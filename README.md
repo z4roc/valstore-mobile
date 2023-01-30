@@ -1,16 +1,18 @@
 # valstore
 
-A new Flutter project.
+A flutter app using Riots API's and an unofficial API to display your Valorant Shop
 
-## Getting Started
+## Status
 
-This project is a starting point for a Flutter application.
+This project is in early development and will see a lot of changes in structure and
+functionality, you can expect as well some change to the UI.
 
-A few resources to get you started if this is your first Flutter project:
+## Contribute
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+In case of styling I would be glad to get some styling tipps since I am relativly new
+to UI Development and Flutter.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Credits
+
+Only because of the original VShop branch I managed to implement the Riot Auth, thank you
+creators of VShop!
