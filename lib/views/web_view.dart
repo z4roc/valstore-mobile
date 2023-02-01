@@ -15,33 +15,33 @@ class WebViewPage extends StatefulWidget {
 }
 
 class _WebViewPageState extends State<WebViewPage> {
+  WebViewController controller = WebViewController()
+    ..setJavaScriptMode(JavaScriptMode.unrestricted)
+    ..setNavigationDelegate(NavigationDelegate(
+      onPageStarted: (url) {},
+      onNavigationRequest: (request) async {
+        RiotService.accessToken = request.url.split('=')[1].split('&')[0];
+        await RiotService().getEntitlements();
+        RiotService().getUserId();
+        await RiotService().getStore();
+        await RiotService().getUserData();
+        //await WebViewCookieManager().clearCookies();
+        navigatorKey.currentState!.push(MaterialPageRoute(
+          builder: (context) {
+            return const StorePage();
+          },
+        ));
+        return NavigationDecision.prevent;
+      },
+    ))
+    ..loadRequest(
+      Uri.parse(RiotService.loginUrl),
+    )
+    ..clearLocalStorage()
+    ..clearCache();
+
   @override
   Widget build(BuildContext context) {
-    WebViewController controller = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setNavigationDelegate(NavigationDelegate(
-        onPageStarted: (url) {},
-        onNavigationRequest: (request) async {
-          RiotService.accessToken = request.url.split('=')[1].split('&')[0];
-          await RiotService().getEntitlements();
-          RiotService().getUserId();
-          await RiotService().getStore();
-          await RiotService().getUserData();
-          //await WebViewCookieManager().clearCookies();
-          navigatorKey.currentState!.push(MaterialPageRoute(
-            builder: (context) {
-              return const StorePage();
-            },
-          ));
-          return NavigationDecision.prevent;
-        },
-      ))
-      ..loadRequest(
-        Uri.parse(RiotService.loginUrl),
-      )
-      ..clearLocalStorage()
-      ..clearCache();
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Riot Games Sing in'),

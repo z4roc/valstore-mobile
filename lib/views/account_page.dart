@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 
-class BundlePage extends StatefulWidget {
-  const BundlePage({super.key});
+class AccountPage extends StatefulWidget {
+  const AccountPage({super.key});
 
   @override
-  State<BundlePage> createState() => _BundlePageState();
+  State<AccountPage> createState() => _AccountPageState();
 }
 
-class _BundlePageState extends State<BundlePage> {
+class _AccountPageState extends State<AccountPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold();

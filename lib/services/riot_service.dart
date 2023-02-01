@@ -2,7 +2,11 @@ import 'dart:convert';
 
 import 'package:http/http.dart';
 import 'package:jwt_decode/jwt_decode.dart';
+import 'package:valstore/models/ValApiBundle.dart';
+import 'package:valstore/models/bundle.dart';
+import 'package:valstore/models/bundle_display_data.dart';
 import 'package:valstore/models/player.dart';
+import 'package:valstore/models/store_offers.dart';
 
 class RiotService {
   static String region = "eu";
@@ -37,7 +41,7 @@ class RiotService {
     return entitlementsRequest.body;
   }
 
-  Future<List<dynamic>> getStore() async {
+  Future<List<Offers>> getStore() async {
     final shopRequest = await get(
       Uri.parse(storeUri),
       headers: {
@@ -49,14 +53,27 @@ class RiotService {
     final allShopJson = json.decode(shopRequest.body);
     final playerStoreJson = allShopJson['SkinsPanelLayout']['SingleItemOffers'];
 
-    var shop = [];
+    final offerRequest = await get(
+      Uri.parse("https://api.henrikdev.xyz/valorant/v2/store-offers"),
+    );
 
-    for (var offer in playerStoreJson) {
+    StoreOffers storeOffers =
+        StoreOffers.fromJson(jsonDecode(offerRequest.body));
+
+    List<Offers> shop = [];
+
+    for (var item in playerStoreJson) {
+      shop.add(storeOffers.data!.offers!
+          .where((offer) => offer.offerId == item)
+          .first);
+    }
+
+    /*for (var offer in playerStoreJson) {
       var offerData = await get(
         Uri.parse("https://valorant-api.com/v1/weapons/skinlevels/$offer"),
       );
       shop.add(json.decode(offerData.body)['data']);
-    }
+    }*/
 
     return shop;
   }
@@ -83,5 +100,30 @@ class RiotService {
 
     user = PlayerInfo.fromJson(resultJson);
     region = user.region!;
+  }
+
+  Future<BundleDisplayData?> getCurrentBundle() async {
+    final bundleRequest = await get(
+      Uri.parse('https://api.henrikdev.xyz/valorant/v2/store-featured'),
+    );
+
+    final bundleJson = json.decode(bundleRequest.body);
+
+    Bundle bundle = Bundle.fromJson(bundleJson);
+
+    final imgRequest = await get(
+      Uri.parse(
+        'https://valorant-api.com/v1/bundles/${bundle.data![0].bundleUuid!}',
+      ),
+    );
+
+    final valApiJson = json.decode(imgRequest.body);
+
+    ValApiBundle apiBundle = ValApiBundle.fromJson(valApiJson);
+
+    BundleDisplayData bdd =
+        BundleDisplayData(bundleData: apiBundle.data, data: bundle.data![0]);
+
+    return bdd;
   }
 }

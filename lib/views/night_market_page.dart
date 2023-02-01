@@ -15,6 +15,26 @@ class _NightMarketPageState extends State<NightMarketPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: const NavDrawer(),
+      appBar: AppBar(
+        title: const Text('Night Market'),
+      ),
+      body: Container(
+        height: double.infinity,
+        padding: const EdgeInsets.all(10),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: const [
+              Icon(Icons.nightlight_round_rounded),
+              SizedBox(
+                height: 10,
+              ),
+              Text('There is currently no Night Market!'),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

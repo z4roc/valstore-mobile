@@ -37,29 +37,64 @@ class _StorePageState extends State<StorePage> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                           ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(snapshot.data![index]['displayName']),
-                              Image(
-                                image: NetworkImage(
-                                  snapshot.data![index]['displayIcon'],
+                          child: Container(
+                            padding: const EdgeInsets.all(20),
+                            child: Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      snapshot.data![index].name!,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 18,
+                                      ),
+                                    ),
+                                    const Spacer(),
+                                    Text(snapshot.data![index].cost.toString()),
+                                    const SizedBox(
+                                      width: 5,
+                                    ),
+                                    const Image(
+                                      height: 15,
+                                      image: NetworkImage(
+                                        "https://media.valorant-api.com/currencies/85ad13f7-3d1b-5128-9eb2-7cd8ee0b5741/displayicon.png",
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                height: 125,
-                              ),
-                            ],
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Image(
+                                  image: NetworkImage(
+                                    snapshot.data![index].icon!,
+                                  ),
+                                  height: 100,
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       );
                     },
                   );
                 } else {
-                  return Center(
-                    child: Column(
-                      children: const [
-                        Text('Loading Store'),
-                        CircularProgressIndicator()
-                      ],
+                  return Container(
+                    height: double.infinity,
+                    padding: EdgeInsets.zero,
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: const [
+                          Text('Loading Store'),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          CircularProgressIndicator()
+                        ],
+                      ),
                     ),
                   );
                 }

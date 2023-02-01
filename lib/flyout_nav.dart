@@ -47,10 +47,12 @@ class NavDrawer extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(10, 10, 0, 0),
             child: ListTile(
               leading: const Icon(Icons.shopping_cart),
-              title: Text(
+              title: const Text(
                 'Daily Store',
               ),
-              onTap: () {},
+              onTap: () {
+                navigatorKey.currentState!.pushNamed('/store');
+              },
             ),
           ),
           Container(
@@ -59,7 +61,20 @@ class NavDrawer extends StatelessWidget {
             child: ListTile(
               leading: const Icon(Icons.discount_rounded),
               title: const Text('Night Market'),
-              onTap: () {},
+              onTap: () {
+                navigatorKey.currentState!.pushNamed('/nightmarket');
+              },
+            ),
+          ),
+          Container(
+            height: 75,
+            padding: const EdgeInsets.fromLTRB(10, 10, 0, 0),
+            child: ListTile(
+              leading: const Icon(Icons.dataset_rounded),
+              title: const Text('Bundle'),
+              onTap: () {
+                navigatorKey.currentState!.pushNamed('/bundle');
+              },
             ),
           ),
           Container(

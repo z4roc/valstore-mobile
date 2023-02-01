@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 ThemeData light = ThemeData(
   brightness: Brightness.light,
-  primarySwatch: Colors.indigo,
-  primaryColor: Color(0xdc3d4b),
   appBarTheme: const AppBarTheme(
     backgroundColor: Colors.red,
     centerTitle: true,
@@ -36,10 +35,21 @@ ThemeData dark = ThemeData(
       ),
     ),
   ),
+  progressIndicatorTheme: const ProgressIndicatorThemeData(
+    color: Colors.red,
+  ),
 );
 
 class ThemeProvider extends ChangeNotifier {
-  ThemeMode themeMode = ThemeMode.system;
+  ThemeMode themeMode = ThemeMode.dark;
+
+  void initTheme() async {
+    final prefs = await SharedPreferences.getInstance();
+    bool? darkMode = await prefs.getBool('mode');
+    if (darkMode != null) {
+      themeMode = darkMode ? ThemeMode.dark : ThemeMode.light;
+    }
+  }
 
   bool get isDarkMode => themeMode == ThemeMode.dark;
 
@@ -61,8 +71,10 @@ class ChangeThemeButton extends StatelessWidget {
             ? Icons.nights_stay_rounded
             : Icons.wb_sunny_rounded,
       ),
-      onPressed: () {
+      onPressed: () async {
         final provider = Provider.of<ThemeProvider>(context, listen: false);
+        final prefs = await SharedPreferences.getInstance();
+        prefs.setBool('mode', !themeProvider.isDarkMode);
         provider.toggleTheme(!themeProvider.isDarkMode);
       },
     );
