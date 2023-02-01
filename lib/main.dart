@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:valstore/services/riot_service.dart';
-import 'package:valstore/store.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:valstore/routes.dart';
 import 'package:valstore/theme.dart';
-import 'package:webview_flutter/webview_flutter.dart';
-import 'package:http/http.dart';
 
 void main() {
   runApp(const MyApp());
@@ -23,7 +21,7 @@ class MyApp extends StatelessWidget {
         final themeProvider = Provider.of<ThemeProvider>(context);
         return MaterialApp(
           debugShowCheckedModeBanner: false,
-          home: const HomeScreen(),
+          routes: routes,
           navigatorKey: navigatorKey,
           theme: light,
           darkTheme: dark,
@@ -42,36 +40,76 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  WebViewController controller = WebViewController()
-    ..setJavaScriptMode(JavaScriptMode.unrestricted)
-    ..setNavigationDelegate(NavigationDelegate(
-      onPageStarted: (url) {},
-      onNavigationRequest: (request) async {
-        RiotService.accessToken = request.url.split('=')[1].split('&')[0];
-        await RiotService().getEntitlements();
-        RiotService().getUserId();
-        await RiotService().getStore();
-        //await WebViewCookieManager().clearCookies();
-        navigatorKey.currentState!.push(MaterialPageRoute(
-          builder: (context) {
-            return StorePage(accessToken: request.url);
-          },
-        ));
-        return NavigationDecision.navigate;
-      },
-    ))
-    ..loadRequest(
-      Uri.parse(RiotService.loginUrl),
-    )
-    ..clearLocalStorage()
-    ..clearCache();
+  late SharedPreferences prefs;
+
+  @override
+  void initState() {
+    loadPrefs();
+    super.initState();
+  }
+
+  void loadPrefs() async {
+    prefs = await SharedPreferences.getInstance();
+    bool? login = prefs.getBool('login');
+    if (login != null && login) {
+      navigatorKey.currentState!.pushNamed('/login');
+    }
+  }
+
+  bool isChecked = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: WebViewWidget(
-        controller: controller,
+      appBar: AppBar(
+        title: const Text('Login'),
+        centerTitle: true,
+      ),
+      body: Container(
+        height: double.infinity,
+        width: double.infinity,
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const Text('ValStore'),
+            const SizedBox(
+              height: 20,
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                navigatorKey.currentState!.pushNamed('/login');
+              },
+              child: const Text(
+                'Login at Riot games',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Checkbox(
+                  value: isChecked,
+                  onChanged: (value) {
+                    setState(() {
+                      isChecked = value!;
+                    });
+                    prefs.setBool('login', value!);
+                  },
+                  fillColor:
+                      MaterialStateProperty.resolveWith((states) => Colors.red),
+                ),
+                const Text('Automatically sign me in next time'),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }

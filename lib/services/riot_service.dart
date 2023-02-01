@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart';
 import 'package:jwt_decode/jwt_decode.dart';
+import 'package:valstore/models/player.dart';
 
 class RiotService {
   static String region = "eu";
@@ -15,6 +16,8 @@ class RiotService {
   static String accessToken = "";
   static String entitlements = "";
   static String userId = "";
+
+  static late PlayerInfo user;
 
   void getUserId() {
     userId = Jwt.parseJwt(accessToken)['sub'];
@@ -56,5 +59,29 @@ class RiotService {
     }
 
     return shop;
+  }
+
+  Future<void> getUserData() async {
+    final userRequest = await put(
+      Uri.parse("https://pd.$region.a.pvp.net/name-service/v2/players"),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(
+        <String>[userId],
+      ),
+    );
+
+    final userResult = json.decode(userRequest.body);
+
+    final bannerRequest = await get(
+      Uri.parse(
+          'https://api.henrikdev.xyz/valorant/v1/account/${userResult[0]['GameName']}/${userResult[0]['TagLine']}'),
+    );
+
+    final resultJson = json.decode(bannerRequest.body)['data'];
+
+    user = PlayerInfo.fromJson(resultJson);
+    region = user.region!;
   }
 }
