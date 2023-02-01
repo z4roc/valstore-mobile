@@ -9,14 +9,14 @@ class Bundle {
     if (json['data'] != null) {
       data = <Data>[];
       json['data'].forEach((v) {
-        data!.add(new Data.fromJson(v));
+        data!.add(Data.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['status'] = this.status;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['status'] = status;
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
@@ -45,21 +45,21 @@ class Data {
     if (json['items'] != null) {
       items = <Items>[];
       json['items'].forEach((v) {
-        items!.add(new Items.fromJson(v));
+        items!.add(Items.fromJson(v));
       });
     }
     secondsRemaining = json['seconds_remaining'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['bundle_uuid'] = this.bundleUuid;
-    data['bundle_price'] = this.bundlePrice;
-    data['whole_sale_only'] = this.wholeSaleOnly;
-    if (this.items != null) {
-      data['items'] = this.items!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['bundle_uuid'] = bundleUuid;
+    data['bundle_price'] = bundlePrice;
+    data['whole_sale_only'] = wholeSaleOnly;
+    if (items != null) {
+      data['items'] = items!.map((v) => v.toJson()).toList();
     }
-    data['seconds_remaining'] = this.secondsRemaining;
+    data['seconds_remaining'] = secondsRemaining;
     return data;
   }
 }
@@ -99,16 +99,16 @@ class Items {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['uuid'] = this.uuid;
-    data['name'] = this.name;
-    data['image'] = this.image;
-    data['type'] = this.type;
-    data['amount'] = this.amount;
-    data['discount_percent'] = this.discountPercent;
-    data['base_price'] = this.basePrice;
-    data['discounted_price'] = this.discountedPrice;
-    data['promo_item'] = this.promoItem;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['uuid'] = uuid;
+    data['name'] = name;
+    data['image'] = image;
+    data['type'] = type;
+    data['amount'] = amount;
+    data['discount_percent'] = discountPercent;
+    data['base_price'] = basePrice;
+    data['discounted_price'] = discountedPrice;
+    data['promo_item'] = promoItem;
     return data;
   }
 }

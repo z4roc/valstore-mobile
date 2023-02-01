@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:valstore/main.dart';
-import 'package:valstore/models/player.dart';
 import 'package:valstore/services/riot_service.dart';
 import 'package:valstore/theme.dart';
 import 'package:webview_flutter/webview_flutter.dart';

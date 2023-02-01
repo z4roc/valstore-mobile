@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:valstore/flyout_nav.dart';
 import 'package:valstore/models/bundle_display_data.dart';
 import 'package:valstore/services/riot_service.dart';
@@ -22,7 +20,7 @@ class _BundlePageState extends State<BundlePage> {
       appBar: AppBar(
         title: const Text('Bundle'),
       ),
-      body: Container(
+      body: SizedBox(
         height: double.infinity,
         width: double.infinity,
         child: FutureBuilder<BundleDisplayData?>(
@@ -48,7 +46,7 @@ class _BundlePageState extends State<BundlePage> {
                       children: [
                         Text(
                           snapshot.data!.bundleData!.displayName!,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.w500,
                           ),

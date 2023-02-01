@@ -45,7 +45,7 @@ class ThemeProvider extends ChangeNotifier {
 
   void initTheme() async {
     final prefs = await SharedPreferences.getInstance();
-    bool? darkMode = await prefs.getBool('mode');
+    bool? darkMode = prefs.getBool('mode');
     if (darkMode != null) {
       themeMode = darkMode ? ThemeMode.dark : ThemeMode.light;
     }

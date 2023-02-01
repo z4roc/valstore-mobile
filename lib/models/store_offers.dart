@@ -6,12 +6,12 @@ class StoreOffers {
 
   StoreOffers.fromJson(Map<String, dynamic> json) {
     status = json['status'];
-    data = json['data'] != null ? new Data.fromJson(json['data']) : null;
+    data = json['data'] != null ? Data.fromJson(json['data']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['status'] = this.status;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['status'] = status;
     if (this.data != null) {
       data['data'] = this.data!.toJson();
     }
@@ -28,15 +28,15 @@ class Data {
     if (json['offers'] != null) {
       offers = <Offers>[];
       json['offers'].forEach((v) {
-        offers!.add(new Offers.fromJson(v));
+        offers!.add(Offers.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.offers != null) {
-      data['offers'] = this.offers!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (offers != null) {
+      data['offers'] = offers!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -68,20 +68,20 @@ class Offers {
     type = json['type'];
     skinId = json['skin_id'];
     contentTier = json['content_tier'] != null
-        ? new ContentTier.fromJson(json['content_tier'])
+        ? ContentTier.fromJson(json['content_tier'])
         : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['offer_id'] = this.offerId;
-    data['cost'] = this.cost;
-    data['name'] = this.name;
-    data['icon'] = this.icon;
-    data['type'] = this.type;
-    data['skin_id'] = this.skinId;
-    if (this.contentTier != null) {
-      data['content_tier'] = this.contentTier!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['offer_id'] = offerId;
+    data['cost'] = cost;
+    data['name'] = name;
+    data['icon'] = icon;
+    data['type'] = type;
+    data['skin_id'] = skinId;
+    if (contentTier != null) {
+      data['content_tier'] = contentTier!.toJson();
     }
     return data;
   }
@@ -101,10 +101,10 @@ class ContentTier {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['name'] = this.name;
-    data['dev_name'] = this.devName;
-    data['icon'] = this.icon;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['name'] = name;
+    data['dev_name'] = devName;
+    data['icon'] = icon;
     return data;
   }
 }

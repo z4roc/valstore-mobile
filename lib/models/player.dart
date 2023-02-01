@@ -24,23 +24,23 @@ class PlayerInfo {
     accountLevel = json['account_level'];
     name = json['name'];
     tag = json['tag'];
-    card = json['card'] != null ? new Card.fromJson(json['card']) : null;
+    card = json['card'] != null ? Card.fromJson(json['card']) : null;
     lastUpdate = json['last_update'];
     lastUpdateRaw = json['last_update_raw'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['puuid'] = this.puuid;
-    data['region'] = this.region;
-    data['account_level'] = this.accountLevel;
-    data['name'] = this.name;
-    data['tag'] = this.tag;
-    if (this.card != null) {
-      data['card'] = this.card!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['puuid'] = puuid;
+    data['region'] = region;
+    data['account_level'] = accountLevel;
+    data['name'] = name;
+    data['tag'] = tag;
+    if (card != null) {
+      data['card'] = card!.toJson();
     }
-    data['last_update'] = this.lastUpdate;
-    data['last_update_raw'] = this.lastUpdateRaw;
+    data['last_update'] = lastUpdate;
+    data['last_update_raw'] = lastUpdateRaw;
     return data;
   }
 }
@@ -61,11 +61,11 @@ class Card {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['small'] = this.small;
-    data['large'] = this.large;
-    data['wide'] = this.wide;
-    data['id'] = this.id;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['small'] = small;
+    data['large'] = large;
+    data['wide'] = wide;
+    data['id'] = id;
     return data;
   }
 }

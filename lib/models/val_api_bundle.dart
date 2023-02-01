@@ -6,12 +6,12 @@ class ValApiBundle {
 
   ValApiBundle.fromJson(Map<String, dynamic> json) {
     status = json['status'];
-    data = json['data'] != null ? new BundleData.fromJson(json['data']) : null;
+    data = json['data'] != null ? BundleData.fromJson(json['data']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['status'] = this.status;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['status'] = status;
     if (this.data != null) {
       data['data'] = this.data!.toJson();
     }
@@ -60,18 +60,18 @@ class BundleData {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['uuid'] = this.uuid;
-    data['displayName'] = this.displayName;
-    data['displayNameSubText'] = this.displayNameSubText;
-    data['description'] = this.description;
-    data['extraDescription'] = this.extraDescription;
-    data['promoDescription'] = this.promoDescription;
-    data['useAdditionalContext'] = this.useAdditionalContext;
-    data['displayIcon'] = this.displayIcon;
-    data['displayIcon2'] = this.displayIcon2;
-    data['verticalPromoImage'] = this.verticalPromoImage;
-    data['assetPath'] = this.assetPath;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['uuid'] = uuid;
+    data['displayName'] = displayName;
+    data['displayNameSubText'] = displayNameSubText;
+    data['description'] = description;
+    data['extraDescription'] = extraDescription;
+    data['promoDescription'] = promoDescription;
+    data['useAdditionalContext'] = useAdditionalContext;
+    data['displayIcon'] = displayIcon;
+    data['displayIcon2'] = displayIcon2;
+    data['verticalPromoImage'] = verticalPromoImage;
+    data['assetPath'] = assetPath;
     return data;
   }
 }
