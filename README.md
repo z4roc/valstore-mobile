@@ -1,18 +1,13 @@
 # valstore
 
-A flutter app using Riots API's and an unofficial API to display your Valorant Shop
+A flutter app using Riots API's and an unofficial API to display your valorant store offers.
 
 ## Status
 
 This project is in early development and will see a lot of changes in structure and
-functionality, you can expect as well some change to the UI.
-
-## Contribute
-
-In case of styling I would be glad to get some styling tipps since I am relativly new
-to UI Development and Flutter.
+functionality, you can expect as well some change to the UI and themes.
 
 ## Credits
 
-Only because of the original VShop branch I managed to implement the Riot Auth, thank you
-creators of VShop!
+Thanks to @HeyM1ke and @VShop for the Riot API Docs and implementations, without this
+project wouldn't be possible
