@@ -2,11 +2,13 @@ import 'dart:convert';
 
 import 'package:http/http.dart';
 import 'package:jwt_decode/jwt_decode.dart';
-import 'package:valstore/models/ValApiBundle.dart';
+import 'package:valstore/models/firebase_skin.dart';
+import 'package:valstore/models/val_api_bundle.dart';
 import 'package:valstore/models/bundle.dart';
 import 'package:valstore/models/bundle_display_data.dart';
 import 'package:valstore/models/player.dart';
 import 'package:valstore/models/store_offers.dart';
+import 'package:valstore/services/firestore_service.dart';
 
 class RiotService {
   static String region = "eu";
@@ -41,7 +43,7 @@ class RiotService {
     return entitlementsRequest.body;
   }
 
-  Future<List<Offers>> getStore() async {
+  Future<List<FirebaseSkin>> getStore() async {
     final shopRequest = await get(
       Uri.parse(storeUri),
       headers: {
@@ -53,19 +55,22 @@ class RiotService {
     final allShopJson = json.decode(shopRequest.body);
     final playerStoreJson = allShopJson['SkinsPanelLayout']['SingleItemOffers'];
 
-    final offerRequest = await get(
+    /*final offerRequest = await get(
       Uri.parse("https://api.henrikdev.xyz/valorant/v2/store-offers"),
     );
 
     StoreOffers storeOffers =
-        StoreOffers.fromJson(jsonDecode(offerRequest.body));
+        StoreOffers.fromJson(jsonDecode(offerRequest.body));*/
 
-    List<Offers> shop = [];
+    List<FirebaseSkin> shop = [];
 
     for (var item in playerStoreJson) {
-      shop.add(storeOffers.data!.offers!
-          .where((offer) => offer.offerId == item)
-          .first);
+      var firebaseSkin = await FireStoreService().getSkin(item);
+      if (firebaseSkin != null) {
+        shop.add(firebaseSkin);
+      } else {
+        shop.add(FirebaseSkin());
+      }
     }
 
     /*for (var offer in playerStoreJson) {
@@ -96,10 +101,21 @@ class RiotService {
           'https://api.henrikdev.xyz/valorant/v1/account/${userResult[0]['GameName']}/${userResult[0]['TagLine']}'),
     );
 
-    final resultJson = json.decode(bannerRequest.body)['data'];
-
-    user = PlayerInfo.fromJson(resultJson);
-    region = user.region!;
+    try {
+      final resultJson = json.decode(bannerRequest.body)['data'];
+      user = PlayerInfo.fromJson(resultJson);
+      region = user.region!;
+    } catch (e) {
+      user = PlayerInfo(
+        name: "Unknown",
+        tag: "EUW",
+        accountLevel: 0,
+        card: Card(
+          wide:
+              "https://media.valorant-api.com/playercards/9fb348bc-41a0-91ad-8a3e-818035c4e561/wideart.png",
+        ),
+      );
+    }
   }
 
   Future<BundleDisplayData?> getCurrentBundle() async {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:valstore/color_extension.dart';
 import 'package:valstore/flyout_nav.dart';
 import 'package:valstore/services/riot_service.dart';
 
@@ -30,15 +31,22 @@ class _StorePageState extends State<StorePage> {
                   return ListView.builder(
                     itemCount: snapshot.data!.length,
                     itemBuilder: (context, index) {
+                      final colorString =
+                          snapshot.data?[index].contentTier?.color != null
+                              ? snapshot.data![index].contentTier!.color
+                              : "252525";
+                      final Color color =
+                          HexColor(colorString!).withOpacity(.65);
                       return SizedBox(
                         height: 200,
                         child: Card(
                           elevation: 2,
+                          color: color,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Container(
-                            padding: const EdgeInsets.all(20),
+                            padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
                             child: Column(
                               children: [
                                 Row(
@@ -51,14 +59,11 @@ class _StorePageState extends State<StorePage> {
                                       ),
                                     ),
                                     const Spacer(),
-                                    Text(snapshot.data![index].cost.toString()),
-                                    const SizedBox(
-                                      width: 5,
-                                    ),
-                                    const Image(
-                                      height: 15,
+                                    Image(
+                                      height: 30,
                                       image: NetworkImage(
-                                        "https://media.valorant-api.com/currencies/85ad13f7-3d1b-5128-9eb2-7cd8ee0b5741/displayicon.png",
+                                        snapshot
+                                            .data![index].contentTier!.icon!,
                                       ),
                                     ),
                                   ],
@@ -72,6 +77,31 @@ class _StorePageState extends State<StorePage> {
                                   ),
                                   height: 100,
                                 ),
+                                const Spacer(),
+                                Row(
+                                  children: [
+                                    const SizedBox(
+                                      width: 5,
+                                    ),
+                                    const Spacer(),
+                                    Text(
+                                      snapshot.data![index].cost!.toString(),
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      width: 5,
+                                    ),
+                                    const Image(
+                                      height: 18,
+                                      image: NetworkImage(
+                                        "https://media.valorant-api.com/currencies/85ad13f7-3d1b-5128-9eb2-7cd8ee0b5741/displayicon.png",
+                                      ),
+                                    ),
+                                  ],
+                                )
                               ],
                             ),
                           ),

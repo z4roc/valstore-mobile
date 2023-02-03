@@ -40,7 +40,8 @@ dependencies:
   jwt_decode: ^0.3.1
   provider: ^6.0.5
   shared_preferences: ^2.0.17
-  flutter_countdown_timer: ^4.1.0
+  firebase_core: ^2.4.1
+  cloud_firestore: ^4.3.1
 
 dev_dependencies:
   flutter_test:

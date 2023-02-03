@@ -1,4 +1,4 @@
-import 'package:valstore/models/ValApiBundle.dart';
+import 'package:valstore/models/val_api_bundle.dart';
 import 'package:valstore/models/bundle.dart';
 
 class BundleDisplayData {

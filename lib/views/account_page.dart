@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:valstore/flyout_nav.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
@@ -10,6 +11,11 @@ class AccountPage extends StatefulWidget {
 class _AccountPageState extends State<AccountPage> {
   @override
   Widget build(BuildContext context) {
-    return const Scaffold();
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Account'),
+      ),
+      drawer: const NavDrawer(),
+    );
   }
 }
