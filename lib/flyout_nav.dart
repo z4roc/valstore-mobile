@@ -89,7 +89,7 @@ class NavDrawer extends StatelessWidget {
           const Divider(
             thickness: 1,
           ),
-          Container(
+          /*Container(
             padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
             child: ListTile(
               leading: Icon(
@@ -104,7 +104,7 @@ class NavDrawer extends StatelessWidget {
                 provider.toggleTheme(!themeProvider.isDarkMode);
               },
             ),
-          ),
+          ),*/
           Container(
             padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
             child: ListTile(

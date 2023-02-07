@@ -12,6 +12,7 @@ class _NightMarketPageState extends State<NightMarketPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF16141a).withOpacity(.8),
       drawer: const NavDrawer(),
       appBar: AppBar(
         title: const Text('Night Market'),

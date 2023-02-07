@@ -16,6 +16,7 @@ class _StorePageState extends State<StorePage> {
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
+          backgroundColor: const Color(0xFF16141a).withOpacity(.8),
           drawer: const NavDrawer(),
           appBar: AppBar(
             title: const Text('Your shop'),
@@ -36,36 +37,44 @@ class _StorePageState extends State<StorePage> {
                               ? snapshot.data![index].contentTier!.color
                               : "252525";
                       final Color color =
-                          HexColor(colorString!).withOpacity(.65);
+                          HexColor(colorString!).withOpacity(.7);
                       return SizedBox(
                         height: 200,
                         child: Card(
                           elevation: 2,
-                          color: color,
+                          color: color
+                              .withBlue((color.blue / 1.7).round())
+                              .withRed((color.red / 1.7).round())
+                              .withGreen((color.green / 1.7).round()),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Container(
+                            decoration: BoxDecoration(
+                                image: DecorationImage(
+                              fit: BoxFit.cover,
+                              opacity: .6,
+                              image: NetworkImage(
+                                snapshot.data![index].contentTier!.icon!,
+                              ),
+                            )),
                             padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
                             child: Column(
                               children: [
                                 Row(
                                   children: [
-                                    Text(
-                                      snapshot.data![index].name!,
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 18,
+                                    Expanded(
+                                      child: Text(
+                                        snapshot.data![index].name!,
+                                        overflow: TextOverflow.fade,
+                                        softWrap: false,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 20,
+                                        ),
                                       ),
                                     ),
-                                    const Spacer(),
-                                    Image(
-                                      height: 30,
-                                      image: NetworkImage(
-                                        snapshot
-                                            .data![index].contentTier!.icon!,
-                                      ),
-                                    ),
+                                    //
                                   ],
                                 ),
                                 const SizedBox(
@@ -87,7 +96,7 @@ class _StorePageState extends State<StorePage> {
                                     Text(
                                       snapshot.data![index].cost!.toString(),
                                       style: const TextStyle(
-                                        fontSize: 16,
+                                        fontSize: 20,
                                         fontWeight: FontWeight.w500,
                                       ),
                                     ),
@@ -95,7 +104,7 @@ class _StorePageState extends State<StorePage> {
                                       width: 5,
                                     ),
                                     const Image(
-                                      height: 18,
+                                      height: 22,
                                       image: NetworkImage(
                                         "https://media.valorant-api.com/currencies/85ad13f7-3d1b-5128-9eb2-7cd8ee0b5741/displayicon.png",
                                       ),

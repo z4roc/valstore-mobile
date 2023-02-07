@@ -16,6 +16,7 @@ class _BundlePageState extends State<BundlePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF16141a).withOpacity(.8),
       drawer: const NavDrawer(),
       appBar: AppBar(
         title: const Text('Bundle'),
@@ -33,6 +34,7 @@ class _BundlePageState extends State<BundlePage> {
                     height: 150,
                     width: double.infinity,
                     decoration: BoxDecoration(
+                      color: Color.fromARGB(255, 37, 34, 41).withOpacity(.8),
                       image: DecorationImage(
                         fit: BoxFit.cover,
                         image: NetworkImage(
@@ -83,40 +85,43 @@ class _BundlePageState extends State<BundlePage> {
                       itemCount: snapshot.data!.data!.items!.length,
                       itemBuilder: (context, index) {
                         Items item = snapshot.data!.data!.items![index];
-
-                        return Card(
-                          elevation: 2,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Container(
-                            height: 200,
-                            padding: const EdgeInsets.all(20),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Row(
-                                  children: [
-                                    Text(item.name!),
-                                    const Spacer(),
-                                    Text(item.basePrice.toString()),
-                                    const Image(
-                                      height: 15,
-                                      image: NetworkImage(
-                                        "https://media.valorant-api.com/currencies/85ad13f7-3d1b-5128-9eb2-7cd8ee0b5741/displayicon.png",
+                        return Padding(
+                          padding: const EdgeInsets.fromLTRB(5, 5, 5, 0),
+                          child: Card(
+                            elevation: 2,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Container(
+                              color: const Color(0xFF16141a).withOpacity(.7),
+                              height: 200,
+                              padding: const EdgeInsets.all(20),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(item.name!),
+                                      const Spacer(),
+                                      Text(item.basePrice.toString()),
+                                      const Image(
+                                        height: 15,
+                                        image: NetworkImage(
+                                          "https://media.valorant-api.com/currencies/85ad13f7-3d1b-5128-9eb2-7cd8ee0b5741/displayicon.png",
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                Image(
-                                  height: 125,
-                                  image: NetworkImage(item.image!),
-                                )
-                              ],
+                                    ],
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  Image(
+                                    height: 125,
+                                    image: NetworkImage(item.image!),
+                                  )
+                                ],
+                              ),
                             ),
                           ),
                         );

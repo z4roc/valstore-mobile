@@ -21,8 +21,11 @@ ThemeData light = ThemeData(
 
 ThemeData dark = ThemeData(
   brightness: Brightness.dark,
+  drawerTheme: const DrawerThemeData(
+    backgroundColor: Color(0xFF16141a),
+  ),
   appBarTheme: const AppBarTheme(
-    backgroundColor: Colors.red,
+    backgroundColor: Color(0xFF16141a),
     centerTitle: true,
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
