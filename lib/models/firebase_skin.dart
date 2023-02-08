@@ -89,7 +89,7 @@ class Level {
   String? assetPath;
   String? displayIcon;
   String? displayName;
-  String? fullRender;
+  String? levelItem;
   String? streamedVideo;
   String? swatch;
   String? uuid;
@@ -98,7 +98,7 @@ class Level {
       {this.assetPath,
       this.displayIcon,
       this.displayName,
-      this.fullRender,
+      this.levelItem,
       this.streamedVideo,
       this.swatch,
       this.uuid});
@@ -107,7 +107,7 @@ class Level {
     assetPath = json['assetPath'];
     displayIcon = json['displayIcon'];
     displayName = json['displayName'];
-    fullRender = json['fullRender'];
+    levelItem = json['levelItem'];
     streamedVideo = json['streamedVideo'];
     swatch = json['swatch'];
     uuid = json['uuid'];

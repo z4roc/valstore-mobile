@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:valstore/color_extension.dart';
 import 'package:valstore/flyout_nav.dart';
+import 'package:valstore/main.dart';
 import 'package:valstore/services/riot_service.dart';
+import 'package:valstore/views/skin_detail_page.dart';
 
 class StorePage extends StatefulWidget {
   const StorePage({super.key});
@@ -38,80 +40,90 @@ class _StorePageState extends State<StorePage> {
                               : "252525";
                       final Color color =
                           HexColor(colorString!).withOpacity(.7);
-                      return SizedBox(
-                        height: 200,
-                        child: Card(
-                          elevation: 2,
-                          color: color
-                              .withBlue((color.blue / 1.7).round())
-                              .withRed((color.red / 1.7).round())
-                              .withGreen((color.green / 1.7).round()),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Container(
-                            decoration: BoxDecoration(
-                                image: DecorationImage(
-                              fit: BoxFit.cover,
-                              opacity: .6,
-                              image: NetworkImage(
-                                snapshot.data![index].contentTier!.icon!,
-                              ),
-                            )),
-                            padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
-                            child: Column(
-                              children: [
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        snapshot.data![index].name!,
-                                        overflow: TextOverflow.fade,
-                                        softWrap: false,
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 20,
+                      return GestureDetector(
+                        onTap: () {
+                          navigatorKey.currentState!
+                              .push(MaterialPageRoute(builder: ((context) {
+                            return SkinDetailPage(skin: snapshot.data![index]);
+                          })));
+                        },
+                        child: SizedBox(
+                          height: 200,
+                          child: Card(
+                            elevation: 2,
+                            color: color
+                                .withBlue((color.blue / 1.7).round())
+                                .withRed((color.red / 1.7).round())
+                                .withGreen((color.green / 1.7).round()),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                fit: BoxFit.contain,
+                                opacity: .2,
+                                image: NetworkImage(
+                                  snapshot.data![index].contentTier!.icon!,
+                                ),
+                              )),
+                              padding:
+                                  const EdgeInsets.fromLTRB(20, 15, 20, 10),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          snapshot.data![index].name!,
+                                          overflow: TextOverflow.fade,
+                                          softWrap: false,
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 20,
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    //
-                                  ],
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                Image(
-                                  image: NetworkImage(
-                                    snapshot.data![index].icon!,
+                                      //
+                                    ],
                                   ),
-                                  height: 100,
-                                ),
-                                const Spacer(),
-                                Row(
-                                  children: [
-                                    const SizedBox(
-                                      width: 5,
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  Hero(
+                                    tag: snapshot.data![index].name!,
+                                    child: Image.network(
+                                      snapshot.data![index].icon!,
+                                      height: 100,
                                     ),
-                                    const Spacer(),
-                                    Text(
-                                      snapshot.data![index].cost!.toString(),
-                                      style: const TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w500,
+                                  ),
+                                  const Spacer(),
+                                  Row(
+                                    children: [
+                                      const SizedBox(
+                                        width: 5,
                                       ),
-                                    ),
-                                    const SizedBox(
-                                      width: 5,
-                                    ),
-                                    const Image(
-                                      height: 22,
-                                      image: NetworkImage(
-                                        "https://media.valorant-api.com/currencies/85ad13f7-3d1b-5128-9eb2-7cd8ee0b5741/displayicon.png",
+                                      const Spacer(),
+                                      Text(
+                                        snapshot.data![index].cost!.toString(),
+                                        style: const TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w500,
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                )
-                              ],
+                                      const SizedBox(
+                                        width: 5,
+                                      ),
+                                      const Image(
+                                        height: 22,
+                                        image: NetworkImage(
+                                          "https://media.valorant-api.com/currencies/85ad13f7-3d1b-5128-9eb2-7cd8ee0b5741/displayicon.png",
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                ],
+                              ),
                             ),
                           ),
                         ),

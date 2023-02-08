@@ -51,7 +51,9 @@ class RiotService {
         'Authorization': 'Bearer $accessToken'
       },
     );
-
+    if (shopRequest.statusCode == 403) {
+      return await getStore();
+    }
     final allShopJson = json.decode(shopRequest.body);
     final playerStoreJson = allShopJson['SkinsPanelLayout']['SingleItemOffers'];
 

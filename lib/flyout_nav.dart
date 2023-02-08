@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:restart_app/restart_app.dart';
 import 'package:valstore/main.dart';
 import 'package:valstore/services/riot_service.dart';
 import 'package:valstore/theme.dart';
@@ -21,11 +22,15 @@ class NavDrawer extends StatelessWidget {
             decoration: BoxDecoration(
               image: DecorationImage(
                 fit: BoxFit.cover,
-                image: NetworkImage(user.card!.wide!),
+                scale: 2.0,
+                image: NetworkImage(
+                  user.card!.wide!,
+                ),
                 opacity: .5,
               ),
             ),
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Spacer(),
                 Text(
@@ -36,7 +41,7 @@ class NavDrawer extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(
-                  height: 30,
+                  height: 50,
                 ),
               ],
             ),
@@ -76,7 +81,7 @@ class NavDrawer extends StatelessWidget {
               },
             ),
           ),
-          Container(
+          /*Container(
             height: 75,
             padding: const EdgeInsets.fromLTRB(10, 10, 0, 0),
             child: ListTile(
@@ -84,7 +89,7 @@ class NavDrawer extends StatelessWidget {
               title: const Text('Account'),
               onTap: () {},
             ),
-          ),
+          ),*/
           const Spacer(),
           const Divider(
             thickness: 1,
@@ -112,10 +117,11 @@ class NavDrawer extends StatelessWidget {
               title: const Text('Logout'),
               onTap: () async {
                 await WebViewCookieManager().clearCookies();
+                await WebViewController().clearLocalStorage();
                 await WebViewController().reload();
-                navigatorKey.currentState!.popUntil(
-                  ModalRoute.withName('/'),
-                );
+                RiotService.accessToken = "";
+                RiotService.entitlements = "";
+                Restart.restartApp();
               },
             ),
           ),

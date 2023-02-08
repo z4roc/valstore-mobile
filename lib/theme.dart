@@ -26,7 +26,6 @@ ThemeData dark = ThemeData(
   ),
   appBarTheme: const AppBarTheme(
     backgroundColor: Color(0xFF16141a),
-    centerTitle: true,
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
