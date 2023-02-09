@@ -16,7 +16,6 @@ class _WebViewPageState extends State<WebViewPage> {
   WebViewController controller = WebViewController()
     ..setJavaScriptMode(JavaScriptMode.unrestricted)
     ..setNavigationDelegate(NavigationDelegate(
-      onPageStarted: (url) {},
       onNavigationRequest: (request) async {
         RiotService.accessToken = request.url.split('=')[1].split('&')[0];
         await RiotService().getEntitlements();

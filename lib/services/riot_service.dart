@@ -7,7 +7,6 @@ import 'package:valstore/models/val_api_bundle.dart';
 import 'package:valstore/models/bundle.dart';
 import 'package:valstore/models/bundle_display_data.dart';
 import 'package:valstore/models/player.dart';
-import 'package:valstore/models/store_offers.dart';
 import 'package:valstore/services/firestore_service.dart';
 
 class RiotService {
@@ -84,13 +83,7 @@ class RiotService {
     }*/
     if (sort == 1) {
       shop.sort((a, b) {
-        if (a.cost! < b.cost!) {
-          return 1;
-        } else if (a.cost! > b.cost!) {
-          return -1;
-        } else {
-          return 0;
-        }
+        return b.cost! - a.cost!;
       });
     } else if (sort == 2) {
       shop.sort(
@@ -167,6 +160,12 @@ class RiotService {
     );
 
     final valApiJson = json.decode(imgRequest.body);
+
+    bundle.data![0].items!.sort(
+      (a, b) {
+        return b.basePrice! - a.basePrice!;
+      },
+    );
 
     ValApiBundle apiBundle = ValApiBundle.fromJson(valApiJson);
 

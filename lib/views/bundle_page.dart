@@ -23,176 +23,187 @@ class _BundlePageState extends State<BundlePage> {
       appBar: AppBar(
         title: const Text('Bundle'),
       ),
-      body: SizedBox(
-        height: double.infinity,
-        width: double.infinity,
-        child: FutureBuilder<BundleDisplayData?>(
-          future: RiotService().getCurrentBundle(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return Column(
-                children: [
-                  Container(
-                    height: 150,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color:
-                          const Color.fromARGB(255, 37, 34, 41).withOpacity(.8),
-                      image: DecorationImage(
-                        fit: BoxFit.cover,
-                        image: NetworkImage(
-                          snapshot.data!.bundleData!.displayIcon!,
+      body: RefreshIndicator(
+        onRefresh: () async {
+          setState(() {});
+        },
+        color: Colors.redAccent,
+        child: SizedBox(
+          height: double.infinity,
+          width: double.infinity,
+          child: FutureBuilder<BundleDisplayData?>(
+            future: RiotService().getCurrentBundle(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return Column(
+                  children: [
+                    Container(
+                      height: 150,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 37, 34, 41)
+                            .withOpacity(.8),
+                        image: DecorationImage(
+                          fit: BoxFit.cover,
+                          image: NetworkImage(
+                            snapshot.data!.bundleData!.displayIcon!,
+                          ),
+                          opacity: .6,
                         ),
-                        opacity: .6,
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const Spacer(),
+                          Text(
+                            snapshot.data!.bundleData!.displayName!,
+                            style: const TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                snapshot.data!.data!.bundlePrice.toString(),
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 5,
+                              ),
+                              const Image(
+                                height: 20,
+                                image: NetworkImage(
+                                  "https://media.valorant-api.com/currencies/85ad13f7-3d1b-5128-9eb2-7cd8ee0b5741/displayicon.png",
+                                ),
+                              ),
+                            ],
+                          ),
+                          const Spacer(),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              const Icon(
+                                Icons.timelapse,
+                                size: 20,
+                              ),
+                              const SizedBox(
+                                width: 5,
+                              ),
+                              CountdownTimer(
+                                endTime: DateTime.now().millisecondsSinceEpoch +
+                                    (snapshot.data!.data!.secondsRemaining! *
+                                        1000),
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                        ],
                       ),
                     ),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: snapshot.data!.data!.items!.length,
+                        itemBuilder: (context, index) {
+                          Items item = snapshot.data!.data!.items![index];
+                          return Padding(
+                            padding: const EdgeInsets.fromLTRB(5, 5, 5, 0),
+                            child: Card(
+                              elevation: 2,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Container(
+                                color: const Color(0xFF16141a).withOpacity(.7),
+                                height: 200,
+                                padding: const EdgeInsets.all(20),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Text(
+                                          textAlign: TextAlign.start,
+                                          item.name!,
+                                          style: const TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Image(
+                                      height: 100,
+                                      image: NetworkImage(item.image!),
+                                    ),
+                                    const Spacer(),
+                                    Row(
+                                      children: [
+                                        const Spacer(),
+                                        Text(
+                                          "${item.basePrice} ",
+                                          style: const TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                        const Image(
+                                          height: 20,
+                                          image: NetworkImage(
+                                            "https://media.valorant-api.com/currencies/85ad13f7-3d1b-5128-9eb2-7cd8ee0b5741/displayicon.png",
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                );
+              } else {
+                return Container(
+                  height: double.infinity,
+                  padding: EdgeInsets.zero,
+                  child: Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const Spacer(),
-                        Text(
-                          snapshot.data!.bundleData!.displayName!,
-                          style: const TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const SizedBox(
+                      children: const [
+                        Text('Loading Bundle'),
+                        SizedBox(
                           height: 10,
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              snapshot.data!.data!.bundlePrice.toString(),
-                              style: const TextStyle(
-                                fontSize: 20,
-                              ),
-                            ),
-                            const SizedBox(
-                              width: 5,
-                            ),
-                            const Image(
-                              height: 20,
-                              image: NetworkImage(
-                                "https://media.valorant-api.com/currencies/85ad13f7-3d1b-5128-9eb2-7cd8ee0b5741/displayicon.png",
-                              ),
-                            ),
-                          ],
-                        ),
-                        const Spacer(),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            const Icon(
-                              Icons.timelapse,
-                              size: 20,
-                            ),
-                            const SizedBox(
-                              width: 5,
-                            ),
-                            CountdownTimer(
-                              endTime: DateTime.now().millisecondsSinceEpoch +
-                                  (snapshot.data!.data!.secondsRemaining! *
-                                      1000),
-                            ),
-                            const SizedBox(
-                              width: 10,
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 5,
-                        ),
+                        CircularProgressIndicator()
                       ],
                     ),
                   ),
-                  Expanded(
-                    child: ListView.builder(
-                      reverse: true,
-                      itemCount: snapshot.data!.data!.items!.length,
-                      itemBuilder: (context, index) {
-                        Items item = snapshot.data!.data!.items![index];
-                        return Padding(
-                          padding: const EdgeInsets.fromLTRB(5, 5, 5, 0),
-                          child: Card(
-                            elevation: 2,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Container(
-                              color: const Color(0xFF16141a).withOpacity(.7),
-                              height: 200,
-                              padding: const EdgeInsets.all(20),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text(
-                                        textAlign: TextAlign.start,
-                                        item.name!,
-                                        style: const TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  Image(
-                                    height: 100,
-                                    image: NetworkImage(item.image!),
-                                  ),
-                                  const Spacer(),
-                                  Row(
-                                    children: [
-                                      const Spacer(),
-                                      Text(item.basePrice.toString()),
-                                      const Image(
-                                        height: 15,
-                                        image: NetworkImage(
-                                          "https://media.valorant-api.com/currencies/85ad13f7-3d1b-5128-9eb2-7cd8ee0b5741/displayicon.png",
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              );
-            } else {
-              return Container(
-                height: double.infinity,
-                padding: EdgeInsets.zero,
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: const [
-                      Text('Loading Bundle'),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      CircularProgressIndicator()
-                    ],
-                  ),
-                ),
-              );
-            }
-          },
+                );
+              }
+            },
+          ),
         ),
       ),
     );

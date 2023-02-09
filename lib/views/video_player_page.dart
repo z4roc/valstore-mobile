@@ -28,9 +28,6 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (_controller.value.isInitialized) {
-      _controller.play();
-    }
     return Scaffold(
       appBar: AppBar(
         title: const Text('Level Video'),
@@ -49,19 +46,6 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
             }
           },
           future: _initController,
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.redAccent,
-        onPressed: () {
-          setState(() {
-            _controller.value.isPlaying
-                ? _controller.pause()
-                : _controller.play();
-          });
-        },
-        child: Icon(
-          _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
         ),
       ),
     );
