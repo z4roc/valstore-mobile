@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
 import 'package:valstore/color_extension.dart';
 import 'package:valstore/flyout_nav.dart';
 import 'package:valstore/main.dart';
+import 'package:valstore/models/firebase_skin.dart';
 import 'package:valstore/services/riot_service.dart';
 import 'package:valstore/views/skin_detail_page.dart';
 
@@ -13,6 +15,10 @@ class StorePage extends StatefulWidget {
 }
 
 class _StorePageState extends State<StorePage> {
+  late List<FirebaseSkin> skins;
+
+  int sortOption = 0;
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -22,21 +28,74 @@ class _StorePageState extends State<StorePage> {
           drawer: const NavDrawer(),
           appBar: AppBar(
             title: const Text('Your shop'),
+            actions: [
+              FutureBuilder<int>(
+                future: RiotService().getStoreTimer(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    final time = DateTime.now().millisecondsSinceEpoch +
+                        (snapshot.data! * 1000);
+                    return Row(
+                      children: [
+                        const Icon(Icons.timelapse_rounded),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        CountdownTimer(
+                          endTime: time,
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                      ],
+                    );
+                  } else {
+                    return const SizedBox();
+                  }
+                },
+              ),
+              PopupMenuButton(
+                itemBuilder: (context) {
+                  return [
+                    const PopupMenuItem<int>(
+                      value: 1,
+                      child: Text('Sort by cost'),
+                    ),
+                    const PopupMenuItem<int>(
+                      value: 2,
+                      child: Text('Sort by name'),
+                    ),
+                  ];
+                },
+                onSelected: (value) {
+                  if (value == 1) {
+                    setState(() {
+                      sortOption = 1;
+                    });
+                  } else if (value == 2) {
+                    setState(() {
+                      sortOption = 2;
+                    });
+                  }
+                },
+              ),
+            ],
           ),
           body: Container(
             padding: const EdgeInsets.all(10),
             height: double.infinity,
             width: double.infinity,
             child: FutureBuilder(
-              future: RiotService().getStore(),
+              future: RiotService().getStore(sortOption),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
+                  skins = snapshot.data!.skins;
                   return ListView.builder(
-                    itemCount: snapshot.data!.length,
+                    itemCount: skins.length,
                     itemBuilder: (context, index) {
                       final colorString =
-                          snapshot.data?[index].contentTier?.color != null
-                              ? snapshot.data![index].contentTier!.color
+                          skins[index].contentTier?.color != null
+                              ? skins[index].contentTier!.color
                               : "252525";
                       final Color color =
                           HexColor(colorString!).withOpacity(.7);
@@ -44,7 +103,7 @@ class _StorePageState extends State<StorePage> {
                         onTap: () {
                           navigatorKey.currentState!
                               .push(MaterialPageRoute(builder: ((context) {
-                            return SkinDetailPage(skin: snapshot.data![index]);
+                            return SkinDetailPage(skin: skins[index]);
                           })));
                         },
                         child: SizedBox(
@@ -64,7 +123,7 @@ class _StorePageState extends State<StorePage> {
                                 fit: BoxFit.contain,
                                 opacity: .2,
                                 image: NetworkImage(
-                                  snapshot.data![index].contentTier!.icon!,
+                                  skins[index].contentTier!.icon!,
                                 ),
                               )),
                               padding:
@@ -75,7 +134,7 @@ class _StorePageState extends State<StorePage> {
                                     children: [
                                       Expanded(
                                         child: Text(
-                                          snapshot.data![index].name!,
+                                          skins[index].name!,
                                           overflow: TextOverflow.fade,
                                           softWrap: false,
                                           style: const TextStyle(
@@ -91,9 +150,9 @@ class _StorePageState extends State<StorePage> {
                                     height: 10,
                                   ),
                                   Hero(
-                                    tag: snapshot.data![index].name!,
+                                    tag: skins[index].name!,
                                     child: Image.network(
-                                      snapshot.data![index].icon!,
+                                      skins[index].icon!,
                                       height: 100,
                                     ),
                                   ),
@@ -105,7 +164,7 @@ class _StorePageState extends State<StorePage> {
                                       ),
                                       const Spacer(),
                                       Text(
-                                        snapshot.data![index].cost!.toString(),
+                                        skins[index].cost!.toString(),
                                         style: const TextStyle(
                                           fontSize: 20,
                                           fontWeight: FontWeight.w500,
@@ -143,7 +202,7 @@ class _StorePageState extends State<StorePage> {
                           SizedBox(
                             height: 10,
                           ),
-                          CircularProgressIndicator()
+                          CircularProgressIndicator(),
                         ],
                       ),
                     ),

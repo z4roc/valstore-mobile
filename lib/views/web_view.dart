@@ -21,7 +21,6 @@ class _WebViewPageState extends State<WebViewPage> {
         RiotService.accessToken = request.url.split('=')[1].split('&')[0];
         await RiotService().getEntitlements();
         RiotService().getUserId();
-        await RiotService().getStore();
         await RiotService().getUserData();
         //await WebViewCookieManager().clearCookies();
         navigatorKey.currentState!.push(MaterialPageRoute(

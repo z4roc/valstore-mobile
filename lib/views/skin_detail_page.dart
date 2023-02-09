@@ -26,20 +26,20 @@ class _SkinDetailPageState extends State<SkinDetailPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.max,
           children: [
-            Text(
-              skin.name!,
-              overflow: TextOverflow.fade,
-              softWrap: false,
-            ),
-            const SizedBox(
-              width: 5,
-            ),
             skin.contentTier?.icon != null
                 ? Image.network(
                     skin.contentTier!.icon!,
                     height: 22,
                   )
                 : const SizedBox(),
+            const SizedBox(
+              width: 5,
+            ),
+            Text(
+              skin.name!,
+              overflow: TextOverflow.fade,
+              softWrap: false,
+            ),
           ],
         ),
       ),

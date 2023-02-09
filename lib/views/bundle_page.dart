@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_countdown_timer/countdown.dart';
+import 'package:flutter_countdown_timer/index.dart';
 import 'package:valstore/flyout_nav.dart';
 import 'package:valstore/models/bundle_display_data.dart';
 import 'package:valstore/services/riot_service.dart';
@@ -34,11 +36,13 @@ class _BundlePageState extends State<BundlePage> {
                     height: 150,
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 37, 34, 41).withOpacity(.8),
+                      color:
+                          const Color.fromARGB(255, 37, 34, 41).withOpacity(.8),
                       image: DecorationImage(
                         fit: BoxFit.cover,
                         image: NetworkImage(
-                            snapshot.data!.bundleData!.displayIcon!),
+                          snapshot.data!.bundleData!.displayIcon!,
+                        ),
                         opacity: .6,
                       ),
                     ),
@@ -46,6 +50,7 @@ class _BundlePageState extends State<BundlePage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
+                        const Spacer(),
                         Text(
                           snapshot.data!.bundleData!.displayName!,
                           style: const TextStyle(
@@ -76,6 +81,32 @@ class _BundlePageState extends State<BundlePage> {
                             ),
                           ],
                         ),
+                        const Spacer(),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            const Icon(
+                              Icons.timelapse,
+                              size: 20,
+                            ),
+                            const SizedBox(
+                              width: 5,
+                            ),
+                            CountdownTimer(
+                              endTime: DateTime.now().millisecondsSinceEpoch +
+                                  (snapshot.data!.data!.secondsRemaining! *
+                                      1000),
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 5,
+                        ),
                       ],
                     ),
                   ),
@@ -102,7 +133,26 @@ class _BundlePageState extends State<BundlePage> {
                                 children: [
                                   Row(
                                     children: [
-                                      Text(item.name!),
+                                      Text(
+                                        textAlign: TextAlign.start,
+                                        item.name!,
+                                        style: const TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  Image(
+                                    height: 100,
+                                    image: NetworkImage(item.image!),
+                                  ),
+                                  const Spacer(),
+                                  Row(
+                                    children: [
                                       const Spacer(),
                                       Text(item.basePrice.toString()),
                                       const Image(
@@ -113,13 +163,6 @@ class _BundlePageState extends State<BundlePage> {
                                       ),
                                     ],
                                   ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  Image(
-                                    height: 125,
-                                    image: NetworkImage(item.image!),
-                                  )
                                 ],
                               ),
                             ),

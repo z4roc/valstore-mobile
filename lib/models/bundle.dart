@@ -70,7 +70,7 @@ class Items {
   String? image;
   String? type;
   int? amount;
-  int? discountPercent;
+  double? discountPercent;
   int? basePrice;
   int? discountedPrice;
   bool? promoItem;

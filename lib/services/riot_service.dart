@@ -43,7 +43,7 @@ class RiotService {
     return entitlementsRequest.body;
   }
 
-  Future<List<FirebaseSkin>> getStore() async {
+  Future<PlayerShop> getStore(int sort) async {
     final shopRequest = await get(
       Uri.parse(storeUri),
       headers: {
@@ -51,11 +51,12 @@ class RiotService {
         'Authorization': 'Bearer $accessToken'
       },
     );
-    if (shopRequest.statusCode == 403) {
-      return await getStore();
-    }
-    final allShopJson = json.decode(shopRequest.body);
+
+    final body = shopRequest.body;
+    final allShopJson = json.decode(body);
     final playerStoreJson = allShopJson['SkinsPanelLayout']['SingleItemOffers'];
+    final shopRemains = allShopJson['SkinsPanelLayout']
+        ['SingleItemOffersRemainingDurationInSeconds'];
 
     /*final offerRequest = await get(
       Uri.parse("https://api.henrikdev.xyz/valorant/v2/store-offers"),
@@ -81,8 +82,38 @@ class RiotService {
       );
       shop.add(json.decode(offerData.body)['data']);
     }*/
+    if (sort == 1) {
+      shop.sort((a, b) {
+        if (a.cost! < b.cost!) {
+          return 1;
+        } else if (a.cost! > b.cost!) {
+          return -1;
+        } else {
+          return 0;
+        }
+      });
+    } else if (sort == 2) {
+      shop.sort(
+          (a, b) => a.name!.toLowerCase().compareTo(b.name!.toLowerCase()));
+    }
 
-    return shop;
+    return PlayerShop(storeRemaining: shopRemains, skins: shop);
+  }
+
+  Future<int> getStoreTimer() async {
+    final shopRequest = await get(
+      Uri.parse(storeUri),
+      headers: {
+        'X-Riot-Entitlements-JWT': entitlements,
+        'Authorization': 'Bearer $accessToken'
+      },
+    );
+
+    final body = shopRequest.body;
+    final allShopJson = json.decode(body);
+    final shopRemains = allShopJson['SkinsPanelLayout']
+        ['SingleItemOffersRemainingDurationInSeconds'];
+    return shopRemains;
   }
 
   Future<void> getUserData() async {

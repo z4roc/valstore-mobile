@@ -1,3 +1,10 @@
+class PlayerShop {
+  int? storeRemaining;
+  List<FirebaseSkin> skins;
+
+  PlayerShop({required this.storeRemaining, required this.skins});
+}
+
 class FirebaseSkin {
   String? name;
   String? offerId;

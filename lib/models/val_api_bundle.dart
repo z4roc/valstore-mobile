@@ -22,10 +22,10 @@ class ValApiBundle {
 class BundleData {
   String? uuid;
   String? displayName;
-  Null? displayNameSubText;
+  String? displayNameSubText;
   String? description;
-  Null? extraDescription;
-  Null? promoDescription;
+  String? extraDescription;
+  String? promoDescription;
   bool? useAdditionalContext;
   String? displayIcon;
   String? displayIcon2;
