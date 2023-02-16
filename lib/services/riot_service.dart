@@ -3,8 +3,10 @@ import 'dart:convert';
 import 'package:http/http.dart';
 import 'package:jwt_decode/jwt_decode.dart';
 import 'package:valstore/models/firebase_skin.dart';
+import 'package:valstore/models/night_market_model.dart';
+import 'package:valstore/models/store_models.dart';
 import 'package:valstore/models/val_api_bundle.dart';
-import 'package:valstore/models/bundle.dart';
+import 'package:valstore/models/bundle.dart' as b;
 import 'package:valstore/models/bundle_display_data.dart';
 import 'package:valstore/models/player.dart';
 import 'package:valstore/services/firestore_service.dart';
@@ -93,6 +95,35 @@ class RiotService {
     return PlayerShop(storeRemaining: shopRemains, skins: shop);
   }
 
+  Future<NightMarket?> getNightMarket() async {
+    final shopRequest = await get(
+      Uri.parse(storeUri),
+      headers: {
+        'X-Riot-Entitlements-JWT': entitlements,
+        'Authorization': 'Bearer $accessToken'
+      },
+    );
+
+    final body = shopRequest.body;
+    final allShopJson = json.decode(body);
+
+    var shop = Shop.fromJson(allShopJson);
+    if (shop.bonusStore == null) return null;
+
+    List<NightMarketSkin> nightMarketSkins = [];
+
+    for (var offer in shop.bonusStore!.bonusStoreOffers!) {
+      var firebaseSkin = await FireStoreService().getSkin(offer.bonusOfferID!);
+
+      nightMarketSkins.add(NightMarketSkin(
+        skinData: firebaseSkin,
+        percentageReduced: offer.discountPercent,
+      ));
+    }
+
+    return NightMarket();
+  }
+
   Future<int> getStoreTimer() async {
     final shopRequest = await get(
       Uri.parse(storeUri),
@@ -151,7 +182,7 @@ class RiotService {
 
     final bundleJson = json.decode(bundleRequest.body);
 
-    Bundle bundle = Bundle.fromJson(bundleJson);
+    b.Bundle bundle = b.Bundle.fromJson(bundleJson);
 
     final imgRequest = await get(
       Uri.parse(
