@@ -35,10 +35,12 @@ class _SkinDetailPageState extends State<SkinDetailPage> {
             const SizedBox(
               width: 5,
             ),
-            Text(
-              skin.name!,
-              overflow: TextOverflow.fade,
-              softWrap: false,
+            Expanded(
+              child: Text(
+                skin.name!,
+                overflow: TextOverflow.fade,
+                softWrap: false,
+              ),
             ),
           ],
         ),
@@ -103,14 +105,20 @@ class _SkinDetailPageState extends State<SkinDetailPage> {
                             const Spacer(),
                             Row(
                               children: [
-                                Text(
-                                  skin.name! !=
-                                          skin.chromas![index].displayName!
-                                      ? skin.chromas![index].displayName!
-                                      : 'Default',
-                                  style: const TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w400,
+                                SizedBox(
+                                  width: 200,
+                                  child: Text(
+                                    skin.name! !=
+                                            skin.chromas![index].displayName!
+                                        ? skin.chromas![index].displayName!
+                                            .split(skin.name!)[1]
+                                        : 'Default',
+                                    maxLines: 2,
+                                    style: const TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w400,
+                                      overflow: TextOverflow.fade,
+                                    ),
                                   ),
                                 ),
                                 const Spacer(),

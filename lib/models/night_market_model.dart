@@ -3,6 +3,8 @@ import 'package:valstore/models/firebase_skin.dart';
 class NightMarket {
   int? durationRemain;
   List<NightMarketSkin?>? skins;
+
+  NightMarket({required this.durationRemain, required this.skins});
 }
 
 class NightMarketSkin {

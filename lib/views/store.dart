@@ -143,13 +143,14 @@ class _StorePageState extends State<StorePage> {
                               ),
                               child: Container(
                                 decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                  fit: BoxFit.contain,
-                                  opacity: .2,
-                                  image: NetworkImage(
-                                    skins[index].contentTier!.icon!,
+                                  image: DecorationImage(
+                                    fit: BoxFit.contain,
+                                    opacity: .2,
+                                    image: NetworkImage(
+                                      skins[index].contentTier!.icon!,
+                                    ),
                                   ),
-                                )),
+                                ),
                                 padding:
                                     const EdgeInsets.fromLTRB(20, 15, 20, 10),
                                 child: Column(

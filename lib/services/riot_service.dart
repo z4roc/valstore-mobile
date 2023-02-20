@@ -113,7 +113,8 @@ class RiotService {
     List<NightMarketSkin> nightMarketSkins = [];
 
     for (var offer in shop.bonusStore!.bonusStoreOffers!) {
-      var firebaseSkin = await FireStoreService().getSkin(offer.bonusOfferID!);
+      var firebaseSkin =
+          await FireStoreService().getSkin(offer.offer!.offerID!);
 
       nightMarketSkins.add(NightMarketSkin(
         skinData: firebaseSkin,
@@ -121,7 +122,9 @@ class RiotService {
       ));
     }
 
-    return NightMarket();
+    return NightMarket(
+        durationRemain: shop.bonusStore!.bonusStoreRemainingDurationInSeconds,
+        skins: nightMarketSkins);
   }
 
   Future<int> getStoreTimer() async {
