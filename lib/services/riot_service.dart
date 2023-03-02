@@ -123,8 +123,9 @@ class RiotService {
     }
 
     return NightMarket(
-        durationRemain: shop.bonusStore!.bonusStoreRemainingDurationInSeconds,
-        skins: nightMarketSkins);
+      durationRemain: shop.bonusStore!.bonusStoreRemainingDurationInSeconds,
+      skins: nightMarketSkins,
+    );
   }
 
   Future<int> getStoreTimer() async {

@@ -92,7 +92,9 @@ class ItemOffers {
   ItemOffers.fromJson(Map<String, dynamic> json) {
     bundleItemOfferID = json['BundleItemOfferID'];
     offer = json['Offer'] != null ? new Offer.fromJson(json['Offer']) : null;
-    discountPercent = json['DiscountPercent'];
+    discountPercent = json['DiscountPercent'] != null
+        ? double.parse("${json['DiscountPercent']}")
+        : null;
     discountedCost = json['DiscountedCost'] != null
         ? new Cost.fromJson(json['DiscountedCost'])
         : null;
@@ -198,7 +200,9 @@ class Items {
     item = json['Item'] != null ? new Item.fromJson(json['Item']) : null;
     basePrice = json['BasePrice'];
     currencyID = json['CurrencyID'];
-    discountPercent = json['DiscountPercent'];
+    discountPercent = json['DiscountPercent'] != null
+        ? double.parse("${json['DiscountPercent']}")
+        : null;
     discountedPrice = json['DiscountedPrice'];
     isPromoItem = json['IsPromoItem'];
   }

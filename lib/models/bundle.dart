@@ -92,7 +92,7 @@ class Items {
     image = json['image'];
     type = json['type'];
     amount = json['amount'];
-    discountPercent = json['discount_percent'];
+    discountPercent = json['discount_percent'].toDouble();
     basePrice = json['base_price'];
     discountedPrice = json['discounted_price'];
     promoItem = json['promo_item'];
