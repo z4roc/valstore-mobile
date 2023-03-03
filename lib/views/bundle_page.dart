@@ -15,6 +15,8 @@ class BundlePage extends StatefulWidget {
 }
 
 class _BundlePageState extends State<BundlePage> {
+  int activePage = 0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,139 +33,66 @@ class _BundlePageState extends State<BundlePage> {
         child: SizedBox(
           height: double.infinity,
           width: double.infinity,
-          child: FutureBuilder<BundleDisplayData?>(
+          child: FutureBuilder<List<BundleDisplayData?>>(
             future: RiotService().getCurrentBundle(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return Column(
                   children: [
                     Container(
-                      height: 150,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 37, 34, 41)
-                            .withOpacity(.8),
-                        image: DecorationImage(
-                          fit: BoxFit.cover,
-                          image: NetworkImage(
-                            snapshot.data!.bundleData!.displayIcon!,
-                          ),
-                          opacity: .6,
-                        ),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          const Spacer(),
-                          Text(
-                            snapshot.data!.bundleData!.displayName!,
-                            style: const TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                      height: MediaQuery.of(context).size.height - 110,
+                      child: PageView.builder(
+                        onPageChanged: (value) => setState(() {
+                          activePage = value;
+                        }),
+                        itemBuilder: (context, pageIndex) {
+                          return Column(
                             children: [
-                              Text(
-                                snapshot.data!.data!.bundlePrice.toString(),
-                                style: const TextStyle(
-                                  fontSize: 20,
+                              Container(
+                                height: 150,
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  color: const Color.fromARGB(255, 37, 34, 41)
+                                      .withOpacity(.8),
+                                  image: DecorationImage(
+                                    fit: BoxFit.cover,
+                                    image: NetworkImage(
+                                      snapshot.data![pageIndex]!.bundleData!
+                                          .displayIcon!,
+                                    ),
+                                    opacity: .6,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(
-                                width: 5,
-                              ),
-                              const Image(
-                                height: 20,
-                                image: NetworkImage(
-                                  "https://media.valorant-api.com/currencies/85ad13f7-3d1b-5128-9eb2-7cd8ee0b5741/displayicon.png",
-                                ),
-                              ),
-                            ],
-                          ),
-                          const Spacer(),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              const Icon(
-                                Icons.timelapse,
-                                size: 20,
-                              ),
-                              const SizedBox(
-                                width: 5,
-                              ),
-                              CountdownTimer(
-                                endTime: DateTime.now().millisecondsSinceEpoch +
-                                    (snapshot.data!.data!.secondsRemaining! *
-                                        1000),
-                              ),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 5,
-                          ),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: snapshot.data!.data!.items!.length,
-                        itemBuilder: (context, index) {
-                          Items item = snapshot.data!.data!.items![index];
-                          return Padding(
-                            padding: const EdgeInsets.fromLTRB(5, 5, 5, 0),
-                            child: Card(
-                              elevation: 2,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Container(
-                                color: const Color(0xFF16141a).withOpacity(.7),
-                                height: 200,
-                                padding: const EdgeInsets.all(20),
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Row(
-                                      children: [
-                                        Text(
-                                          textAlign: TextAlign.start,
-                                          item.name!,
-                                          style: const TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ],
+                                    const Spacer(),
+                                    Text(
+                                      snapshot.data![pageIndex]!.bundleData!
+                                          .displayName!,
+                                      style: const TextStyle(
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.w500,
+                                      ),
                                     ),
                                     const SizedBox(
                                       height: 10,
                                     ),
-                                    Image(
-                                      height: 100,
-                                      image: NetworkImage(item.image!),
-                                    ),
-                                    const Spacer(),
                                     Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
-                                        const Spacer(),
                                         Text(
-                                          "${item.basePrice} ",
+                                          snapshot.data![pageIndex]!.data!
+                                              .bundlePrice
+                                              .toString(),
                                           style: const TextStyle(
                                             fontSize: 20,
-                                            fontWeight: FontWeight.w500,
                                           ),
+                                        ),
+                                        const SizedBox(
+                                          width: 5,
                                         ),
                                         const Image(
                                           height: 20,
@@ -173,15 +102,135 @@ class _BundlePageState extends State<BundlePage> {
                                         ),
                                       ],
                                     ),
+                                    const Spacer(),
+                                    Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      mainAxisSize: MainAxisSize.max,
+                                      children: [
+                                        const Icon(
+                                          Icons.timelapse,
+                                          size: 20,
+                                        ),
+                                        const SizedBox(
+                                          width: 5,
+                                        ),
+                                        CountdownTimer(
+                                          endTime: DateTime.now()
+                                                  .millisecondsSinceEpoch +
+                                              (snapshot.data![pageIndex]!.data!
+                                                      .secondsRemaining! *
+                                                  1000),
+                                        ),
+                                        const SizedBox(
+                                          width: 10,
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
                                   ],
                                 ),
                               ),
-                            ),
+                              Expanded(
+                                child: ListView.builder(
+                                  itemCount: snapshot
+                                      .data![pageIndex]!.data!.items!.length,
+                                  itemBuilder: (context, index) {
+                                    Items item = snapshot
+                                        .data![pageIndex]!.data!.items![index];
+                                    return Padding(
+                                      padding:
+                                          const EdgeInsets.fromLTRB(5, 5, 5, 0),
+                                      child: Card(
+                                        elevation: 2,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                        ),
+                                        child: Container(
+                                          color: const Color(0xFF16141a)
+                                              .withOpacity(.7),
+                                          height: 200,
+                                          padding: const EdgeInsets.all(20),
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Text(
+                                                    textAlign: TextAlign.start,
+                                                    item.name!,
+                                                    style: const TextStyle(
+                                                      fontSize: 20,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              const SizedBox(
+                                                height: 10,
+                                              ),
+                                              Image(
+                                                height: 100,
+                                                image:
+                                                    NetworkImage(item.image!),
+                                              ),
+                                              const Spacer(),
+                                              Row(
+                                                children: [
+                                                  const Spacer(),
+                                                  Text(
+                                                    "${item.basePrice} ",
+                                                    style: const TextStyle(
+                                                      fontSize: 20,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                    ),
+                                                  ),
+                                                  const Image(
+                                                    height: 20,
+                                                    image: NetworkImage(
+                                                      "https://media.valorant-api.com/currencies/85ad13f7-3d1b-5128-9eb2-7cd8ee0b5741/displayicon.png",
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
                           );
                         },
+                        itemCount: snapshot.data!.length,
                       ),
                     ),
+                    const Spacer(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: indicators(snapshot.data!.length, activePage),
+                    ),
                   ],
+                );
+              } else if (snapshot.hasError) {
+                return Container(
+                  height: double.infinity,
+                  padding: EdgeInsets.zero,
+                  child: Center(
+                    child: Text(snapshot.error.toString()),
+                  ),
                 );
               } else {
                 return Container(
@@ -207,5 +256,19 @@ class _BundlePageState extends State<BundlePage> {
         ),
       ),
     );
+  }
+
+  List<Widget> indicators(imagesLength, currentIndex) {
+    return List<Widget>.generate(imagesLength, (index) {
+      return Container(
+        margin: const EdgeInsets.all(3),
+        width: 10,
+        height: 10,
+        decoration: BoxDecoration(
+          color: currentIndex == index ? Colors.white : Colors.white30,
+          shape: BoxShape.circle,
+        ),
+      );
+    });
   }
 }

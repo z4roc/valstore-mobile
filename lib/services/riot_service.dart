@@ -179,7 +179,7 @@ class RiotService {
     }
   }
 
-  Future<BundleDisplayData?> getCurrentBundle() async {
+  Future<List<BundleDisplayData?>> getCurrentBundle() async {
     final bundleRequest = await get(
       Uri.parse('https://api.henrikdev.xyz/valorant/v2/store-featured'),
     );
@@ -188,25 +188,23 @@ class RiotService {
 
     b.Bundle bundle = b.Bundle.fromJson(bundleJson);
 
-    final imgRequest = await get(
-      Uri.parse(
-        'https://valorant-api.com/v1/bundles/${bundle.data![0].bundleUuid!}',
-      ),
-    );
+    List<BundleDisplayData> bundles = [];
 
-    final valApiJson = json.decode(imgRequest.body);
+    for (var item in bundle.data!) {
+      final imgRequest = await get(
+        Uri.parse(
+          'https://valorant-api.com/v1/bundles/${item.bundleUuid!}',
+        ),
+      );
 
-    bundle.data![0].items!.sort(
-      (a, b) {
-        return b.basePrice! - a.basePrice!;
-      },
-    );
+      final valApiJson = json.decode(imgRequest.body);
 
-    ValApiBundle apiBundle = ValApiBundle.fromJson(valApiJson);
+      ValApiBundle apiBundle = ValApiBundle.fromJson(valApiJson);
+      item.items!.sort(((a, b) => b.basePrice! - a.basePrice!));
 
-    BundleDisplayData bdd =
-        BundleDisplayData(bundleData: apiBundle.data, data: bundle.data![0]);
+      bundles.add(BundleDisplayData(bundleData: apiBundle.data, data: item));
+    }
 
-    return bdd;
+    return bundles;
   }
 }
