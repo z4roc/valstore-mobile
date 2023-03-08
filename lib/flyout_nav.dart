@@ -17,34 +17,83 @@ class NavDrawer extends StatelessWidget {
       child: Column(
         children: [
           Container(
-            height: 150,
+            height: 160,
             width: double.infinity,
             decoration: BoxDecoration(
               image: DecorationImage(
                 fit: BoxFit.cover,
-                scale: 2.0,
                 image: NetworkImage(
-                  user.card!.wide!,
+                  user.playerInfo!.card!.wide!,
+                  scale: .5,
                 ),
-                opacity: .5,
+                opacity: .4,
+                alignment: Alignment.bottomLeft,
               ),
             ),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Spacer(),
-                Text(
-                  "${user.name!}#${user.tag!}",
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 25,
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 5, 0, 5),
+                  child: Text(
+                    "${user.playerInfo!.name!}#${user.playerInfo!.tag!}",
+                    textAlign: TextAlign.start,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 25,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 5, 0, 0),
+                  child: Row(
+                    children: [
+                      Image.network(
+                        "https://media.valorant-api.com/currencies/85ad13f7-3d1b-5128-9eb2-7cd8ee0b5741/displayicon.png",
+                        height: 20,
+                      ),
+                      const SizedBox(
+                        width: 5,
+                      ),
+                      Text(
+                        user.wallet!.valorantPoints!.toString(),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 5, 0, 0),
+                  child: Row(
+                    children: [
+                      Image.network(
+                        "https://media.valorant-api.com/currencies/e59aa87c-4cbf-517a-5983-6e81511be9b7/displayicon.png",
+                        height: 20,
+                      ),
+                      const SizedBox(
+                        width: 5,
+                      ),
+                      Text(
+                        user.wallet!.radianitePoints!.toString(),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(
-                  height: 50,
+                  height: 20,
                 ),
               ],
             ),
+          ),
+          const SizedBox(
+            height: 20,
           ),
           Container(
             height: 75,

@@ -11,4 +11,13 @@ class FireStoreService {
 
     return FirebaseSkin.fromJson(snapshot.data()!);
   }
+
+  Future<FirebaseSkin?> getSkinById(String uuid) async {
+    var colRef = _db.collection("skins");
+    var qry = colRef.where("skin_id", isEqualTo: uuid);
+
+    final skin = await qry.get();
+
+    return FirebaseSkin.fromJson(skin.docs.first.data());
+  }
 }

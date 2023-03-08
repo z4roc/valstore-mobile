@@ -1,3 +1,20 @@
+class Player {
+  PlayerInfo? playerInfo;
+  Wallet? wallet;
+  Player({
+    this.playerInfo,
+    this.wallet,
+  });
+}
+
+class Wallet {
+  int? valorantPoints;
+  int? radianitePoints;
+  int? freeAgents;
+
+  Wallet({this.valorantPoints, this.radianitePoints, this.freeAgents});
+}
+
 class PlayerInfo {
   String? puuid;
   String? region;

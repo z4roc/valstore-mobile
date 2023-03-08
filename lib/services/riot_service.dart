@@ -24,7 +24,7 @@ class RiotService {
   static String entitlements = "";
   static String userId = "";
 
-  static late PlayerInfo user;
+  static late Player user;
 
   void getUserId() {
     userId = Jwt.parseJwt(accessToken)['sub'];
@@ -162,18 +162,38 @@ class RiotService {
           'https://api.henrikdev.xyz/valorant/v1/account/${userResult[0]['GameName']}/${userResult[0]['TagLine']}'),
     );
 
+    final balanceRequest = await get(
+      Uri.parse("https://pd.$region.a.pvp.net/store/v1/wallet/$userId/"),
+      headers: {
+        "X-Riot-Entitlements-JWT": entitlements,
+        "Authorization": "Bearer $accessToken",
+      },
+    );
+
     try {
       final resultJson = json.decode(bannerRequest.body)['data'];
-      user = PlayerInfo.fromJson(resultJson);
-      region = user.region!;
+      final balanceResult = json.decode(balanceRequest.body);
+
+      user = Player(
+          playerInfo: PlayerInfo.fromJson(resultJson),
+          wallet: Wallet(
+            valorantPoints: balanceResult["Balances"]
+                [currencies["valorantPoints"]],
+            radianitePoints: balanceResult["Balances"]
+                [currencies["radianitePoints"]],
+            freeAgents: balanceResult["Balances"][currencies["freeAgents"]],
+          ));
+      region = user.playerInfo!.region!;
     } catch (e) {
-      user = PlayerInfo(
-        name: "Unknown",
-        tag: "EUW",
-        accountLevel: 0,
-        card: Card(
-          wide:
-              "https://media.valorant-api.com/playercards/9fb348bc-41a0-91ad-8a3e-818035c4e561/wideart.png",
+      user = Player(
+        playerInfo: PlayerInfo(
+          name: "Unknown",
+          tag: "EUW",
+          accountLevel: 0,
+          card: Card(
+            wide:
+                "https://media.valorant-api.com/playercards/9fb348bc-41a0-91ad-8a3e-818035c4e561/wideart.png",
+          ),
         ),
       );
     }
@@ -208,3 +228,9 @@ class RiotService {
     return bundles;
   }
 }
+
+Map<String, String> currencies = {
+  "valorantPoints": "85ad13f7-3d1b-5128-9eb2-7cd8ee0b5741",
+  "radianitePoints": "e59aa87c-4cbf-517a-5983-6e81511be9b7",
+  "freeAgents": "f08d4ae3-939c-4576-ab26-09ce1f23bb37",
+};

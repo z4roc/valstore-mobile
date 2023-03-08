@@ -73,11 +73,12 @@ class _SkinDetailPageState extends State<SkinDetailPage> {
               ),
               Container(
                 width: MediaQuery.of(context).size.width,
-                height: 210,
+                height: 250,
                 child: Card(
                   color: const Color.fromARGB(255, 31, 28, 37),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                   child: PageView.builder(
                     pageSnapping: true,
                     onPageChanged: (value) {
@@ -87,9 +88,27 @@ class _SkinDetailPageState extends State<SkinDetailPage> {
                     },
                     itemBuilder: ((context, index) {
                       return Container(
+                        width: MediaQuery.of(context).size.width,
                         padding: const EdgeInsets.all(10),
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(10, 10, 0, 0),
+                              child: Text(
+                                skin.name! != skin.chromas![index].displayName!
+                                    ? skin.chromas![index].displayName!
+                                        .split(skin.name!)[1]
+                                    : 'Default',
+                                maxLines: 2,
+                                textAlign: TextAlign.left,
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w400,
+                                  overflow: TextOverflow.fade,
+                                ),
+                              ),
+                            ),
                             index == 0
                                 ? Hero(
                                     tag: skin.name!,
@@ -100,27 +119,36 @@ class _SkinDetailPageState extends State<SkinDetailPage> {
                                   )
                                 : Image.network(
                                     skin.chromas![index].fullRender!,
-                                    height: 125,
+                                    height: 120,
                                   ),
                             const Spacer(),
                             Row(
                               children: [
-                                SizedBox(
-                                  width: 200,
-                                  child: Text(
-                                    skin.name! !=
-                                            skin.chromas![index].displayName!
-                                        ? skin.chromas![index].displayName!
-                                            .split(skin.name!)[1]
-                                        : 'Default',
-                                    maxLines: 2,
-                                    style: const TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w400,
-                                      overflow: TextOverflow.fade,
-                                    ),
-                                  ),
-                                ),
+                                skin.chromas?[index].streamedVideo != null
+                                    ? TextButton(
+                                        onPressed: () =>
+                                            navigatorKey.currentState!.push(
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                VideoPlayerPage(
+                                              url: skin.chromas![index]
+                                                  .streamedVideo!,
+                                            ),
+                                          ),
+                                        ),
+                                        style: TextButton.styleFrom(
+                                          foregroundColor: Colors.redAccent,
+                                        ),
+                                        child: Row(
+                                          children: const [
+                                            Icon(
+                                              Icons.play_arrow_rounded,
+                                            ),
+                                            Text("Video"),
+                                          ],
+                                        ),
+                                      )
+                                    : const SizedBox(),
                                 const Spacer(),
                                 skin.chromas![index].swatch != null
                                     ? Image.network(
@@ -167,7 +195,7 @@ class _SkinDetailPageState extends State<SkinDetailPage> {
                 height: 10,
               ),
               SizedBox(
-                height: 300,
+                height: 250,
                 child: ListView.builder(
                   itemCount: skin.levels != null ? skin.levels!.length : 0,
                   itemBuilder: ((context, index) {
@@ -207,7 +235,14 @@ class _SkinDetailPageState extends State<SkinDetailPage> {
                                     style: TextButton.styleFrom(
                                       foregroundColor: Colors.redAccent,
                                     ),
-                                    child: const Text('Video'),
+                                    child: Row(
+                                      children: const [
+                                        Icon(
+                                          Icons.play_arrow_rounded,
+                                        ),
+                                        Text("Video"),
+                                      ],
+                                    ),
                                   )
                                 : const SizedBox(),
                           ],
