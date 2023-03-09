@@ -1,4 +1,4 @@
-package com.example.valstore
+package de.zaroc.valstore
 
 import io.flutter.embedding.android.FlutterActivity
 

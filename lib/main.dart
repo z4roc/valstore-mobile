@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:valstore/firebase_options.dart';
@@ -7,6 +8,10 @@ import 'package:valstore/routes.dart';
 import 'package:valstore/theme.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations(
+    [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
+  );
   runApp(const MyApp());
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -67,11 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF16141a).withOpacity(.8),
-      appBar: AppBar(
-        title: const Text('Login'),
-        centerTitle: true,
-      ),
+      backgroundColor: const Color(0x090909),
       body: Container(
         height: double.infinity,
         width: double.infinity,
