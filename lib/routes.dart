@@ -1,4 +1,5 @@
 import 'package:valstore/main.dart';
+import 'package:valstore/views/about_page.dart';
 import 'package:valstore/views/account_page.dart';
 import 'package:valstore/views/bundle_page.dart';
 import 'package:valstore/views/night_market_page.dart';
@@ -12,4 +13,5 @@ final routes = {
   '/nightmarket': (context) => const NightMarketPage(),
   '/bundle': (context) => const BundlePage(),
   '/account': (context) => const AccountPage(),
+  '/about': (context) => const AboutPage(),
 };

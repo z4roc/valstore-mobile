@@ -81,9 +81,29 @@ class _HomeScreenState extends State<HomeScreen> {
           mainAxisSize: MainAxisSize.max,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Text('ValStore'),
+            Image.asset(
+              "assets/Valstore_Icon.png",
+              height: 120,
+            ),
+            const Text(
+              'ValStore',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             const SizedBox(
-              height: 20,
+              height: 50,
+            ),
+            const Text(
+              "A way to check all your Valorant Store offers everyday, without starting the game.",
+              style: TextStyle(
+                fontSize: 18,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(
+              height: 50,
             ),
             ElevatedButton(
               onPressed: () async {

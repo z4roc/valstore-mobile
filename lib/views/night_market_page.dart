@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:valstore/color_extension.dart';
 import 'package:valstore/flyout_nav.dart';
 import 'package:valstore/models/night_market_model.dart';
@@ -63,8 +65,38 @@ Widget noNightMarket() => Scaffold(
         height: double.infinity,
         width: double.infinity,
         padding: const EdgeInsets.all(1),
-        child: const Center(
-          child: Text("There is currently no Night Market"),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              FaIcon(FontAwesomeIcons.cloudMoon),
+              const SizedBox(
+                height: 20,
+              ),
+              Text(
+                "There is currently no Night Market",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              TextButton(
+                onPressed: () async => await launchUrl(
+                  Uri.parse("https://twitter.com/ValorLeaks"),
+                  mode: LaunchMode.externalApplication,
+                ),
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.redAccent,
+                ),
+                child: const Text(
+                  "Check ValorLeaks on Twitter for updates",
+                  style: TextStyle(
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

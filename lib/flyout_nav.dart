@@ -11,7 +11,7 @@ class NavDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var themeProvider = Provider.of<ThemeProvider>(context);
+    //var themeProvider = Provider.of<ThemeProvider>(context);
     final user = RiotService.user;
     return Drawer(
       child: Column(
@@ -36,18 +36,19 @@ class NavDrawer extends StatelessWidget {
               children: [
                 const Spacer(),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 5, 0, 5),
+                  padding: const EdgeInsets.fromLTRB(30, 5, 0, 5),
                   child: Text(
                     "${user.playerInfo!.name!}#${user.playerInfo!.tag!}",
                     textAlign: TextAlign.start,
+                    overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 25,
+                      fontSize: 26,
                     ),
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 5, 0, 0),
+                  padding: const EdgeInsets.fromLTRB(30, 10, 0, 0),
                   child: Row(
                     children: [
                       Image.network(
@@ -55,19 +56,20 @@ class NavDrawer extends StatelessWidget {
                         height: 20,
                       ),
                       const SizedBox(
-                        width: 5,
+                        width: 10,
                       ),
                       Text(
                         user.wallet!.valorantPoints!.toString(),
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
+                          fontSize: 16,
                         ),
                       ),
                     ],
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 5, 0, 0),
+                  padding: const EdgeInsets.fromLTRB(30, 5, 0, 0),
                   child: Row(
                     children: [
                       Image.network(
@@ -75,12 +77,13 @@ class NavDrawer extends StatelessWidget {
                         height: 20,
                       ),
                       const SizedBox(
-                        width: 5,
+                        width: 10,
                       ),
                       Text(
                         user.wallet!.radianitePoints!.toString(),
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
+                          fontSize: 16,
                         ),
                       ),
                     ],
@@ -130,15 +133,17 @@ class NavDrawer extends StatelessWidget {
               },
             ),
           ),
-          /*Container(
+          Container(
             height: 75,
             padding: const EdgeInsets.fromLTRB(10, 10, 0, 0),
             child: ListTile(
-              leading: const Icon(Icons.account_circle_rounded),
-              title: const Text('Account'),
-              onTap: () {},
+              leading: const Icon(Icons.info_outline_rounded),
+              title: const Text('About'),
+              onTap: () {
+                navigatorKey.currentState!.pushNamed('/about');
+              },
             ),
-          ),*/
+          ),
           const Spacer(),
           const Divider(
             thickness: 1,

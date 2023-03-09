@@ -25,6 +25,8 @@ class RiotService {
   static String userId = "";
 
   static late Player user;
+  static late PlayerShop? playerShop = null;
+  static late NightMarket? nightMarket = null;
 
   void getUserId() {
     userId = Jwt.parseJwt(accessToken)['sub'];
@@ -45,6 +47,18 @@ class RiotService {
   }
 
   Future<PlayerShop> getStore(int sort) async {
+    if (playerShop != null) {
+      if (sort == 1) {
+        playerShop!.skins.sort((a, b) {
+          return b.cost! - a.cost!;
+        });
+      } else if (sort == 2) {
+        playerShop!.skins.sort(
+            (a, b) => a.name!.toLowerCase().compareTo(b.name!.toLowerCase()));
+      }
+      return playerShop!;
+    }
+
     final shopRequest = await get(
       Uri.parse(storeUri),
       headers: {
@@ -92,10 +106,14 @@ class RiotService {
           (a, b) => a.name!.toLowerCase().compareTo(b.name!.toLowerCase()));
     }
 
-    return PlayerShop(storeRemaining: shopRemains, skins: shop);
+    playerShop = PlayerShop(storeRemaining: shopRemains, skins: shop);
+    return playerShop!;
   }
 
   Future<NightMarket?> getNightMarket() async {
+    if (nightMarket != null) {
+      return nightMarket;
+    }
     final shopRequest = await get(
       Uri.parse(storeUri),
       headers: {
@@ -121,11 +139,12 @@ class RiotService {
         percentageReduced: offer.discountPercent,
       ));
     }
-
-    return NightMarket(
+    nightMarket = NightMarket(
       durationRemain: shop.bonusStore!.bonusStoreRemainingDurationInSeconds,
       skins: nightMarketSkins,
     );
+
+    return nightMarket;
   }
 
   Future<int> getStoreTimer() async {

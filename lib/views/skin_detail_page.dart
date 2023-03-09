@@ -50,6 +50,7 @@ class _SkinDetailPageState extends State<SkinDetailPage> {
           padding: const EdgeInsets.all(15),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const SizedBox(
                 height: 10,
@@ -91,23 +92,39 @@ class _SkinDetailPageState extends State<SkinDetailPage> {
                         width: MediaQuery.of(context).size.width,
                         padding: const EdgeInsets.all(10),
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.max,
                           children: [
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(10, 10, 0, 0),
-                              child: Text(
-                                skin.name! != skin.chromas![index].displayName!
-                                    ? skin.chromas![index].displayName!
-                                        .split(skin.name!)[1]
-                                    : 'Default',
-                                maxLines: 2,
-                                textAlign: TextAlign.left,
-                                style: const TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w400,
-                                  overflow: TextOverflow.fade,
+                            Row(
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(5, 5, 0, 10),
+                                  child: skin.name! !=
+                                          skin.chromas![index].displayName!
+                                      ? Text(
+                                          skin.chromas![index].displayName!
+                                              .split("(")
+                                              .last
+                                              .split(")")
+                                              .first,
+                                          softWrap: true,
+                                          style: const TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        )
+                                      : const Text(
+                                          "Default",
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
                                 ),
-                              ),
+                              ],
                             ),
                             index == 0
                                 ? Hero(
@@ -115,6 +132,7 @@ class _SkinDetailPageState extends State<SkinDetailPage> {
                                     child: Image.network(
                                       image,
                                       height: 120,
+                                      width: double.infinity,
                                     ),
                                   )
                                 : Image.network(
