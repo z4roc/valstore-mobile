@@ -104,40 +104,11 @@ class _AboutPageState extends State<AboutPage> {
                   size: 30,
                 ),
                 title: const Text("Github"),
-                subtitle: const Text("Public repository"),
+                subtitle: const Text("Docs"),
                 onTap: () async {
                   await launchUrl(
                     Uri.parse(
                       "https://github.com/z4roc/flutter-valorant-store",
-                    ),
-                    mode: LaunchMode.externalApplication,
-                  );
-                },
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              const Text(
-                "Donate",
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              ListTile(
-                leading: const FaIcon(
-                  FontAwesomeIcons.mugSaucer,
-                  size: 30,
-                ),
-                title: const Text("Ko-fi"),
-                subtitle: const Text("Make future projects possible"),
-                onTap: () async {
-                  await launchUrl(
-                    Uri.parse(
-                      "https://ko-fi.com/zaroc",
                     ),
                     mode: LaunchMode.externalApplication,
                   );

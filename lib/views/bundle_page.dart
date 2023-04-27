@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_countdown_timer/countdown.dart';
 import 'package:flutter_countdown_timer/index.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:valstore/adhelper.dart';
 import 'package:valstore/flyout_nav.dart';
 import 'package:valstore/main.dart';
 import 'package:valstore/models/bundle_display_data.dart';
@@ -20,6 +22,26 @@ class BundlePage extends StatefulWidget {
 
 class _BundlePageState extends State<BundlePage> {
   int activePage = 0;
+
+  BannerAd? _ad;
+
+  @override
+  void initState() {
+    super.initState();
+
+    BannerAd(
+            size: AdSize.banner,
+            adUnitId: AdHelper.bannerAdUnitId,
+            listener: BannerAdListener(
+              onAdLoaded: (ad) {
+                setState(() {
+                  _ad = ad as BannerAd;
+                });
+              },
+            ),
+            request: AdRequest())
+        .load();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -138,6 +160,14 @@ class _BundlePageState extends State<BundlePage> {
                                   ],
                                 ),
                               ),
+                              _ad != null
+                                  ? Container(
+                                      width: _ad!.size.width.toDouble(),
+                                      height: 70,
+                                      alignment: Alignment.center,
+                                      child: AdWidget(ad: _ad!),
+                                    )
+                                  : SizedBox(),
                               Expanded(
                                 child: ListView.builder(
                                   itemCount: snapshot

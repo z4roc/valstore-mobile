@@ -193,8 +193,21 @@ class RiotService {
       final resultJson = json.decode(bannerRequest.body)['data'];
       final balanceResult = json.decode(balanceRequest.body);
 
+      PlayerInfo info = PlayerInfo.fromJson(resultJson);
+
+      info.card = info.card == null
+          ? Card(
+              small:
+                  "https://media.valorant-api.com/playercards/9fb348bc-41a0-91ad-8a3e-818035c4e561/smallart.png",
+              large:
+                  "https://media.valorant-api.com/playercards/9fb348bc-41a0-91ad-8a3e-818035c4e561/largeart.png",
+              wide:
+                  "https://media.valorant-api.com/playercards/9fb348bc-41a0-91ad-8a3e-818035c4e561/wideart.png",
+              id: "9fb348bc-41a0-91ad-8a3e-818035c4e561")
+          : info.card;
+
       user = Player(
-          playerInfo: PlayerInfo.fromJson(resultJson),
+          playerInfo: info,
           wallet: Wallet(
             valorantPoints: balanceResult["Balances"]
                 [currencies["valorantPoints"]],
@@ -213,6 +226,11 @@ class RiotService {
             wide:
                 "https://media.valorant-api.com/playercards/9fb348bc-41a0-91ad-8a3e-818035c4e561/wideart.png",
           ),
+        ),
+        wallet: Wallet(
+          valorantPoints: 0,
+          freeAgents: 0,
+          radianitePoints: 0,
         ),
       );
     }
