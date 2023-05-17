@@ -217,53 +217,64 @@ class _SkinDetailPageState extends State<SkinDetailPage> {
                 child: ListView.builder(
                   itemCount: skin.levels != null ? skin.levels!.length : 0,
                   itemBuilder: ((context, index) {
-                    return Container(
-                      height: 75,
-                      child: Card(
-                        elevation: 2,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                    return GestureDetector(
+                      onTap: () => navigatorKey.currentState!.push(
+                        MaterialPageRoute(
+                          builder: (context) => VideoPlayerPage(
+                            url: skin.levels![index].streamedVideo!,
+                          ),
                         ),
-                        color: const Color.fromARGB(255, 31, 28, 37),
-                        child: Row(
-                          children: [
-                            const SizedBox(
-                              width: 15,
-                            ),
-                            Text(
-                              skin.levels![index].levelItem != null
-                                  ? skin.levels![index].levelItem!
-                                      .split('::')
-                                      .last
-                                  : 'Base Skin',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w400,
+                      ),
+                      child: SizedBox(
+                        height: 75,
+                        child: Card(
+                          elevation: 2,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          color: const Color.fromARGB(255, 31, 28, 37),
+                          child: Row(
+                            children: [
+                              const SizedBox(
+                                width: 15,
                               ),
-                            ),
-                            const Spacer(),
-                            skin.levels?[index].streamedVideo != null
-                                ? TextButton(
-                                    onPressed: () => navigatorKey.currentState!
-                                        .push(MaterialPageRoute(
-                                      builder: (context) => VideoPlayerPage(
-                                        url: skin.levels![index].streamedVideo!,
-                                      ),
-                                    )),
-                                    style: TextButton.styleFrom(
-                                      foregroundColor: Colors.redAccent,
-                                    ),
-                                    child: Row(
-                                      children: const [
-                                        Icon(
-                                          Icons.play_arrow_rounded,
+                              Text(
+                                skin.levels![index].levelItem != null
+                                    ? skin.levels![index].levelItem!
+                                        .split('::')
+                                        .last
+                                    : 'Base Skin',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                              const Spacer(),
+                              skin.levels?[index].streamedVideo != null
+                                  ? TextButton(
+                                      onPressed: () => navigatorKey
+                                          .currentState!
+                                          .push(MaterialPageRoute(
+                                        builder: (context) => VideoPlayerPage(
+                                          url: skin
+                                              .levels![index].streamedVideo!,
                                         ),
-                                        Text("Video"),
-                                      ],
-                                    ),
-                                  )
-                                : const SizedBox(),
-                          ],
+                                      )),
+                                      style: TextButton.styleFrom(
+                                        foregroundColor: Colors.redAccent,
+                                      ),
+                                      child: Row(
+                                        children: const [
+                                          Icon(
+                                            Icons.play_arrow_rounded,
+                                          ),
+                                          Text("Video"),
+                                        ],
+                                      ),
+                                    )
+                                  : const SizedBox(),
+                            ],
+                          ),
                         ),
                       ),
                     );

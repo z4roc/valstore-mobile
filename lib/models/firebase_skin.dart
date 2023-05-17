@@ -47,6 +47,16 @@ class FirebaseSkin {
       });
     }
   }
+
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'offer_id': offerId,
+        'skin_id': skinId,
+        'chromas': chromas,
+        'content_tier': contentTier,
+        'cost': cost,
+        'icon': icon,
+      };
 }
 
 class ContentTier {

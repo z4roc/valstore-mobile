@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_countdown_timer/countdown.dart';
 import 'package:flutter_countdown_timer/index.dart';
+import 'package:animated_overflow/animated_overflow.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:valstore/adhelper.dart';
 import 'package:valstore/flyout_nav.dart';
@@ -94,12 +94,16 @@ class _BundlePageState extends State<BundlePage> {
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     const Spacer(),
-                                    Text(
-                                      snapshot.data![pageIndex]!.bundleData!
-                                          .displayName!,
-                                      style: const TextStyle(
-                                        fontSize: 22,
-                                        fontWeight: FontWeight.w500,
+                                    Expanded(
+                                      child: Text(
+                                        snapshot.data![pageIndex]!.bundleData!
+                                            .displayName!,
+                                        overflow: TextOverflow.fade,
+                                        softWrap: false,
+                                        style: const TextStyle(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.w500,
+                                        ),
                                       ),
                                     ),
                                     const SizedBox(
@@ -113,6 +117,7 @@ class _BundlePageState extends State<BundlePage> {
                                           snapshot.data![pageIndex]!.data!
                                               .bundlePrice
                                               .toString(),
+                                          overflow: TextOverflow.fade,
                                           style: const TextStyle(
                                             fontSize: 20,
                                           ),
@@ -211,14 +216,30 @@ class _BundlePageState extends State<BundlePage> {
                                               children: [
                                                 Row(
                                                   children: [
-                                                    Text(
-                                                      textAlign:
-                                                          TextAlign.start,
-                                                      item.name!,
-                                                      style: const TextStyle(
-                                                        fontSize: 20,
-                                                        fontWeight:
-                                                            FontWeight.w500,
+                                                    Expanded(
+                                                      child: AnimatedOverflow(
+                                                        maxWidth: MediaQuery.of(
+                                                                    context)
+                                                                .size
+                                                                .width -
+                                                            100,
+                                                        animatedOverflowDirection:
+                                                            AnimatedOverflowDirection
+                                                                .HORIZONTAL,
+                                                        speed: 50,
+                                                        padding: 0,
+                                                        child: Text(
+                                                          textAlign:
+                                                              TextAlign.start,
+                                                          item.name!,
+                                                          softWrap: false,
+                                                          style:
+                                                              const TextStyle(
+                                                            fontSize: 20,
+                                                            fontWeight:
+                                                                FontWeight.w500,
+                                                          ),
+                                                        ),
                                                       ),
                                                     ),
                                                   ],

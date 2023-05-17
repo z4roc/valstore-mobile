@@ -47,7 +47,7 @@ class _AboutPageState extends State<AboutPage> {
                 onTap: () async {
                   await launchUrl(
                     Uri.parse(
-                      "https://discord.zaroc.de",
+                      "https://discord.gg/amv6SNPRz7",
                     ),
                     mode: LaunchMode.externalApplication,
                   );

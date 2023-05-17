@@ -20,4 +20,13 @@ class FireStoreService {
 
     return FirebaseSkin.fromJson(skin.docs.first.data());
   }
+
+  Future<List<FirebaseSkin?>?> getSkins() async {
+    var colRef = _db.collection("skins");
+
+    final skins = await colRef.get();
+    List<FirebaseSkin>? firebaseSkins =
+        skins.docs.map((e) => FirebaseSkin.fromJson(e.data())).toList();
+    return firebaseSkins;
+  }
 }

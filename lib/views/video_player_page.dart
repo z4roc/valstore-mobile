@@ -1,6 +1,5 @@
+import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPlayerPage extends StatefulWidget {
@@ -14,16 +13,37 @@ class VideoPlayerPage extends StatefulWidget {
 
 class _VideoPlayerPageState extends State<VideoPlayerPage> {
   late VideoPlayerController _controller;
-  late Future<void> _initController;
+  ChewieController? chewieController;
+
+  Future<void> initializePlayer() async {
+    _controller = VideoPlayerController.network(widget.url);
+    await _controller.initialize();
+    createChewieController();
+    setState(() {});
+  }
+
+  void createChewieController() {
+    chewieController = ChewieController(
+        videoPlayerController: _controller,
+        autoPlay: true,
+        looping: true,
+        hideControlsTimer: const Duration(seconds: 1),
+        materialProgressColors: ChewieProgressColors());
+  }
 
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.network(widget.url);
-
-    _initController = _controller.initialize();
+    initializePlayer();
     _controller.setLooping(true);
     _controller.play();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    chewieController?.dispose();
+    super.dispose();
   }
 
   @override
@@ -33,27 +53,28 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
         title: const Text('Level Video'),
       ),
       backgroundColor: const Color(0xFF16141a).withOpacity(.8),
-      body: Center(
-        child: FutureBuilder(
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              return AspectRatio(
-                aspectRatio: _controller.value.aspectRatio,
-                child: VideoPlayer(_controller),
-              );
-            } else {
-              return const CircularProgressIndicator();
-            }
-          },
-          future: _initController,
-        ),
+      body: Column(
+        children: [
+          Expanded(
+              child: Center(
+            child: chewieController != null &&
+                    chewieController!.videoPlayerController.value.isInitialized
+                ? Chewie(
+                    controller: chewieController!,
+                  )
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      CircularProgressIndicator(),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Text('Loading'),
+                    ],
+                  ),
+          )),
+        ],
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _controller.dispose();
   }
 }

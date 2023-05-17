@@ -137,7 +137,18 @@ class NavDrawer extends StatelessWidget {
             height: 75,
             padding: const EdgeInsets.fromLTRB(10, 10, 0, 0),
             child: ListTile(
-              leading: const Icon(Icons.info_outline_rounded),
+              leading: const Icon(Icons.list_rounded),
+              title: const Text('Galery'),
+              onTap: () {
+                navigatorKey.currentState!.pushNamed('/galery');
+              },
+            ),
+          ),
+          Container(
+            height: 75,
+            padding: const EdgeInsets.fromLTRB(10, 10, 0, 0),
+            child: ListTile(
+              leading: const Icon(Icons.info),
               title: const Text('About'),
               onTap: () {
                 navigatorKey.currentState!.pushNamed('/about');
