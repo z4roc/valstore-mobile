@@ -72,7 +72,7 @@ class _SkinDetailPageState extends State<SkinDetailPage> {
               const SizedBox(
                 height: 10,
               ),
-              Container(
+              SizedBox(
                 width: MediaQuery.of(context).size.width,
                 height: 250,
                 child: Card(
@@ -157,8 +157,8 @@ class _SkinDetailPageState extends State<SkinDetailPage> {
                                         style: TextButton.styleFrom(
                                           foregroundColor: Colors.redAccent,
                                         ),
-                                        child: Row(
-                                          children: const [
+                                        child: const Row(
+                                          children: [
                                             Icon(
                                               Icons.play_arrow_rounded,
                                             ),
@@ -263,8 +263,8 @@ class _SkinDetailPageState extends State<SkinDetailPage> {
                                       style: TextButton.styleFrom(
                                         foregroundColor: Colors.redAccent,
                                       ),
-                                      child: Row(
-                                        children: const [
+                                      child: const Row(
+                                        children: [
                                           Icon(
                                             Icons.play_arrow_rounded,
                                           ),

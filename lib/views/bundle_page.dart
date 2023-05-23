@@ -30,17 +30,17 @@ class _BundlePageState extends State<BundlePage> {
     super.initState();
 
     BannerAd(
-            size: AdSize.banner,
-            adUnitId: AdHelper.bannerAdUnitId,
-            listener: BannerAdListener(
-              onAdLoaded: (ad) {
-                setState(() {
-                  _ad = ad as BannerAd;
-                });
-              },
-            ),
-            request: AdRequest())
-        .load();
+      size: AdSize.banner,
+      adUnitId: AdHelper.bannerAdUnitId,
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          setState(() {
+            _ad = ad as BannerAd;
+          });
+        },
+      ),
+      request: const AdRequest(),
+    ).load();
   }
 
   @override
@@ -65,7 +65,7 @@ class _BundlePageState extends State<BundlePage> {
               if (snapshot.hasData) {
                 return Column(
                   children: [
-                    Container(
+                    SizedBox(
                       height: MediaQuery.of(context).size.height - 110,
                       child: PageView.builder(
                         onPageChanged: (value) => setState(() {
@@ -172,7 +172,7 @@ class _BundlePageState extends State<BundlePage> {
                                       alignment: Alignment.center,
                                       child: AdWidget(ad: _ad!),
                                     )
-                                  : SizedBox(),
+                                  : const SizedBox(),
                               Expanded(
                                 child: ListView.builder(
                                   itemCount: snapshot
@@ -311,11 +311,11 @@ class _BundlePageState extends State<BundlePage> {
                 return Container(
                   height: double.infinity,
                   padding: EdgeInsets.zero,
-                  child: Center(
+                  child: const Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
-                      children: const [
+                      children: [
                         Text('Loading Bundle'),
                         SizedBox(
                           height: 10,

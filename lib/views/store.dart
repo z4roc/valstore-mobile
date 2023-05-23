@@ -218,11 +218,11 @@ class _StorePageState extends State<StorePage> {
                     return Container(
                       height: double.infinity,
                       padding: EdgeInsets.zero,
-                      child: Center(
+                      child: const Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
-                          children: const [
+                          children: [
                             Text('Loading Store'),
                             SizedBox(
                               height: 10,

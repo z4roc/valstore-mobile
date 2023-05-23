@@ -62,9 +62,9 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
                 ? Chewie(
                     controller: chewieController!,
                   )
-                : Column(
+                : const Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
+                    children: [
                       CircularProgressIndicator(),
                       SizedBox(
                         height: 10,

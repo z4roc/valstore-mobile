@@ -25,8 +25,8 @@ class RiotService {
   static String userId = "";
 
   static late Player user;
-  static late PlayerShop? playerShop = null;
-  static late NightMarket? nightMarket = null;
+  static late PlayerShop? playerShop;
+  static late NightMarket? nightMarket;
 
   void getUserId() {
     userId = Jwt.parseJwt(accessToken)['sub'];
@@ -168,6 +168,8 @@ class RiotService {
       Uri.parse("https://pd.$region.a.pvp.net/name-service/v2/players"),
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+        'X-Riot-Entitlements-JWT': entitlements,
       },
       body: jsonEncode(
         <String>[userId],
@@ -195,16 +197,15 @@ class RiotService {
 
       PlayerInfo info = PlayerInfo.fromJson(resultJson);
 
-      info.card = info.card == null
-          ? Card(
+      info.card ??
+          Card(
               small:
                   "https://media.valorant-api.com/playercards/9fb348bc-41a0-91ad-8a3e-818035c4e561/smallart.png",
               large:
                   "https://media.valorant-api.com/playercards/9fb348bc-41a0-91ad-8a3e-818035c4e561/largeart.png",
               wide:
                   "https://media.valorant-api.com/playercards/9fb348bc-41a0-91ad-8a3e-818035c4e561/wideart.png",
-              id: "9fb348bc-41a0-91ad-8a3e-818035c4e561")
-          : info.card;
+              id: "9fb348bc-41a0-91ad-8a3e-818035c4e561");
 
       user = Player(
           playerInfo: info,
