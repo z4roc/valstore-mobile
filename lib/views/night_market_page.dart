@@ -5,7 +5,6 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:valstore/color_extension.dart';
 import 'package:valstore/flyout_nav.dart';
 import 'package:valstore/models/night_market_model.dart';
-import 'package:valstore/models/store_models.dart';
 import 'package:valstore/services/riot_service.dart';
 import 'package:valstore/views/skin_detail_page.dart';
 
@@ -21,10 +20,18 @@ class NightMarketPage extends StatefulWidget {
 }
 
 class _NightMarketPageState extends State<NightMarketPage> {
+  late Future<NightMarket?> _nightMarket;
+
+  @override
+  void initState() {
+    super.initState();
+    _nightMarket = RiotService.getNightMarket();
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: RiotService().getNightMarket(),
+      future: _nightMarket,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return loading();
@@ -69,11 +76,11 @@ Widget noNightMarket() => Scaffold(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              FaIcon(FontAwesomeIcons.cloudMoon),
+              const FaIcon(FontAwesomeIcons.cloudMoon),
               const SizedBox(
                 height: 20,
               ),
-              Text(
+              const Text(
                 "There is currently no Night Market",
                 style: TextStyle(
                   fontSize: 18,

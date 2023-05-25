@@ -12,4 +12,14 @@ class AdHelper {
       throw UnsupportedError("Ads not Configured for Platform");
     }
   }
+
+  static String get storeBannerAdUnitId {
+    if (Platform.isAndroid && !kDebugMode) {
+      return "ca-app-pub-1408435828857197/3931781548";
+    } else if (Platform.isAndroid && kDebugMode) {
+      return "ca-app-pub-3940256099942544/6300978111";
+    } else {
+      throw UnsupportedError("Ads not Configured for this Platform");
+    }
+  }
 }

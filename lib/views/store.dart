@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:valstore/circle_painter.dart';
 import 'package:valstore/color_extension.dart';
 import 'package:valstore/flyout_nav.dart';
@@ -7,6 +10,8 @@ import 'package:valstore/main.dart';
 import 'package:valstore/models/firebase_skin.dart';
 import 'package:valstore/services/riot_service.dart';
 import 'package:valstore/views/skin_detail_page.dart';
+
+import '../adhelper.dart';
 
 class StorePage extends StatefulWidget {
   const StorePage({super.key});
@@ -17,8 +22,29 @@ class StorePage extends StatefulWidget {
 
 class _StorePageState extends State<StorePage> {
   late List<FirebaseSkin> skins;
-
+  late Future<PlayerShop> _shop;
+  late Future<int> _storeTimer;
+  BannerAd? _ad;
   int sortOption = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _storeTimer = RiotService.getStoreTimer();
+    _shop = RiotService.getStore(sortOption);
+    BannerAd(
+      size: AdSize.banner,
+      adUnitId: AdHelper.storeBannerAdUnitId,
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          setState(() {
+            _ad = ad as BannerAd;
+          });
+        },
+      ),
+      request: const AdRequest(),
+    ).load();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,12 +57,20 @@ class _StorePageState extends State<StorePage> {
             title: const Text('Your shop'),
             actions: [
               FutureBuilder<int>(
-                future: RiotService().getStoreTimer(),
+                future: _storeTimer,
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     final time = DateTime.now().millisecondsSinceEpoch +
                         (snapshot.data! * 1000);
                     final val = DateTime.fromMillisecondsSinceEpoch(time);
+                    Timer(
+                        Duration(
+                            seconds: val.difference(DateTime.now()).inSeconds),
+                        () => setState(() {
+                              RiotService.playerShop = null;
+                              sortOption = 0;
+                              _shop = RiotService.getStore(sortOption);
+                            }));
 
                     final dif = val.difference(DateTime.now()).inHours / 24;
                     return Row(
@@ -101,7 +135,10 @@ class _StorePageState extends State<StorePage> {
           body: RefreshIndicator(
             onRefresh: () async {
               setState(() {
+                RiotService.playerShop = null;
                 sortOption = 0;
+                _shop = RiotService.getStore(sortOption);
+                _storeTimer = RiotService.getStoreTimer();
               });
             },
             color: Colors.redAccent,
@@ -110,19 +147,43 @@ class _StorePageState extends State<StorePage> {
               height: double.infinity,
               width: double.infinity,
               child: FutureBuilder(
-                future: RiotService().getStore(sortOption),
+                future: _shop,
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     skins = snapshot.data!.skins;
+                    if (sortOption == 1) {
+                      skins.sort((a, b) {
+                        return b.cost! - a.cost!;
+                      });
+                    } else if (sortOption == 2) {
+                      skins.sort(
+                        (a, b) => a.name!.toLowerCase().compareTo(
+                              b.name!.toLowerCase(),
+                            ),
+                      );
+                    }
                     return ListView.builder(
-                      itemCount: skins.length,
+                      itemCount: skins.length + 1,
                       itemBuilder: (context, index) {
+                        if (index == 4 && index >= skins.length) {
+                          return _ad != null
+                              ? Container(
+                                  width: _ad!.size.width.toDouble(),
+                                  height: 70,
+                                  alignment: Alignment.center,
+                                  child: AdWidget(ad: _ad!),
+                                )
+                              : const SizedBox();
+                        }
+
                         final colorString =
                             skins[index].contentTier?.color != null
                                 ? skins[index].contentTier!.color
                                 : "252525";
+
                         final Color color =
                             HexColor(colorString!).withOpacity(.7);
+
                         return GestureDetector(
                           onTap: () {
                             navigatorKey.currentState!

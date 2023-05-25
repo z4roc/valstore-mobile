@@ -1,14 +1,13 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutterfire_ui/firestore.dart';
 import 'package:valstore/flyout_nav.dart';
 import 'package:valstore/main.dart';
 import 'package:valstore/models/firebase_skin.dart';
 import 'package:valstore/services/firestore_service.dart';
+import 'package:valstore/services/riot_service.dart';
+import 'package:valstore/views/night_market_page.dart';
 import 'package:valstore/views/skin_detail_page.dart';
+
+import '../models/val_api_skins.dart';
 
 class GaleryPage extends StatefulWidget {
   const GaleryPage({super.key});
@@ -37,73 +36,27 @@ class _GaleryPageState extends State<GaleryPage> {
           ),
         ],
       ),
-      body: FirestoreListView<FirebaseSkin>(
-        pageSize: 10,
-        query: FirebaseFirestore.instance
-            .collection("skins")
-            .where("cost", isGreaterThanOrEqualTo: 1275)
-            .orderBy("cost")
-            .orderBy("name")
-            .withConverter(
-              fromFirestore: (snapshot, options) => FirebaseSkin.fromJson(
-                snapshot.data()!,
-              ),
-              toFirestore: (value, options) => value.toJson(),
-            ),
-        itemBuilder: (context, doc) {
-          final skin = doc.data();
+      body: FutureBuilder(
+        future: RiotService().getAllSkins(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            var skins = snapshot.data!.data!;
 
-          return GestureDetector(
-            onTap: () {
-              navigatorKey.currentState!.push(
-                MaterialPageRoute(
-                  builder: (context) {
-                    return SkinDetailPage(skin: skin);
-                  },
-                ),
-              );
-            },
-            child: ListTile(
-              leading: Hero(
-                tag: skin.name!,
-                child: Image(
-                  image: NetworkImage(skin.icon!),
-                  height: 75,
-                  width: 150,
-                ),
-              ),
-              title: Row(
-                children: [
-                  Image(
-                    height: 20,
-                    width: 20,
-                    image: NetworkImage(skin.contentTier!.icon!),
-                  ),
-                  const SizedBox(
-                    width: 5,
-                  ),
-                  Expanded(
-                    child: Text(
-                      skin.name!,
-                      overflow: TextOverflow.fade,
-                      softWrap: false,
-                    ),
-                  ),
-                ],
-              ),
-              subtitle: Row(
-                children: [
-                  Text(skin.cost!.toString()),
-                  const Image(
-                    height: 15,
-                    width: 15,
-                    image: NetworkImage(
-                        "https://media.valorant-api.com/currencies/85ad13f7-3d1b-5128-9eb2-7cd8ee0b5741/displayicon.png"),
-                  )
-                ],
-              ),
-            ),
-          );
+            skins.sort(
+              (a, b) => a.displayName!.compareTo(b.displayName!),
+            );
+
+            return ListView.builder(
+              itemCount: skins.length,
+              itemBuilder: (context, index) {
+                return itemTile(skins[index]);
+              },
+            );
+          } else {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
         },
       ),
     );
@@ -131,73 +84,48 @@ class SkinSearchDelegate extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
-    return FirestoreListView(
-      query: FirebaseFirestore.instance
-          .collection("skins")
-          .where("name", isGreaterThanOrEqualTo: query)
-          .where("name", isLessThanOrEqualTo: "$query\uf7ff")
-          .orderBy("name")
-          .withConverter(
-            fromFirestore: (snapshot, options) =>
-                FirebaseSkin.fromJson(snapshot.data()!),
-            toFirestore: (value, options) => value.toJson(),
-          ),
-      itemBuilder: (context, doc) {
-        final skin = doc.data();
+    return Container(
+      color: color,
+      child: FutureBuilder(
+        future: RiotService().getAllSkins(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            var skins = snapshot.data!.data!;
 
-        if (skin.contentTier?.icon == null) {
-          return const SizedBox();
-        }
-        return GestureDetector(
-          onTap: () => navigatorKey.currentState!.push(
-            MaterialPageRoute(
-              builder: (context) {
-                return SkinDetailPage(skin: skin);
-              },
-            ),
-          ),
-          child: ListTile(
-            leading: Hero(
-              tag: skin.name!,
-              child: Image(
-                image: NetworkImage(skin.icon!),
-                height: 75,
-                width: 150,
-              ),
-            ),
-            title: Row(
-              children: [
-                Image(
-                  height: 20,
-                  width: 20,
-                  image: NetworkImage(skin.contentTier!.icon!),
-                ),
-                const SizedBox(
-                  width: 5,
-                ),
-                Expanded(
-                  child: Text(
-                    skin.name!,
-                    overflow: TextOverflow.fade,
-                    softWrap: false,
-                  ),
-                ),
-              ],
-            ),
-            subtitle: Row(
-              children: [
-                Text(skin.cost!.toString()),
-                const Image(
-                  height: 15,
-                  width: 15,
-                  image: NetworkImage(
-                      "https://media.valorant-api.com/currencies/85ad13f7-3d1b-5128-9eb2-7cd8ee0b5741/displayicon.png"),
+            skins = skins
+                .where(
+                  (element) =>
+                      element.displayName!.toLowerCase().trim().contains(
+                            query.toLowerCase().trim(),
+                          ),
                 )
-              ],
-            ),
-          ),
-        );
-      },
+                .toList();
+
+            return ListView.builder(
+              itemCount: skins.length,
+              itemBuilder: (context, index) {
+                return itemTile(
+                  skins[index],
+                );
+              },
+            );
+          } else {
+            return const Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("Loading Inventory..."),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  CircularProgressIndicator(),
+                ],
+              ),
+            );
+          }
+        },
+      ),
     );
   }
 
@@ -205,4 +133,73 @@ class SkinSearchDelegate extends SearchDelegate {
   Widget buildSuggestions(BuildContext context) {
     return Container();
   }
+}
+
+Widget itemTile(Data skin) {
+  Color color = const Color.fromARGB(255, 31, 28, 37);
+
+  return GestureDetector(
+    onTap: () async {
+      FirebaseSkin? firebaseSkin =
+          await FireStoreService().getSkin(skin.levels![0].uuid!);
+      if (firebaseSkin == null) return;
+      navigatorKey.currentState!.push(MaterialPageRoute(builder: ((context) {
+        return SkinDetailPage(skin: firebaseSkin);
+      })));
+    },
+    child: Container(
+      decoration: const BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: Color.fromARGB(255, 75, 72, 82),
+          ),
+        ),
+      ),
+      height: 150,
+      child: Card(
+        elevation: 2,
+        color: color
+            .withBlue((color.blue / 1.7).round())
+            .withRed((color.red / 1.7).round())
+            .withGreen((color.green / 1.7).round()),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(20, 15, 20, 10),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      skin.displayName!,
+                      overflow: TextOverflow.fade,
+                      softWrap: false,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                  //
+                ],
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              Hero(
+                tag: skin.displayName!,
+                child: Image.network(
+                  skin.levels![0].displayIcon!,
+                  height: 60,
+                ),
+              ),
+              const Spacer(),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
 }

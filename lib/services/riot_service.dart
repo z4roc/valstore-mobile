@@ -1,14 +1,17 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:http/http.dart';
 import 'package:jwt_decode/jwt_decode.dart';
 import 'package:valstore/models/firebase_skin.dart';
 import 'package:valstore/models/night_market_model.dart';
+import 'package:valstore/models/player_inventory.dart';
 import 'package:valstore/models/store_models.dart';
 import 'package:valstore/models/val_api_bundle.dart';
 import 'package:valstore/models/bundle.dart' as b;
 import 'package:valstore/models/bundle_display_data.dart';
 import 'package:valstore/models/player.dart';
+import 'package:valstore/models/val_api_skins.dart';
 import 'package:valstore/services/firestore_service.dart';
 
 class RiotService {
@@ -22,17 +25,31 @@ class RiotService {
       "https://pd.$region.a.pvp.net/store/v2/storefront/$userId/";
   static String accessToken = "";
   static String entitlements = "";
+  //static String cookies = "";
   static String userId = "";
 
+  static late List<Cookie>? authCookies = null;
   static late Player user;
-  static late PlayerShop? playerShop;
-  static late NightMarket? nightMarket;
+  static late PlayerShop? playerShop = null;
+  static late NightMarket? nightMarket = null;
 
   void getUserId() {
     userId = Jwt.parseJwt(accessToken)['sub'];
   }
 
   Future<String> getEntitlements() async {
+    /*authCookies = await WebviewCookieManager()
+        .getCookies("https://auth.riotgames.com/login");
+
+    for (var element in authCookies!) {
+      cookies += "${element.name}=${element.value};";
+    }
+
+    final ssid =
+        authCookies!.where((element) => element.name == "ssid").first.value;
+
+    cookies = "ssid=$ssid;";*/
+
     var entitlementsRequest = await post(
       Uri.parse(entitlementsUri),
       headers: {
@@ -46,7 +63,7 @@ class RiotService {
     return entitlementsRequest.body;
   }
 
-  Future<PlayerShop> getStore(int sort) async {
+  static Future<PlayerShop> getStore(int sort) async {
     if (playerShop != null) {
       if (sort == 1) {
         playerShop!.skins.sort((a, b) {
@@ -110,10 +127,11 @@ class RiotService {
     return playerShop!;
   }
 
-  Future<NightMarket?> getNightMarket() async {
+  static Future<NightMarket?> getNightMarket() async {
     if (nightMarket != null) {
       return nightMarket;
     }
+
     final shopRequest = await get(
       Uri.parse(storeUri),
       headers: {
@@ -147,7 +165,7 @@ class RiotService {
     return nightMarket;
   }
 
-  Future<int> getStoreTimer() async {
+  static Future<int> getStoreTimer() async {
     final shopRequest = await get(
       Uri.parse(storeUri),
       headers: {
@@ -265,10 +283,57 @@ class RiotService {
 
     return bundles;
   }
+
+  Future<List<Data?>?> getUserOwnedItems() async {
+    final inventoryRequest = await get(
+      Uri.parse(
+          "https://pd.$region.a.pvp.net/store/v1/entitlements/$userId/${itemTypes['skins']}"),
+      headers: {
+        'Content-Type': 'application/json',
+        "X-Riot-Entitlements-JWT": entitlements,
+        "Authorization": "Bearer $accessToken",
+      },
+    );
+
+    final inventoryJson = jsonDecode(inventoryRequest.body);
+
+    final data = await getAllSkins();
+    final playerInventory = Inventory.fromJson(inventoryJson);
+
+    final skinDatas = playerInventory.entitlements
+        ?.map((e) => data?.data
+            ?.where((element) => element.levels?[0].uuid == e.itemID)
+            .firstOrNull)
+        .toList();
+
+    skinDatas?.removeWhere((element) => element == null);
+
+    return skinDatas;
+  }
+
+  Future<ValApiSkins?> getAllSkins() async {
+    final allSkins = jsonDecode((await get(
+      Uri.parse("https://valorant-api.com/v1/weapons/skins"),
+    ))
+        .body);
+
+    return ValApiSkins.fromJson(allSkins);
+  }
 }
 
 Map<String, String> currencies = {
   "valorantPoints": "85ad13f7-3d1b-5128-9eb2-7cd8ee0b5741",
   "radianitePoints": "e59aa87c-4cbf-517a-5983-6e81511be9b7",
   "freeAgents": "f08d4ae3-939c-4576-ab26-09ce1f23bb37",
+};
+
+Map<String, String> itemTypes = {
+  "agents": "01bb38e1-da47-4e6a-9b3d-945fe4655707",
+  "contracts": "f85cb6f7-33e5-4dc8-b609-ec7212301948",
+  "sprays": "d5f120f8-ff8c-4aac-92ea-f2b5acbe9475",
+  "gun_buddies": "dd3bf334-87f3-40bd-b043-682a57a8dc3a",
+  "cards": "3f296c07-64c3-494c-923b-fe692a4fa1bd",
+  "skins": "e7c63390-eda7-46e0-bb7a-a6abdacd2433",
+  "skin_variants": "3ad1b2b2-acdb-4524-852f-954a76ddae0a",
+  "titles": "de7caa6b-adf7-4588-bbd1-143831e786c6",
 };

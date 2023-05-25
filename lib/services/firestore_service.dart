@@ -4,10 +4,13 @@ import 'package:valstore/models/firebase_skin.dart';
 class FireStoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
-  Future<FirebaseSkin?> getSkin(String uuid) async {
+  Future<FirebaseSkin?> getSkin(String? uuid) async {
+    if (uuid == null) return null;
     var docRef = _db.collection("skins").doc(uuid);
 
     var snapshot = await docRef.get();
+
+    if (!snapshot.exists) return null;
 
     return FirebaseSkin.fromJson(snapshot.data()!);
   }
@@ -19,14 +22,5 @@ class FireStoreService {
     final skin = await qry.get();
 
     return FirebaseSkin.fromJson(skin.docs.first.data());
-  }
-
-  Future<List<FirebaseSkin?>?> getSkins() async {
-    var colRef = _db.collection("skins");
-
-    final skins = await colRef.get();
-    List<FirebaseSkin>? firebaseSkins =
-        skins.docs.map((e) => FirebaseSkin.fromJson(e.data())).toList();
-    return firebaseSkins;
   }
 }

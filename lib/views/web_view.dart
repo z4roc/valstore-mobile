@@ -25,6 +25,7 @@ class _WebViewPageState extends State<WebViewPage> {
         await RiotService().getEntitlements();
         RiotService().getUserId();
         await RiotService().getUserData();
+        //await RiotService().getUserOwnedItems();
         //await WebViewCookieManager().clearCookies();
         navigatorKey.currentState!.push(MaterialPageRoute(
           builder: (context) {

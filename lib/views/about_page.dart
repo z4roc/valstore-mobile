@@ -43,7 +43,7 @@ class _AboutPageState extends State<AboutPage> {
                   size: 30,
                 ),
                 title: const Text("Discord"),
-                subtitle: const Text("ZAROC#2375"),
+                subtitle: const Text("Community Discord"),
                 onTap: () async {
                   await launchUrl(
                     Uri.parse(
@@ -118,6 +118,36 @@ class _AboutPageState extends State<AboutPage> {
                 height: 10,
               ),
               const Text(
+                "Donate",
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              ListTile(
+                leading: const FaIcon(
+                  FontAwesomeIcons.mugSaucer,
+                  size: 30,
+                ),
+                title: const Text("Kofi"),
+                subtitle:
+                    const Text("Donations help me keeping this project up"),
+                onTap: () async {
+                  await launchUrl(
+                    Uri.parse(
+                      "https://ko-fi.com/zaroc",
+                    ),
+                    mode: LaunchMode.externalApplication,
+                  );
+                },
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              const Text(
                 "Other links",
                 style: TextStyle(
                   fontSize: 22,
@@ -173,6 +203,12 @@ class _AboutPageState extends State<AboutPage> {
                   ),
                 ),
               ),
+              /*TextButton(
+                onPressed: () async {
+                  await RiotService().reauthenticateUser();
+                },
+                child: const Text("Reauth"),
+              ),*/
             ],
           ),
         ),
