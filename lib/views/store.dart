@@ -192,7 +192,7 @@ class _StorePageState extends State<StorePage> {
                             })));
                           },
                           child: SizedBox(
-                            height: 200,
+                            height: 175,
                             child: Card(
                               elevation: 2,
                               color: color
@@ -200,7 +200,7 @@ class _StorePageState extends State<StorePage> {
                                   .withRed((color.red / 1.7).round())
                                   .withGreen((color.green / 1.7).round()),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
+                                borderRadius: BorderRadius.circular(10),
                               ),
                               child: Container(
                                 decoration: BoxDecoration(
@@ -239,7 +239,7 @@ class _StorePageState extends State<StorePage> {
                                       tag: skins[index].name!,
                                       child: Image.network(
                                         skins[index].icon!,
-                                        height: 100,
+                                        height: 80,
                                       ),
                                     ),
                                     const Spacer(),

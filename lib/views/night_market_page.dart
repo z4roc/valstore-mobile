@@ -134,12 +134,15 @@ Widget nightMarket(NightMarket store) => Scaffold(
                 Icons.timer,
                 size: 20,
               ),
+              const SizedBox(
+                width: 5,
+              ),
               CountdownTimer(
                 endTime: DateTime.now().millisecondsSinceEpoch +
                     store.durationRemain! * 1000,
               ),
               const SizedBox(
-                width: 10,
+                width: 20,
               ),
             ],
           )
@@ -166,7 +169,7 @@ Widget nightMarket(NightMarket store) => Scaffold(
                 })));
               }),
               child: SizedBox(
-                height: 200,
+                height: 150,
                 child: Card(
                   elevation: 2,
                   color: color
@@ -174,7 +177,7 @@ Widget nightMarket(NightMarket store) => Scaffold(
                       .withRed((color.red / 1.7).round())
                       .withGreen((color.green / 1.7).round()),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                   child: Container(
                     decoration: BoxDecoration(
@@ -198,20 +201,20 @@ Widget nightMarket(NightMarket store) => Scaffold(
                                 softWrap: false,
                                 style: const TextStyle(
                                   fontWeight: FontWeight.w500,
-                                  fontSize: 20,
+                                  fontSize: 18,
                                 ),
                               ),
                             ),
                           ],
                         ),
                         const SizedBox(
-                          height: 10,
+                          height: 5,
                         ),
                         Hero(
                           tag: skin.skinData!.name!,
                           child: Image.network(
                             skin.skinData!.icon!,
-                            height: 100,
+                            height: 60,
                           ),
                         ),
                         const Spacer(),

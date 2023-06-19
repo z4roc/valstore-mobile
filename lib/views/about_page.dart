@@ -21,33 +21,22 @@ class _AboutPageState extends State<AboutPage> {
       backgroundColor: const Color(0xFF16141a).withOpacity(.8),
       body: SingleChildScrollView(
         child: Container(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(10),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
-                "Contact me",
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
               ListTile(
                 leading: const FaIcon(
                   FontAwesomeIcons.discord,
                   size: 30,
                 ),
                 title: const Text("Discord"),
-                subtitle: const Text("Community Discord"),
                 onTap: () async {
                   await launchUrl(
                     Uri.parse(
-                      "https://discord.gg/amv6SNPRz7",
+                      "https://discord.gg/usS8XgVYnF",
                     ),
                     mode: LaunchMode.externalApplication,
                   );
@@ -59,7 +48,6 @@ class _AboutPageState extends State<AboutPage> {
                   size: 30,
                 ),
                 title: const Text("Twitter"),
-                subtitle: const Text(""),
                 onTap: () async {
                   await launchUrl(
                     Uri.parse(
@@ -75,7 +63,6 @@ class _AboutPageState extends State<AboutPage> {
                   size: 30,
                 ),
                 title: const Text("Instagram"),
-                subtitle: const Text(""),
                 onTap: () async {
                   await launchUrl(
                     Uri.parse(
@@ -85,26 +72,13 @@ class _AboutPageState extends State<AboutPage> {
                   );
                 },
               ),
-              const SizedBox(
-                height: 10,
-              ),
-              const Text(
-                "Source code",
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
               ListTile(
                 leading: const FaIcon(
                   FontAwesomeIcons.github,
                   size: 30,
                 ),
-                title: const Text("Github"),
-                subtitle: const Text("Docs"),
+                title: const Text("Docs"),
+                subtitle: const Text("Source Code"),
                 onTap: () async {
                   await launchUrl(
                     Uri.parse(
@@ -114,27 +88,12 @@ class _AboutPageState extends State<AboutPage> {
                   );
                 },
               ),
-              const SizedBox(
-                height: 10,
-              ),
-              const Text(
-                "Donate",
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
               ListTile(
                 leading: const FaIcon(
-                  FontAwesomeIcons.mugSaucer,
+                  FontAwesomeIcons.circleDollarToSlot,
                   size: 30,
                 ),
-                title: const Text("Kofi"),
-                subtitle:
-                    const Text("Donations help me keeping this project up"),
+                title: const Text("Donate"),
                 onTap: () async {
                   await launchUrl(
                     Uri.parse(
@@ -146,6 +105,61 @@ class _AboutPageState extends State<AboutPage> {
               ),
               const SizedBox(
                 height: 10,
+              ),
+              const Text(
+                "Credits",
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              ListTile(
+                leading: const FaIcon(
+                  FontAwesomeIcons.github,
+                  size: 30,
+                ),
+                title: const Text("@techchrism"),
+                subtitle: const Text("valorant-api-docs"),
+                onTap: () async {
+                  await launchUrl(
+                    Uri.parse(
+                      "https://github.com/techchrism/valorant-api-docs",
+                    ),
+                    mode: LaunchMode.externalApplication,
+                  );
+                },
+              ),
+              ListTile(
+                leading: const FaIcon(
+                  FontAwesomeIcons.github,
+                  size: 30,
+                ),
+                title: const Text("@NotOfficer"),
+                subtitle: const Text("Inofficial Valorant API"),
+                onTap: () async {
+                  await launchUrl(
+                    Uri.parse(
+                      "https://github.com/NotOfficer",
+                    ),
+                    mode: LaunchMode.externalApplication,
+                  );
+                },
+              ),
+              ListTile(
+                leading: const FaIcon(
+                  FontAwesomeIcons.github,
+                  size: 30,
+                ),
+                title: const Text("@Henrik-3"),
+                subtitle: const Text("unofficial-valorant-api"),
+                onTap: () async {
+                  await launchUrl(
+                    Uri.parse(
+                      "https://github.com/Henrik-3/unofficial-valorant-api",
+                    ),
+                    mode: LaunchMode.externalApplication,
+                  );
+                },
               ),
               const Text(
                 "Other links",
@@ -202,6 +216,9 @@ class _AboutPageState extends State<AboutPage> {
                     fontSize: 16,
                   ),
                 ),
+              ),
+              const SizedBox(
+                height: 10,
               ),
               /*TextButton(
                 onPressed: () async {
