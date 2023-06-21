@@ -13,6 +13,16 @@ import 'package:valstore/theme.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
+@pragma("vm:entry-point")
+Future<void> onBackgroundMessage(RemoteMessage message) async {
+  if (Firebase.apps.isEmpty) {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  }
+  RiotService.recheckStore();
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -27,14 +37,9 @@ void main() async {
   tz.initializeTimeZones();
   tz.setLocalLocation(tz.local);
   FirebaseMessaging.onBackgroundMessage(
-    (message) => onBackgroundMessage(message),
+    onBackgroundMessage,
   );
   runApp(const MyApp());
-}
-
-@pragma("vm:entry-point")
-Future<void> onBackgroundMessage(RemoteMessage message) async {
-  RiotService.recheckStore();
 }
 
 final navigatorKey = GlobalKey<NavigatorState>();

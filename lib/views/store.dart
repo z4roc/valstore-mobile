@@ -51,11 +51,11 @@ class _StorePageState extends State<StorePage> {
       ),
       request: const AdRequest(),
     ).load();
-    timer = Timer.periodic(
+    /*timer = Timer.periodic(
       const Duration(seconds: 20),
       (timer) => RiotService.recheckStore(),
     );
-    initTimeZones();
+    initTimeZones();*/
   }
 
   Future<void> initTimeZones() async {
