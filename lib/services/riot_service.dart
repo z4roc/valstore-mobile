@@ -59,13 +59,11 @@ class RiotService {
   static Future<void> recheckStore() async {
     await reuathenticateUser();
 
-    final store = await getStore(1);
+    final store = await getStore(0);
 
-    /*for (var skin in store.skins) {
-      showNotification(
-          title: "Skin arrived",
-          body: "${skin.name} is available in your shop!");
-    }*/
+    showNotification(
+        title: "Skin arrived",
+        body: "${store.skins[0].name} is available in your shop!");
   }
 
   static Future<void> reuathenticateUser() async {
