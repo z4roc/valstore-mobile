@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:valstore/flyout_nav.dart';
+import 'package:valstore/shared/flyout_nav.dart';
 import 'package:valstore/main.dart';
 import 'package:valstore/models/firebase_skin.dart';
 import 'package:valstore/services/firestore_service.dart';
@@ -8,6 +8,7 @@ import 'package:valstore/views/night_market_page.dart';
 import 'package:valstore/views/skin_detail_page.dart';
 
 import '../models/val_api_skins.dart';
+import '../shared/loading.dart';
 
 class GaleryPage extends StatefulWidget {
   const GaleryPage({super.key});
@@ -53,8 +54,11 @@ class _GaleryPageState extends State<GaleryPage> {
               },
             );
           } else {
-            return const Center(
-              child: CircularProgressIndicator(),
+            return ListView.builder(
+              itemBuilder: (context, index) {
+                return const BasicItemLoader();
+              },
+              itemCount: 10,
             );
           }
         },
@@ -110,18 +114,11 @@ class SkinSearchDelegate extends SearchDelegate {
               },
             );
           } else {
-            return const Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text("Loading Inventory..."),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  CircularProgressIndicator(),
-                ],
-              ),
+            return ListView.builder(
+              itemBuilder: (context, index) {
+                return const BasicItemLoader();
+              },
+              itemCount: 10,
             );
           }
         },
@@ -131,7 +128,9 @@ class SkinSearchDelegate extends SearchDelegate {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    return Container();
+    return Container(
+      color: const Color.fromARGB(255, 31, 28, 37),
+    );
   }
 }
 

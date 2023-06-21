@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:valstore/flyout_nav.dart';
+import 'package:valstore/shared/flyout_nav.dart';
 import 'package:valstore/services/riot_service.dart';
+import 'package:valstore/shared/loading.dart';
 import 'package:valstore/views/galery_page.dart';
 import 'package:valstore/views/night_market_page.dart';
 
@@ -34,18 +35,11 @@ class _InventoryPageState extends State<InventoryPage> {
               },
             );
           } else {
-            return const Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text("Loading Inventory..."),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  CircularProgressIndicator(),
-                ],
-              ),
+            return ListView.builder(
+              itemBuilder: (context, index) {
+                return const BasicItemLoader();
+              },
+              itemCount: 10,
             );
           }
         },

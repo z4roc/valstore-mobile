@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:valstore/flyout_nav.dart';
+import 'package:valstore/services/notifcation_service.dart';
+import 'package:valstore/shared/flyout_nav.dart';
+import 'package:valstore/shared/loading.dart';
+
+import '../services/riot_service.dart';
 
 class AboutPage extends StatefulWidget {
   const AboutPage({super.key});
@@ -203,12 +207,13 @@ class _AboutPageState extends State<AboutPage> {
                   ),
                 ),
               ),
-              /*TextButton(
+              TextButton(
                 onPressed: () async {
-                  await RiotService().reauthenticateUser();
+                  //await RiotService.reuathenticateUser();
+                  showNotification(title: "Test", body: "Moin meister");
                 },
-                child: const Text("Reauth"),
-              ),*/
+                child: const Text("test"),
+              ),
             ],
           ),
         ),

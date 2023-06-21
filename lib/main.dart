@@ -1,4 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -6,18 +7,34 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:valstore/firebase_options.dart';
 import 'package:valstore/routes.dart';
+import 'package:valstore/services/notifcation_service.dart';
+import 'package:valstore/services/riot_service.dart';
 import 'package:valstore/theme.dart';
+import 'package:timezone/data/latest_all.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await notifications.initialize(initSettings);
   MobileAds.instance.initialize();
   SystemChrome.setPreferredOrientations(
     [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
   );
-  runApp(const MyApp());
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  tz.initializeTimeZones();
+  tz.setLocalLocation(tz.local);
+  FirebaseMessaging.onBackgroundMessage(
+    (message) => onBackgroundMessage(message),
+  );
+  runApp(const MyApp());
+}
+
+@pragma("vm:entry-point")
+Future<void> onBackgroundMessage(RemoteMessage message) async {
+  RiotService.recheckStore();
 }
 
 final navigatorKey = GlobalKey<NavigatorState>();
@@ -55,8 +72,15 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   late SharedPreferences prefs;
 
+  Future<void> initMessaging() async {
+    await FirebaseMessaging.instance.requestPermission();
+    String token = await FirebaseMessaging.instance.getToken() ?? "";
+    //print("token");
+  }
+
   @override
   void initState() {
+    initMessaging();
     loadPrefs();
     super.initState();
   }

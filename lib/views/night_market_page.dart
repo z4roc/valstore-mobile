@@ -3,7 +3,7 @@ import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:valstore/color_extension.dart';
-import 'package:valstore/flyout_nav.dart';
+import 'package:valstore/shared/flyout_nav.dart';
 import 'package:valstore/models/night_market_model.dart';
 import 'package:valstore/services/riot_service.dart';
 import 'package:valstore/views/skin_detail_page.dart';

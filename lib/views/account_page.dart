@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:valstore/flyout_nav.dart';
+import 'package:valstore/shared/flyout_nav.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({super.key});

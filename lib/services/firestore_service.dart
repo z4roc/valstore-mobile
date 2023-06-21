@@ -23,4 +23,14 @@ class FireStoreService {
 
     return FirebaseSkin.fromJson(skin.docs.first.data());
   }
+
+  Future<void> registerUser(String uuid) async {
+    var docRef = _db.collection("users").doc(uuid);
+
+    if ((await docRef.get()).exists) {
+      return;
+    } else {
+      await docRef.set({"wishlist": []});
+    }
+  }
 }
