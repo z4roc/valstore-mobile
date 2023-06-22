@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:http/http.dart';
 import 'package:jwt_decode/jwt_decode.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:valstore/models/auth.dart';
 import 'package:valstore/models/firebase_skin.dart';
 import 'package:valstore/models/night_market_model.dart';
@@ -35,13 +37,12 @@ class RiotService {
   static late PlayerShop? playerShop = null;
   static late NightMarket? nightMarket = null;
 
-  void getUserId() {
+  static void getUserId() {
     userId = Jwt.parseJwt(accessToken)['sub'];
   }
 
   static Future<String> getEntitlements() async {
-    authCookies = await WebviewCookieManager()
-        .getCookies("https://auth.riotgames.com/login");
+    await saveCookies();
 
     var entitlementsRequest = await post(
       Uri.parse(entitlementsUri),
@@ -56,26 +57,51 @@ class RiotService {
     return entitlementsRequest.body;
   }
 
+  static Future<void> saveCookies() async {
+    authCookies = await WebviewCookieManager()
+        .getCookies("https://auth.riotgames.com/login");
+    final prefs = await SharedPreferences.getInstance();
+
+    prefs.setString(
+        "cookie",
+        authCookies
+                ?.map((cookie) => "${cookie.name}=${cookie.value}")
+                .join("; ") ??
+            "");
+  }
+
   static Future<void> recheckStore() async {
     await reuathenticateUser();
 
     final store = await getStore(0);
 
-    showNotification(
-        title: "Skin arrived",
-        body: "${store.skins[0].name} is available in your shop!");
+    final wishlist = await FireStoreService().getUserWishlist(userId);
+
+    for (var element in store.skins) {
+      if (wishlist.contains(element.offerId)) {
+        showNotification(
+          title: "Skin arrived!",
+          body: "${element.name} is available in your shop",
+        );
+      }
+    }
   }
 
   static Future<void> reuathenticateUser() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    final cookies = authCookies
+            ?.map((cookie) => "${cookie.name}=${cookie.value}")
+            .join("; ") ??
+        (prefs.getString("cookie") ?? "");
+
     final res = await post(
       Uri.parse("https://auth.riotgames.com/api/v1/authorization"),
       headers: {
         "User-Agent":
             "RiotClient/06.11.00.900116 rso-auth (Windows; 10;;Professional, x64)",
         "Content-Type": "application/json",
-        "cookie": authCookies!
-            .map((cookie) => "${cookie.name}=${cookie.value}")
-            .join("; "),
+        "cookie": cookies,
       },
       body: jsonEncode({
         "client_id": "play-valorant-web-prod",
@@ -93,8 +119,9 @@ class RiotService {
         auth.response?.parameters?.uri?.split('=')[1].split('&')[0] ??
             RiotService.accessToken;
     //var client = http.Client();
-    RiotService.entitlements = await getEntitlements();
-
+    await getEntitlements();
+    getUserId();
+    await RiotService().getUserData();
     /*var request = http.Request("HEAD", Uri.parse(loginUrl));
     
     request.headers['cookie'] = authCookies!
@@ -164,6 +191,8 @@ class RiotService {
       }
       return playerShop!;
     }
+
+    final test = accessToken;
 
     final shopRequest = await get(
       Uri.parse(storeUri),
@@ -271,6 +300,13 @@ class RiotService {
   }
 
   Future<void> getUserData() async {
+    final pInfoRequest =
+        await get(Uri.parse("https://auth.riotgames.com/userinfo"), headers: {
+      'Authorization': 'Bearer $accessToken',
+    });
+
+    final bdytmp = pInfoRequest.body;
+
     final userRequest = await put(
       Uri.parse("https://pd.$region.a.pvp.net/name-service/v2/players"),
       headers: {

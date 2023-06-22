@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:valstore/shared/flyout_nav.dart';
 import 'package:valstore/main.dart';
 import 'package:valstore/models/firebase_skin.dart';
@@ -6,6 +7,7 @@ import 'package:valstore/services/firestore_service.dart';
 import 'package:valstore/services/riot_service.dart';
 import 'package:valstore/views/night_market_page.dart';
 import 'package:valstore/views/skin_detail_page.dart';
+import 'package:valstore/wishlist_provider.dart';
 
 import '../models/val_api_skins.dart';
 import '../shared/loading.dart';
@@ -18,6 +20,17 @@ class GaleryPage extends StatefulWidget {
 }
 
 class _GaleryPageState extends State<GaleryPage> {
+  final staredItems = [];
+
+  late Future<ValApiSkins?> _allSkinsFuture;
+
+  @override
+  void initState() {
+    _allSkinsFuture = RiotService().getAllSkins();
+    WishlistProvider().initWishlist();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,7 +51,7 @@ class _GaleryPageState extends State<GaleryPage> {
         ],
       ),
       body: FutureBuilder(
-        future: RiotService().getAllSkins(),
+        future: _allSkinsFuture,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             var skins = snapshot.data!.data!;
@@ -47,10 +60,39 @@ class _GaleryPageState extends State<GaleryPage> {
               (a, b) => a.displayName!.compareTo(b.displayName!),
             );
 
+            final provider = Provider.of<WishlistProvider>(context);
+
             return ListView.builder(
               itemCount: skins.length,
               itemBuilder: (context, index) {
-                return itemTile(skins[index]);
+                bool isStared = staredItems.contains(skins[index]);
+
+                return ListTile(
+                  leading: Hero(
+                    tag: skins[index].displayName!,
+                    child: Image.network(
+                      skins[index].levels![0].displayIcon!,
+                      height: 30,
+                      width: 50,
+                    ),
+                  ),
+                  title: Text(skins[index].displayName ?? "Skin_display_name"),
+                  trailing: IconButton(
+                    onPressed: () {
+                      provider
+                          .toggleWishlist(skins[index].levels![0].uuid ?? "");
+                    },
+                    color: provider
+                            .isInWishlist(skins[index].levels![0].uuid ?? "")
+                        ? Colors.yellow
+                        : Colors.white,
+                    icon: Icon(
+                      !provider.isInWishlist(skins[index].levels![0].uuid ?? "")
+                          ? Icons.star_border
+                          : Icons.star,
+                    ),
+                  ),
+                );
               },
             );
           } else {
@@ -104,12 +146,35 @@ class SkinSearchDelegate extends SearchDelegate {
                           ),
                 )
                 .toList();
-
+            final provider = Provider.of<WishlistProvider>(context);
             return ListView.builder(
               itemCount: skins.length,
               itemBuilder: (context, index) {
-                return itemTile(
-                  skins[index],
+                return ListTile(
+                  leading: Hero(
+                    tag: skins[index].displayName!,
+                    child: Image.network(
+                      skins[index].levels![0].displayIcon!,
+                      height: 30,
+                      width: 50,
+                    ),
+                  ),
+                  title: Text(skins[index].displayName ?? "Skin_display_name"),
+                  trailing: IconButton(
+                    onPressed: () {
+                      provider
+                          .toggleWishlist(skins[index].levels![0].uuid ?? "");
+                    },
+                    color: provider
+                            .isInWishlist(skins[index].levels![0].uuid ?? "")
+                        ? Colors.yellow
+                        : Colors.white,
+                    icon: Icon(
+                      !provider.isInWishlist(skins[index].levels![0].uuid ?? "")
+                          ? Icons.star_border
+                          : Icons.star,
+                    ),
+                  ),
                 );
               },
             );
@@ -132,6 +197,26 @@ class SkinSearchDelegate extends SearchDelegate {
       color: const Color.fromARGB(255, 31, 28, 37),
     );
   }
+}
+
+Widget newTile(Data skin) {
+  Color color = const Color.fromARGB(255, 31, 28, 37);
+
+  return ListTile(
+    leading: Hero(
+      tag: skin.displayName!,
+      child: Image.network(
+        skin.levels![0].displayIcon!,
+        height: 30,
+        width: 50,
+      ),
+    ),
+    title: Text(skin.displayName ?? "Skin_display_name"),
+    trailing: IconButton(
+      onPressed: () {},
+      icon: Icon(Icons.star_border),
+    ),
+  );
 }
 
 Widget itemTile(Data skin) {

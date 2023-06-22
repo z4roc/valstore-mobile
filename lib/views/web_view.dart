@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:valstore/services/firestore_service.dart';
 import 'package:valstore/views/store.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -23,10 +24,13 @@ class _WebViewPageState extends State<WebViewPage> {
 
         RiotService.accessToken = request.url.split('=')[1].split('&')[0];
         await RiotService.getEntitlements();
-        RiotService().getUserId();
+        RiotService.getUserId();
         await RiotService().getUserData();
         //await RiotService().getUserOwnedItems();
         //await WebViewCookieManager().clearCookies();
+
+        await FireStoreService().registerUser(RiotService.userId);
+
         navigatorKey.currentState!.push(MaterialPageRoute(
           builder: (context) {
             return const StorePage();

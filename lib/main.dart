@@ -2,6 +2,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,6 +14,7 @@ import 'package:valstore/services/riot_service.dart';
 import 'package:valstore/theme.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+import 'package:valstore/wishlist_provider.dart';
 
 @pragma("vm:entry-point")
 Future<void> onBackgroundMessage(RemoteMessage message) async {
@@ -27,6 +30,11 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await notifications.initialize(initSettings);
+
+  await notifications
+      .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>()
+      ?.createNotificationChannel(channel);
   MobileAds.instance.initialize();
   SystemChrome.setPreferredOrientations(
     [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
@@ -39,6 +47,7 @@ void main() async {
   FirebaseMessaging.onBackgroundMessage(
     onBackgroundMessage,
   );
+
   runApp(const MyApp());
 }
 
@@ -50,17 +59,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => ThemeProvider(),
+      create: (context) => WishlistProvider(),
       builder: (context, child) {
         ThemeProvider().initTheme();
-        final themeProvider = Provider.of<ThemeProvider>(context);
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           routes: routes,
           navigatorKey: navigatorKey,
           theme: light,
           darkTheme: dark,
-          themeMode: themeProvider.themeMode,
         );
       },
     );
@@ -93,12 +100,21 @@ class _HomeScreenState extends State<HomeScreen> {
   void loadPrefs() async {
     prefs = await SharedPreferences.getInstance();
     bool? login = prefs.getBool('login');
-    if (login != null && login) {
+    String? cookie = prefs.getString("cookie");
+    String? region = prefs.getString("region");
+    if (cookie != null && region != null) {
+      await RiotService.reuathenticateUser();
+      navigatorKey.currentState!.pushNamed("/store");
+    } else if (region == null) {
+      navigatorKey.currentState!.pushNamed("/region");
+    } else if (login != null && login) {
       navigatorKey.currentState!.pushNamed('/login');
     }
   }
 
   bool isChecked = false;
+
+  String selectedRegion = "eu";
 
   @override
   Widget build(BuildContext context) {
@@ -139,7 +155,13 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             ElevatedButton(
               onPressed: () async {
-                navigatorKey.currentState!.pushNamed('/login');
+                String? region = prefs.getString("region");
+
+                if (region == null) {
+                  navigatorKey.currentState!.pushNamed("/region");
+                } else {
+                  navigatorKey.currentState!.pushNamed('/login');
+                }
               },
               child: const Text(
                 'Login at Riot games',

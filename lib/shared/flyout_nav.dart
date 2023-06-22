@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:restart_app/restart_app.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:valstore/main.dart';
 import 'package:valstore/services/riot_service.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -193,6 +194,9 @@ class NavDrawer extends StatelessWidget {
                 await WebViewCookieManager().clearCookies();
                 await WebViewController().clearLocalStorage();
                 await WebViewController().reload();
+                final prefs = await SharedPreferences.getInstance();
+
+                prefs.clear();
                 RiotService.accessToken = "";
                 RiotService.entitlements = "";
                 Restart.restartApp();

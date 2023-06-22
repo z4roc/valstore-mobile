@@ -28,3 +28,7 @@ notificationDetails() {
 }
 
 void onDidReceiveBackgroundNotificationResponse(NotificationResponse details) {}
+
+const AndroidNotificationChannel channel = AndroidNotificationChannel(
+    "high_importance_channel", "High Importance notifications",
+    importance: Importance.max);
