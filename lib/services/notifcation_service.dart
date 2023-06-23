@@ -22,9 +22,13 @@ Future showNotification(
 
 notificationDetails() {
   return const NotificationDetails(
-      android: AndroidNotificationDetails("channelId", "channelName",
-          importance: Importance.high),
-      iOS: DarwinNotificationDetails());
+    android: AndroidNotificationDetails(
+      "channelId",
+      "channelName",
+      importance: Importance.max,
+    ),
+    iOS: DarwinNotificationDetails(),
+  );
 }
 
 void onDidReceiveBackgroundNotificationResponse(NotificationResponse details) {}
