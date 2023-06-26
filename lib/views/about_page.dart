@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:valstore/flyout_nav.dart';
+import 'package:valstore/services/notifcation_service.dart';
+import 'package:valstore/shared/flyout_nav.dart';
+import 'package:valstore/shared/loading.dart';
+import 'package:workmanager/workmanager.dart';
+
+import '../services/riot_service.dart';
 
 class AboutPage extends StatefulWidget {
   const AboutPage({super.key});
@@ -11,6 +17,22 @@ class AboutPage extends StatefulWidget {
 }
 
 class _AboutPageState extends State<AboutPage> {
+  bool _notificationsOn = false;
+
+  @override
+  void initState() {
+    initPref();
+    super.initState();
+  }
+
+  Future<void> initPref() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      _notificationsOn = prefs.getBool("notify") ?? false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -217,15 +239,31 @@ class _AboutPageState extends State<AboutPage> {
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 10,
+              ListTile(
+                title: const Text("Enable Wishlist notifications"),
+                leading: Switch(
+                  activeColor: Colors.redAccent,
+                  value: _notificationsOn,
+                  onChanged: (value) async {
+                    setState(() {
+                      _notificationsOn = !_notificationsOn;
+                    });
+
+                    final prefs = await SharedPreferences.getInstance();
+                    prefs.setBool("notify", _notificationsOn);
+
+                    if (_notificationsOn) {
+                      Workmanager().registerPeriodicTask(
+                        "store",
+                        "check",
+                        initialDelay: const Duration(seconds: 10),
+                      );
+                    } else {
+                      Workmanager().cancelAll();
+                    }
+                  },
+                ),
               ),
-              /*TextButton(
-                onPressed: () async {
-                  await RiotService().reauthenticateUser();
-                },
-                child: const Text("Reauth"),
-              ),*/
             ],
           ),
         ),

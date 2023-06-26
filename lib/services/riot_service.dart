@@ -1,8 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:http/http.dart';
 import 'package:jwt_decode/jwt_decode.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:valstore/models/auth.dart';
 import 'package:valstore/models/firebase_skin.dart';
 import 'package:valstore/models/night_market_model.dart';
 import 'package:valstore/models/player_inventory.dart';
@@ -13,10 +16,11 @@ import 'package:valstore/models/bundle_display_data.dart';
 import 'package:valstore/models/player.dart';
 import 'package:valstore/models/val_api_skins.dart';
 import 'package:valstore/services/firestore_service.dart';
+import 'package:valstore/services/notifcation_service.dart';
+import 'package:webview_cookie_manager/webview_cookie_manager.dart';
 
 class RiotService {
   static String region = "eu";
-
   static String loginUrl =
       'https://auth.riotgames.com/login#client_id=play-valorant-web-prod&nonce=1&redirect_uri=https%3A%2F%2Fplayvalorant.com%2Fopt_in&response_type=token%20id_token';
   static String entitlementsUri =
@@ -25,7 +29,7 @@ class RiotService {
       "https://pd.$region.a.pvp.net/store/v2/storefront/$userId/";
   static String accessToken = "";
   static String entitlements = "";
-  //static String cookies = "";
+  static String cookies = "";
   static String userId = "";
 
   static late List<Cookie>? authCookies = null;
@@ -33,22 +37,12 @@ class RiotService {
   static late PlayerShop? playerShop = null;
   static late NightMarket? nightMarket = null;
 
-  void getUserId() {
+  static void getUserId() {
     userId = Jwt.parseJwt(accessToken)['sub'];
   }
 
-  Future<String> getEntitlements() async {
-    /*authCookies = await WebviewCookieManager()
-        .getCookies("https://auth.riotgames.com/login");
-
-    for (var element in authCookies!) {
-      cookies += "${element.name}=${element.value};";
-    }
-
-    final ssid =
-        authCookies!.where((element) => element.name == "ssid").first.value;
-
-    cookies = "ssid=$ssid;";*/
+  static Future<String> getEntitlements() async {
+    await saveCookies();
 
     var entitlementsRequest = await post(
       Uri.parse(entitlementsUri),
@@ -63,6 +57,128 @@ class RiotService {
     return entitlementsRequest.body;
   }
 
+  static Future<void> saveCookies() async {
+    authCookies = await WebviewCookieManager()
+        .getCookies("https://auth.riotgames.com/login");
+    final prefs = await SharedPreferences.getInstance();
+
+    prefs.setString(
+        "cookie",
+        authCookies
+                ?.map((cookie) => "${cookie.name}=${cookie.value}")
+                .join("; ") ??
+            "");
+  }
+
+  static Future<void> recheckStore() async {
+    await reuathenticateUser();
+
+    final store = await getStore(0);
+
+    final wishlist = await FireStoreService().getUserWishlist(userId);
+
+    for (var element in store.skins) {
+      if (wishlist.contains(element.offerId)) {
+        showNotification(
+          title: "Skin arrived!",
+          body: "${element.name} is available in your shop",
+        );
+      }
+    }
+  }
+
+  static Future<void> reuathenticateUser() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    final cookies = authCookies
+            ?.map((cookie) => "${cookie.name}=${cookie.value}")
+            .join("; ") ??
+        (prefs.getString("cookie") ?? "");
+
+    final res = await post(
+      Uri.parse("https://auth.riotgames.com/api/v1/authorization"),
+      headers: {
+        "User-Agent":
+            "RiotClient/06.11.00.900116 rso-auth (Windows; 10;;Professional, x64)",
+        "Content-Type": "application/json",
+        "cookie": cookies,
+      },
+      body: jsonEncode({
+        "client_id": "play-valorant-web-prod",
+        "nonce": 1,
+        "redirect_uri": "https://playvalorant.com/opt_in",
+        "response_type": "token id_token",
+        "response_mode": "query",
+        "scope": "account openid",
+      }),
+    );
+
+    final auth = Reauth.fromJson(jsonDecode(res.body));
+
+    RiotService.accessToken =
+        auth.response?.parameters?.uri?.split('=')[1].split('&')[0] ??
+            RiotService.accessToken;
+    //var client = http.Client();
+    await getEntitlements();
+    getUserId();
+    await RiotService().getUserData();
+    /*var request = http.Request("HEAD", Uri.parse(loginUrl));
+    
+    request.headers['cookie'] = authCookies!
+        .map((cookie) => "${cookie.name}=${cookie.value}")
+        .join("; ");
+
+    request.headers['Content-Type'] = "appliaction/json";
+
+    request.followRedirects = false;
+
+    request.body = json.encode({
+      'client_id': "play-valorant-web-prod",
+      'nonce': 1,
+      'redirect_uri': "https://playvalorant.com/opt_in",
+      'response_type': "token id_token",
+      'scope': "account ban link lol offline_access openid"
+    });
+
+    
+
+    final cookieJar = CookieJar();
+
+    cookieJar.saveFromResponse(
+        Uri.parse("https://auth.riotgames.com"),
+        authCookies!
+            .where(
+                (element) => element.name == "ssid" || element.name == "tdid")
+            .toList());
+
+    dio.interceptors.add(CookieManager(cookieJar));
+
+    //final temp = await cookieJar.loadForRequest(Uri.parse(loginUrl));
+    dio.options.followRedirects = false;
+
+    dio.options.headers['cookie'] = authCookies!
+        .map((cookie) => "${cookie.name}=${cookie.value}")
+        .join("; ");
+
+    final dioRequest = await dio.get(loginUrl);
+
+    //var response = await client.send(request);
+
+    /*if (response.statusCode == 200) {
+      print(response.stream.toString());
+    }*/
+
+    print(dioRequest.headers['set-cookie']);
+
+    if (dioRequest.isRedirect) {
+      print(dioRequest.headers['location']);
+    }*/
+  }
+
+  Future<String> getPlayerLadout() async {
+    return "";
+  }
+
   static Future<PlayerShop> getStore(int sort) async {
     if (playerShop != null) {
       if (sort == 1) {
@@ -75,6 +191,8 @@ class RiotService {
       }
       return playerShop!;
     }
+
+    final test = accessToken;
 
     final shopRequest = await get(
       Uri.parse(storeUri),
@@ -182,6 +300,13 @@ class RiotService {
   }
 
   Future<void> getUserData() async {
+    final pInfoRequest =
+        await get(Uri.parse("https://auth.riotgames.com/userinfo"), headers: {
+      'Authorization': 'Bearer $accessToken',
+    });
+
+    final bdytmp = pInfoRequest.body;
+
     final userRequest = await put(
       Uri.parse("https://pd.$region.a.pvp.net/name-service/v2/players"),
       headers: {

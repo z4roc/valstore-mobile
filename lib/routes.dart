@@ -5,11 +5,13 @@ import 'package:valstore/views/bundle_page.dart';
 import 'package:valstore/views/galery_page.dart';
 import 'package:valstore/views/inventory_page.dart';
 import 'package:valstore/views/night_market_page.dart';
+import 'package:valstore/views/region_page.dart';
 import 'package:valstore/views/store.dart';
 import 'package:valstore/views/web_view.dart';
 
 final routes = {
   '/': (context) => const HomeScreen(),
+  '/region': (context) => const RegionPage(),
   '/login': (context) => const WebViewPage(),
   '/store': (context) => const StorePage(),
   '/nightmarket': (context) => const NightMarketPage(),
