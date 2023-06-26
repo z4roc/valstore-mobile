@@ -208,7 +208,6 @@ class _StorePageState extends State<StorePage> {
 
                       final Color color =
                           HexColor(colorString!).withOpacity(.7);
-
                       return GestureDetector(
                         onTap: () {
                           navigatorKey.currentState!
@@ -248,6 +247,7 @@ class _StorePageState extends State<StorePage> {
                                           skins[index].name!,
                                           overflow: TextOverflow.fade,
                                           softWrap: false,
+
                                           style: const TextStyle(
                                             fontWeight: FontWeight.w500,
                                             fontSize: 20,

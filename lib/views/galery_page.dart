@@ -194,7 +194,7 @@ class SkinSearchDelegate extends SearchDelegate {
   @override
   Widget buildSuggestions(BuildContext context) {
     return Container(
-      color: const Color.fromARGB(255, 31, 28, 37),
+      color: color,
     );
   }
 }
@@ -220,7 +220,7 @@ Widget newTile(Data skin) {
 }
 
 Widget itemTile(Data skin) {
-  Color color = const Color.fromARGB(255, 31, 28, 37);
+  Color color = const Color(0xFF16141a).withOpacity(.8);
 
   return GestureDetector(
     onTap: () async {
@@ -232,8 +232,9 @@ Widget itemTile(Data skin) {
       })));
     },
     child: Container(
-      decoration: const BoxDecoration(
-        border: Border(
+      decoration: BoxDecoration(
+        color: color,
+        border: const Border(
           bottom: BorderSide(
             color: Color.fromARGB(255, 75, 72, 82),
           ),
@@ -242,12 +243,9 @@ Widget itemTile(Data skin) {
       height: 150,
       child: Card(
         elevation: 2,
-        color: color
-            .withBlue((color.blue / 1.7).round())
-            .withRed((color.red / 1.7).round())
-            .withGreen((color.green / 1.7).round()),
+        color: Colors.transparent,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(10),
         ),
         child: Container(
           padding: const EdgeInsets.fromLTRB(20, 15, 20, 10),

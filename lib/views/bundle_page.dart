@@ -201,7 +201,7 @@ class _BundlePageState extends State<BundlePage> {
                                           elevation: 2,
                                           shape: RoundedRectangleBorder(
                                             borderRadius:
-                                                BorderRadius.circular(20),
+                                                BorderRadius.circular(10),
                                           ),
                                           child: Container(
                                             color: const Color(0xFF16141a)
