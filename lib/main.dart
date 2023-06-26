@@ -1,11 +1,7 @@
-import 'dart:math';
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,12 +10,9 @@ import 'package:valstore/routes.dart';
 import 'package:valstore/services/notifcation_service.dart';
 import 'package:valstore/services/riot_service.dart';
 import 'package:valstore/theme.dart';
-import 'package:timezone/data/latest_all.dart' as tz;
-import 'package:timezone/timezone.dart' as tz;
 import 'package:valstore/wishlist_provider.dart';
 import 'package:workmanager/workmanager.dart';
 
-/*
 @pragma("vm:entry-point")
 Future<void> onBackgroundMessage(RemoteMessage message) async {
   if (Firebase.apps.isEmpty) {
@@ -28,49 +21,46 @@ Future<void> onBackgroundMessage(RemoteMessage message) async {
     );
   }
   RiotService.recheckStore();
-}*/
+}
 
 @pragma("vm:entry-point")
 void callbackDispatcher() {
   Workmanager().executeTask((taskName, inputData) async {
-    await showNotification(
+    /*await showNotification(
       title: "Store check executed",
       body: "Store checked",
-    );
-    print("Task executed");
-    if (Firebase.apps.isEmpty) {
-      await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
-      );
+    );*/
+    try {
+      if (notifications == null) notifications.initialize(initSettings);
+      if (Firebase.apps.isEmpty) {
+        await Firebase.initializeApp(
+          options: DefaultFirebaseOptions.currentPlatform,
+        );
+      }
+
+      await RiotService.recheckStore();
+
+      return Future.value(true);
+    } catch (e) {
+      showNotification(title: "Task failed", body: e.toString());
+      return Future.value(false);
     }
-    await RiotService.recheckStore();
-    return Future.value(true);
   });
 }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  await notifications.initialize(initSettings);
-
-  await notifications
-      .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>()
-      ?.createNotificationChannel(channel);
+  notifications.initialize(initSettings);
   MobileAds.instance.initialize();
-  SystemChrome.setPreferredOrientations(
-    [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
-  );
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  tz.initializeTimeZones();
-  tz.setLocalLocation(tz.local);
-  //FirebaseMessaging.onBackgroundMessage(
-  //  onBackgroundMessage,
-  //);
-
-  Workmanager().initialize(callbackDispatcher);
+  SystemChrome.setPreferredOrientations(
+    [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
+  );
+  runApp(const MyApp());
+  FirebaseMessaging.onBackgroundMessage(onBackgroundMessage);
+  Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
 
   runApp(const MyApp());
 }
@@ -85,7 +75,6 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => WishlistProvider(),
       builder: (context, child) {
-        ThemeProvider().initTheme();
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           routes: routes,
@@ -116,13 +105,13 @@ class _HomeScreenState extends State<HomeScreen> {
     prefs = await SharedPreferences.getInstance();
     String? cookie = prefs.getString("cookie");
     String? region = prefs.getString("region");
-
+    print(await FirebaseMessaging.instance.getToken());
     if (cookie != null && region != null && login != null && login) {
       await RiotService.reuathenticateUser();
       navigatorKey.currentState!.pushNamed("/store");
     } else if (region == null) {
       navigatorKey.currentState!.pushNamed("/region");
-    } else if (region != null && login != null && login) {
+    } else if (login != null && login) {
       navigatorKey.currentState!.pushNamed("/login");
     }
     setState(() {
@@ -130,16 +119,9 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  Future<void> initMessaging() async {
-    await FirebaseMessaging.instance.requestPermission();
-    String token = await FirebaseMessaging.instance.getToken() ?? "";
-    //print("token");
-  }
-
   @override
   void initState() {
     super.initState();
-    initMessaging();
     _loadPrefs = loadPrefs();
   }
 

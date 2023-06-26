@@ -4,7 +4,7 @@ final FlutterLocalNotificationsPlugin notifications =
     FlutterLocalNotificationsPlugin();
 
 AndroidInitializationSettings initAndroid =
-    const AndroidInitializationSettings("notify");
+    const AndroidInitializationSettings("launcher_notifcation");
 
 final initIOS = DarwinInitializationSettings(
   requestAlertPermission: true,

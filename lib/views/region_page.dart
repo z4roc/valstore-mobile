@@ -19,14 +19,25 @@ class RegionPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Select Region')),
+      backgroundColor: Color(0xFF16141a),
+      appBar: AppBar(
+        backgroundColor: Color(0xFF16141a),
+        elevation: 0,
+        title: const Text("Select Region"),
+      ),
       body: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(25.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const Text(
-                "In order to work properly you need to select your region"),
+              "In order to work properly you need to select your region",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 18,
+              ),
+            ),
             const SizedBox(
               height: 50,
             ),
@@ -80,12 +91,14 @@ class _DropdownButtonExampleState extends State<DropdownButtonExample> {
           RiotService.region = value;
         });
       },
-      items: list.map<DropdownMenuItem<String>>((String value) {
-        return DropdownMenuItem<String>(
-          value: value,
-          child: Text(names[value] ?? value),
-        );
-      }).toList(),
+      items: list.map<DropdownMenuItem<String>>(
+        (String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Container(child: Text(names[value] ?? value)),
+          );
+        },
+      ).toList(),
     );
   }
 }

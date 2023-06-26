@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -253,6 +254,11 @@ class _AboutPageState extends State<AboutPage> {
                     prefs.setBool("notify", _notificationsOn);
 
                     if (_notificationsOn) {
+                      notifications
+                          .resolvePlatformSpecificImplementation<
+                              AndroidFlutterLocalNotificationsPlugin>()
+                          ?.requestPermission();
+
                       Workmanager().registerPeriodicTask(
                         "store",
                         "check",
@@ -264,6 +270,15 @@ class _AboutPageState extends State<AboutPage> {
                   },
                 ),
               ),
+              /*ElevatedButton(
+                onPressed: () async {
+                  await showNotification(
+                    title: "test",
+                    body: "Test notification",
+                  );
+                },
+                child: const Text("Test"),
+              ),*/
             ],
           ),
         ),

@@ -219,16 +219,39 @@ class _StorePageState extends State<StorePage> {
                           height: 200,
                           child: Card(
                             elevation: 2,
-                            color: color
-                                .withBlue((color.blue / 1.7).round())
-                                .withRed((color.red / 1.7).round())
-                                .withGreen((color.green / 1.7).round()),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
+                              borderRadius: BorderRadius.circular(5),
                             ),
                             child: Container(
                               decoration: BoxDecoration(
+                                shape: BoxShape.rectangle,
+                                borderRadius: BorderRadius.circular(5),
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: Colors.black,
+                                    blurRadius: 1,
+                                  )
+                                ],
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                    color
+                                        .withBlue((color.blue / 3).round())
+                                        .withRed((color.red / 3).round())
+                                        .withGreen((color.green / 3).round()),
+                                    color
+                                        .withBlue((color.blue / 2).round())
+                                        .withRed((color.red / 2).round())
+                                        .withGreen((color.green / 2).round()),
+                                    color
+                                        .withBlue((color.blue / 1).round())
+                                        .withRed((color.red / 1).round())
+                                        .withGreen((color.green / 1).round()),
+                                  ],
+                                ),
                                 image: DecorationImage(
+                                  alignment: Alignment.bottomLeft,
                                   fit: BoxFit.contain,
                                   opacity: .2,
                                   image: NetworkImage(
@@ -247,12 +270,15 @@ class _StorePageState extends State<StorePage> {
                                           skins[index].name!,
                                           overflow: TextOverflow.fade,
                                           softWrap: false,
-
                                           style: const TextStyle(
                                             fontWeight: FontWeight.w500,
                                             fontSize: 20,
                                           ),
                                         ),
+                                      ),
+                                      Image.network(
+                                        skins[index].contentTier!.icon!,
+                                        height: 25,
                                       ),
                                       //
                                     ],

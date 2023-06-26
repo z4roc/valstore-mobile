@@ -1,20 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 ThemeData light = ThemeData(
-  brightness: Brightness.light,
+  brightness: Brightness.dark,
+  fontFamily: GoogleFonts.nunito().fontFamily,
+  textTheme: const TextTheme(),
   appBarTheme: const AppBarTheme(
-    backgroundColor: Colors.red,
-    centerTitle: true,
+    backgroundColor: Color(0xFF16141a),
+    centerTitle: false,
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
       minimumSize: const Size.fromHeight(50),
       backgroundColor: Colors.red,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(10),
       ),
+      textStyle: const TextStyle(
+        fontWeight: FontWeight.w700,
+        fontSize: 20,
+      ),
+      elevation: 2,
     ),
   ),
 );
