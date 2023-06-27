@@ -80,7 +80,6 @@ class MyApp extends StatelessWidget {
           routes: routes,
           navigatorKey: navigatorKey,
           theme: light,
-          darkTheme: dark,
         );
       },
     );

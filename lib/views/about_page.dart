@@ -260,9 +260,18 @@ class _AboutPageState extends State<AboutPage> {
                           ?.requestPermission();
 
                       Workmanager().registerPeriodicTask(
-                        "store",
-                        "check",
-                        initialDelay: const Duration(seconds: 10),
+                        "storeCheck${DateTime.now().toString()}",
+                        "ValStoreStoreRenewal",
+                        initialDelay: const Duration(
+                          seconds: 10,
+                        ),
+                        backoffPolicy: BackoffPolicy.linear,
+                        frequency: const Duration(
+                          hours: 1,
+                        ),
+                        constraints: Constraints(
+                          networkType: NetworkType.connected,
+                        ),
                       );
                     } else {
                       Workmanager().cancelAll();

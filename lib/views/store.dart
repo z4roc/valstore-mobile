@@ -14,7 +14,6 @@ import 'package:valstore/services/riot_service.dart';
 import 'package:valstore/shared/loading.dart';
 import 'package:valstore/views/skin_detail_page.dart';
 
-import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import '../adhelper.dart';
 

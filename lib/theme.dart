@@ -25,9 +25,15 @@ ThemeData light = ThemeData(
       elevation: 2,
     ),
   ),
+  drawerTheme: const DrawerThemeData(
+    backgroundColor: Color(0xFF16141a),
+  ),
+  progressIndicatorTheme: const ProgressIndicatorThemeData(
+    color: Color(0xfd4556),
+  ),
 );
 
-ThemeData dark = ThemeData(
+/*ThemeData dark = ThemeData(
   brightness: Brightness.dark,
   drawerTheme: const DrawerThemeData(
     backgroundColor: Color(0xFF16141a),
@@ -48,7 +54,7 @@ ThemeData dark = ThemeData(
   progressIndicatorTheme: const ProgressIndicatorThemeData(
     color: Colors.red,
   ),
-);
+);*/
 
 class ThemeProvider extends ChangeNotifier {
   ThemeMode themeMode = ThemeMode.dark;

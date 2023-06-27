@@ -8,37 +8,52 @@ class StoreItemLoading extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 200,
+      decoration: BoxDecoration(
+        borderRadius: const BorderRadius.all(Radius.circular(10)),
+        border: Border.all(
+          color: Colors.grey,
+        ),
+        boxShadow: const [BoxShadow(color: Colors.black)],
+      ),
       width: MediaQuery.of(context).size.width - 20,
-      child: Shimmer.fromColors(
-        child: Card(
-          elevation: 2,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(
-              Radius.circular(20),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(5),
+            height: 40,
+            width: double.infinity,
+            child: Shimmer.fromColors(
+              child: const Card(),
+              baseColor: Color.fromARGB(255, 49, 47, 47).withOpacity(.8),
+              highlightColor: Colors.grey.shade700,
             ),
           ),
-          child: Column(
+          Container(
+            padding: const EdgeInsets.all(5),
+            height: 110,
+            width: double.infinity,
+            child: Shimmer.fromColors(
+              child: const Card(),
+              baseColor: Color.fromARGB(255, 49, 47, 47).withOpacity(.8),
+              highlightColor: Colors.grey.shade700,
+            ),
+          ),
+          Row(
             children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Shimmer.fromColors(
-                      child: SizedBox(),
-                      baseColor: Colors.red,
-                      highlightColor: Colors.red,
-                    ),
-                  )
-                ],
+              const Spacer(),
+              Container(
+                padding: const EdgeInsets.all(5),
+                height: 40,
+                width: 150,
+                child: Shimmer.fromColors(
+                  child: const Card(),
+                  baseColor: Color.fromARGB(255, 49, 47, 47).withOpacity(.8),
+                  highlightColor: Colors.grey.shade700,
+                ),
               ),
-              SizedBox(
-                height: 100,
-              ),
-              Row(),
             ],
           ),
-        ),
-        baseColor: const Color.fromARGB(255, 77, 77, 77).withOpacity(.8),
-        highlightColor: Colors.grey,
+        ],
       ),
     );
   }
