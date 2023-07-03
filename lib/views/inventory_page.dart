@@ -16,7 +16,7 @@ class _InventoryPageState extends State<InventoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: color,
+      //backgroundColor: color,
       drawer: const NavDrawer(),
       appBar: AppBar(
         title: const Text("Inventory"),
@@ -43,7 +43,7 @@ class _InventoryPageState extends State<InventoryPage> {
             );
           }
         },
-        future: RiotService().getUserOwnedItems(),
+        future: RiotService.getUserOwnedItems(),
       ),
     );
   }

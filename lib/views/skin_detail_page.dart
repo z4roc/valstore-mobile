@@ -20,7 +20,7 @@ class _SkinDetailPageState extends State<SkinDetailPage> {
     FirebaseSkin skin = widget.skin;
     String image = skin.icon!;
     return Scaffold(
-      backgroundColor: const Color(0xFF16141a).withOpacity(.8),
+      //backgroundColor: const Color(0xFF16141a).withOpacity(.8),
       appBar: AppBar(
         title: Row(
           crossAxisAlignment: CrossAxisAlignment.center,

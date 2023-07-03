@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -10,6 +11,7 @@ import 'package:valstore/routes.dart';
 import 'package:valstore/services/notifcation_service.dart';
 import 'package:valstore/services/riot_service.dart';
 import 'package:valstore/theme.dart';
+import 'package:valstore/v2/valstore_provider.dart';
 import 'package:valstore/wishlist_provider.dart';
 import 'package:workmanager/workmanager.dart';
 
@@ -52,15 +54,16 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   notifications.initialize(initSettings);
   MobileAds.instance.initialize();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  if (Firebase.apps.isEmpty) {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  }
   SystemChrome.setPreferredOrientations(
     [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
   );
-  runApp(const MyApp());
   FirebaseMessaging.onBackgroundMessage(onBackgroundMessage);
-  Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
+  Workmanager().initialize(callbackDispatcher, isInDebugMode: kDebugMode);
 
   runApp(const MyApp());
 }
@@ -73,7 +76,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => WishlistProvider(),
+      create: (context) => ValstoreProvider(),
       builder: (context, child) {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
@@ -104,14 +107,13 @@ class _HomeScreenState extends State<HomeScreen> {
     prefs = await SharedPreferences.getInstance();
     String? cookie = prefs.getString("cookie");
     String? region = prefs.getString("region");
-    print(await FirebaseMessaging.instance.getToken());
     if (cookie != null && region != null && login != null && login) {
       await RiotService.reuathenticateUser();
       navigatorKey.currentState!.pushNamed("/store");
-    } else if (region == null) {
-      navigatorKey.currentState!.pushNamed("/region");
     } else if (login != null && login) {
       navigatorKey.currentState!.pushNamed("/login");
+    } else if (region == null) {
+      navigatorKey.currentState!.pushNamed("/region");
     }
     setState(() {
       isChecked = login ?? false;
@@ -131,7 +133,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0x090909),
+      //backgroundColor: const Color(0x090909),
       body: FutureBuilder(
         future: _loadPrefs,
         builder: (context, snapshot) {

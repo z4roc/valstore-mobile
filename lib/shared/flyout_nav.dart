@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:valstore/main.dart';
 import 'package:valstore/services/riot_service.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:workmanager/workmanager.dart';
 
 class NavDrawer extends StatelessWidget {
   const NavDrawer({super.key});
@@ -195,7 +196,7 @@ class NavDrawer extends StatelessWidget {
                 await WebViewController().clearLocalStorage();
                 await WebViewController().reload();
                 final prefs = await SharedPreferences.getInstance();
-
+                Workmanager().cancelAll();
                 prefs.clear();
                 RiotService.accessToken = "";
                 RiotService.entitlements = "";

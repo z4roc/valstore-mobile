@@ -1,9 +1,13 @@
+import 'package:valstore/models/inofficial_api_models.dart';
+
 class Player {
   PlayerInfo? playerInfo;
   Wallet? wallet;
+  LevelBorder? levelBorder;
   Player({
     this.playerInfo,
     this.wallet,
+    this.levelBorder,
   });
 }
 
@@ -11,8 +15,13 @@ class Wallet {
   int? valorantPoints;
   int? radianitePoints;
   int? freeAgents;
+  int? kingdomCredits;
 
-  Wallet({this.valorantPoints, this.radianitePoints, this.freeAgents});
+  Wallet(
+      {this.valorantPoints,
+      this.radianitePoints,
+      this.freeAgents,
+      this.kingdomCredits});
 }
 
 class PlayerInfo {

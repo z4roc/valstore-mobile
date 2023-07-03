@@ -8,12 +8,12 @@ class StoreItemLoading extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 200,
-      decoration: BoxDecoration(
-        borderRadius: const BorderRadius.all(Radius.circular(10)),
-        border: Border.all(
+      decoration: const BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(10)),
+        /*border: Border.all(
           color: Colors.grey,
-        ),
-        boxShadow: const [BoxShadow(color: Colors.black)],
+        ),*/
+        boxShadow: [BoxShadow(color: Colors.black)],
       ),
       width: MediaQuery.of(context).size.width - 20,
       child: Column(

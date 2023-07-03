@@ -7,15 +7,18 @@ import 'package:jwt_decode/jwt_decode.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:valstore/models/auth.dart';
 import 'package:valstore/models/firebase_skin.dart';
+import 'package:valstore/models/local_offers.dart';
 import 'package:valstore/models/night_market_model.dart';
 import 'package:valstore/models/player_inventory.dart';
 import 'package:valstore/models/store_models.dart';
+import 'package:valstore/models/user_offers.dart';
 import 'package:valstore/models/val_api_bundle.dart';
 import 'package:valstore/models/bundle.dart' as b;
 import 'package:valstore/models/bundle_display_data.dart';
 import 'package:valstore/models/player.dart';
 import 'package:valstore/models/val_api_skins.dart';
 import 'package:valstore/services/firestore_service.dart';
+import 'package:valstore/services/inofficial_valorant_api.dart';
 import 'package:valstore/services/notifcation_service.dart';
 import 'package:webview_cookie_manager/webview_cookie_manager.dart';
 
@@ -36,6 +39,8 @@ class RiotService {
   static late Player user;
   static late PlayerShop? playerShop = null;
   static late NightMarket? nightMarket = null;
+
+  static late UserOffers? userOffers;
 
   static void getUserId() {
     userId = Jwt.parseJwt(accessToken)['sub'];
@@ -121,7 +126,7 @@ class RiotService {
     //var client = http.Client();
     await getEntitlements();
     getUserId();
-    await RiotService().getUserData();
+    await RiotService.getUserData();
     /*var request = http.Request("HEAD", Uri.parse(loginUrl));
     
     request.headers['cookie'] = authCookies!
@@ -283,6 +288,33 @@ class RiotService {
     return nightMarket;
   }
 
+  static Future<UserOffers> getUserOffers() async {
+    final shopRequest = await get(
+      Uri.parse(storeUri),
+      headers: {
+        'X-Riot-Entitlements-JWT': entitlements,
+        'Authorization': 'Bearer $accessToken'
+      },
+    );
+
+    return UserOffers.fromJson(jsonDecode(shopRequest.body));
+  }
+
+  static Future<LocalOffers> getLocalOffers() async {
+    final shopRequest = await get(
+      Uri.parse("https://pd.eu.a.pvp.net/store/v1/offers/"),
+      headers: {
+        //'X-Riot-Entitlements-JWT': entitlements,
+        'Authorization': 'Bearer $accessToken'
+      },
+    );
+
+    final body = shopRequest.body;
+    final allShopJson = json.decode(body);
+    final shopRemains = LocalOffers.fromJson(allShopJson);
+    return shopRemains;
+  }
+
   static Future<int> getStoreTimer() async {
     final shopRequest = await get(
       Uri.parse(storeUri),
@@ -299,13 +331,13 @@ class RiotService {
     return shopRemains;
   }
 
-  Future<void> getUserData() async {
-    final pInfoRequest =
-        await get(Uri.parse("https://auth.riotgames.com/userinfo"), headers: {
-      'Authorization': 'Bearer $accessToken',
-    });
-
-    final bdytmp = pInfoRequest.body;
+  static Future<Player> getUserData() async {
+    /*final pInfoRequest = await get(
+      Uri.parse("https://auth.riotgames.com/userinfo"),
+      headers: {
+        'Authorization': 'Bearer $accessToken',
+      },
+    );*/
 
     final userRequest = await put(
       Uri.parse("https://pd.$region.a.pvp.net/name-service/v2/players"),
@@ -340,6 +372,11 @@ class RiotService {
 
       PlayerInfo info = PlayerInfo.fromJson(resultJson);
 
+      final levelBorder = (await InofficialValorantAPI().getLevelBorders())
+          .borders
+          ?.where((element) => info.accountLevel! < element.startingLevel!)
+          .first;
+
       info.card ??
           Card(
               small:
@@ -351,14 +388,18 @@ class RiotService {
               id: "9fb348bc-41a0-91ad-8a3e-818035c4e561");
 
       user = Player(
-          playerInfo: info,
-          wallet: Wallet(
-            valorantPoints: balanceResult["Balances"]
-                [currencies["valorantPoints"]],
-            radianitePoints: balanceResult["Balances"]
-                [currencies["radianitePoints"]],
-            freeAgents: balanceResult["Balances"][currencies["freeAgents"]],
-          ));
+        playerInfo: info,
+        wallet: Wallet(
+          valorantPoints: balanceResult["Balances"]
+              [currencies["valorantPoints"]],
+          radianitePoints: balanceResult["Balances"]
+              [currencies["radianitePoints"]],
+          freeAgents: balanceResult["Balances"][currencies["freeAgents"]],
+          kingdomCredits: balanceResult["Balances"]
+              [currencies["kingdomCredits"]],
+        ),
+        levelBorder: levelBorder,
+      );
       region = user.playerInfo!.region!;
     } catch (e) {
       user = Player(
@@ -378,9 +419,11 @@ class RiotService {
         ),
       );
     }
+
+    return user;
   }
 
-  Future<List<BundleDisplayData?>> getCurrentBundle() async {
+  static Future<List<BundleDisplayData?>> getCurrentBundle() async {
     final bundleRequest = await get(
       Uri.parse('https://api.henrikdev.xyz/valorant/v2/store-featured'),
     );
@@ -409,7 +452,7 @@ class RiotService {
     return bundles;
   }
 
-  Future<List<Data?>?> getUserOwnedItems() async {
+  static Future<List<Data?>?> getUserOwnedItems() async {
     final inventoryRequest = await get(
       Uri.parse(
           "https://pd.$region.a.pvp.net/store/v1/entitlements/$userId/${itemTypes['skins']}"),
@@ -436,7 +479,7 @@ class RiotService {
     return skinDatas;
   }
 
-  Future<ValApiSkins?> getAllSkins() async {
+  static Future<ValApiSkins?> getAllSkins() async {
     final allSkins = jsonDecode((await get(
       Uri.parse("https://valorant-api.com/v1/weapons/skins"),
     ))
@@ -450,6 +493,7 @@ Map<String, String> currencies = {
   "valorantPoints": "85ad13f7-3d1b-5128-9eb2-7cd8ee0b5741",
   "radianitePoints": "e59aa87c-4cbf-517a-5983-6e81511be9b7",
   "freeAgents": "f08d4ae3-939c-4576-ab26-09ce1f23bb37",
+  "kingdomCredits": "85ca954a-41f2-ce94-9b45-8ca3dd39a00d",
 };
 
 Map<String, String> itemTypes = {

@@ -41,7 +41,7 @@ class _AboutPageState extends State<AboutPage> {
         title: const Text('About'),
       ),
       drawer: const NavDrawer(),
-      backgroundColor: const Color(0xFF16141a).withOpacity(.8),
+      //backgroundColor: Color.fromARGB(0, 37, 37, 52).withOpacity(.5),
       body: SingleChildScrollView(
         child: Container(
           padding: const EdgeInsets.all(10),
@@ -263,11 +263,11 @@ class _AboutPageState extends State<AboutPage> {
                         "storeCheck${DateTime.now().toString()}",
                         "ValStoreStoreRenewal",
                         initialDelay: const Duration(
-                          seconds: 10,
+                          seconds: 5,
                         ),
                         backoffPolicy: BackoffPolicy.linear,
                         frequency: const Duration(
-                          hours: 1,
+                          minutes: 15,
                         ),
                         constraints: Constraints(
                           networkType: NetworkType.connected,

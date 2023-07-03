@@ -10,11 +10,14 @@ ThemeData light = ThemeData(
   appBarTheme: const AppBarTheme(
     backgroundColor: Color(0xFF16141a),
     centerTitle: false,
+    elevation: 1,
   ),
+  primaryColor: Color(0xff4655),
+  scaffoldBackgroundColor: Color.fromARGB(0, 37, 37, 52).withOpacity(.5),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
       minimumSize: const Size.fromHeight(50),
-      backgroundColor: Colors.red,
+      backgroundColor: Color.fromARGB(255, 255, 70, 85),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
       ),
@@ -29,7 +32,7 @@ ThemeData light = ThemeData(
     backgroundColor: Color(0xFF16141a),
   ),
   progressIndicatorTheme: const ProgressIndicatorThemeData(
-    color: Color(0xfd4556),
+    color: Color.fromARGB(255, 255, 70, 85),
   ),
 );
 

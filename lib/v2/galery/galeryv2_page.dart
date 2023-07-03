@@ -5,12 +5,13 @@ import 'package:valstore/main.dart';
 import 'package:valstore/models/firebase_skin.dart';
 import 'package:valstore/services/firestore_service.dart';
 import 'package:valstore/services/riot_service.dart';
+import 'package:valstore/v2/valstore_provider.dart';
 import 'package:valstore/views/night_market_page.dart';
 import 'package:valstore/views/skin_detail_page.dart';
 import 'package:valstore/wishlist_provider.dart';
 
-import '../models/val_api_skins.dart';
-import '../shared/loading.dart';
+import '../../models/val_api_skins.dart';
+import '../../shared/loading.dart';
 
 class GaleryPage extends StatefulWidget {
   const GaleryPage({super.key});
@@ -27,29 +28,14 @@ class _GaleryPageState extends State<GaleryPage> {
   @override
   void initState() {
     _allSkinsFuture = RiotService.getAllSkins();
-    WishlistProvider().initWishlist();
+    //WishlistProvider().initWishlist();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //backgroundColor: const Color(0xFF16141a).withOpacity(.8),
-      drawer: const NavDrawer(),
-      appBar: AppBar(
-        title: const Text("Galery"),
-        actions: [
-          IconButton(
-            onPressed: () async {
-              showSearch(
-                context: context,
-                delegate: SkinSearchDelegate(),
-              );
-            },
-            icon: const Icon(Icons.search),
-          ),
-        ],
-      ),
+      backgroundColor: const Color(0xFF16141a).withOpacity(.8),
       body: FutureBuilder(
         future: _allSkinsFuture,
         builder: (context, snapshot) {
@@ -60,40 +46,63 @@ class _GaleryPageState extends State<GaleryPage> {
               (a, b) => a.displayName!.compareTo(b.displayName!),
             );
 
-            final provider = Provider.of<WishlistProvider>(context);
+            final provider = Provider.of<ValstoreProvider>(context);
 
-            return ListView.builder(
-              itemCount: skins.length,
-              itemBuilder: (context, index) {
-                bool isStared = staredItems.contains(skins[index]);
-
-                return ListTile(
-                  leading: Hero(
-                    tag: skins[index].displayName!,
-                    child: Image.network(
-                      skins[index].levels![0].displayIcon!,
-                      height: 30,
-                      width: 50,
-                    ),
-                  ),
-                  title: Text(skins[index].displayName ?? "Skin_display_name"),
-                  trailing: IconButton(
-                    onPressed: () {
-                      provider
-                          .toggleWishlist(skins[index].levels![0].uuid ?? "");
-                    },
-                    color: provider
-                            .isInWishlist(skins[index].levels![0].uuid ?? "")
-                        ? Colors.yellow
-                        : Colors.white,
-                    icon: Icon(
-                      !provider.isInWishlist(skins[index].levels![0].uuid ?? "")
-                          ? Icons.star_border
-                          : Icons.star,
-                    ),
-                  ),
-                );
-              },
+            return MediaQuery.removeViewPadding(
+              context: context,
+              removeTop: true,
+              child: Scrollbar(
+                radius: const Radius.circular(2),
+                child: ListView.builder(
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: skins.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      leading: Hero(
+                        tag: skins[index].displayName!,
+                        child: Image.network(
+                          skins[index].levels![0].displayIcon!,
+                          height: 30,
+                          width: 50,
+                        ),
+                      ),
+                      onTap: () async {
+                        try {
+                          final skin = await FireStoreService()
+                              .getSkin(skins[index].levels?[0].uuid);
+                          if (skin != null) {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return SkinDetailPage(skin: skin);
+                                },
+                              ),
+                            );
+                          }
+                        } catch (e) {}
+                      },
+                      title:
+                          Text(skins[index].displayName ?? "Skin_display_name"),
+                      trailing: IconButton(
+                        onPressed: () {
+                          provider.toggleWishlist(
+                              skins[index].levels![0].uuid ?? "");
+                        },
+                        color: provider.isInWishlist(
+                                skins[index].levels![0].uuid ?? "")
+                            ? Colors.yellow
+                            : Colors.white,
+                        icon: Icon(
+                          !provider.isInWishlist(
+                                  skins[index].levels![0].uuid ?? "")
+                              ? Icons.star_border
+                              : Icons.star,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
             );
           } else {
             return ListView.builder(
@@ -146,7 +155,7 @@ class SkinSearchDelegate extends SearchDelegate {
                           ),
                 )
                 .toList();
-            final provider = Provider.of<WishlistProvider>(context);
+            final provider = Provider.of<ValstoreProvider>(context);
             return ListView.builder(
               itemCount: skins.length,
               itemBuilder: (context, index) {
