@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:valstore/models/firebase_skin.dart';
+import 'package:valstore/models/inofficial_api_models.dart';
 import 'package:valstore/models/local_offers.dart';
-import 'package:valstore/models/store_models.dart';
 import 'package:valstore/services/inofficial_valorant_api.dart';
 import 'package:valstore/services/riot_service.dart';
 
@@ -126,15 +126,30 @@ class FireStoreService {
 
         final matches = accessories
             .where(
-              (item) => item.uuid == element.offer?.rewards?[0].itemID,
+              (item) =>
+                  item.uuid == element.offer?.rewards?[0].itemID ||
+                  (item.runtimeType == Gunbuddie &&
+                      (item as Gunbuddie).levels?[0].uuid ==
+                          element.offer?.rewards?[0].itemID),
             )
             .toList();
         for (var match in matches) {
-          await _db.collection("skins").doc(match.uuid).set({
-            "offerId": match.uuid,
-            "name": match.displayName,
-            "icon": match.displayIcon,
-          });
+          if (match.runtimeType == Gunbuddie) {
+            await _db
+                .collection("skins")
+                .doc((match as Gunbuddie).levels?[0].uuid)
+                .set({
+              "offerId": match.uuid,
+              "name": match.displayName,
+              "icon": match.displayIcon,
+            });
+          } else {
+            await _db.collection("skins").doc(match.uuid).set({
+              "offerId": match.uuid,
+              "name": match.displayName,
+              "icon": match.displayIcon,
+            });
+          }
         }
         doc = (await docRef.get());
       }
