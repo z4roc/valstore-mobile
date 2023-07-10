@@ -555,6 +555,25 @@ class RiotService {
 
     return ValApiSkins.fromJson(allSkins);
   }
+
+  static Future<void> recheckNightmarket() async {
+    final nightMarket = await getNightMarket();
+    final prefs = await SharedPreferences.getInstance();
+    if (nightMarket == null) {
+      await prefs.setBool("didNotifyNM", false);
+      return;
+    } else {
+      if (prefs.getBool("didNotifyNM") ?? false) {
+        return;
+      } else {
+        await showNotification(
+          id: Random().nextInt(2000),
+          title: "Night market is back!",
+          body: "The Night Market is available again.",
+        );
+      }
+    }
+  }
 }
 
 Map<String, String> currencies = {

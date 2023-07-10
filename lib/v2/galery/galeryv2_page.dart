@@ -79,7 +79,15 @@ class _GaleryPageState extends State<GaleryPage> {
                               ),
                             );
                           }
-                        } catch (e) {}
+                        } catch (e) {
+                          final snackbar = SnackBar(
+                            content: Text(e.toString()),
+                            backgroundColor: Colors.redAccent,
+                          );
+
+                          Scaffold.of(context)
+                              .showBottomSheet((context) => snackbar);
+                        }
                       },
                       title:
                           Text(skins[index].displayName ?? "Skin_display_name"),

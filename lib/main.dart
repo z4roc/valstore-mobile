@@ -1,5 +1,4 @@
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -34,7 +33,7 @@ void callbackDispatcher() {
           await RiotService.recheckStore();
           break;
         case "NightMarketRenewal":
-          // TODO
+          await RiotService.recheckNightmarket();
           break;
         case "ValStoreBundleRenewal":
           await RiotService.recheckBundle();
@@ -291,7 +290,7 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class Restarter extends StatefulWidget {
-  const Restarter({required this.child});
+  const Restarter({super.key, required this.child});
 
   final Widget child;
 
@@ -327,11 +326,7 @@ class InitialPage extends StatefulWidget {
 class _InitialPageState extends State<InitialPage> {
   late Future<void> _loadPrefs;
 
-  Future<void> initMessaging() async {
-    await FirebaseMessaging.instance.requestPermission();
-    String token = await FirebaseMessaging.instance.getToken() ?? "";
-    //print("token");
-  }
+  Future<void> initMessaging() async {}
 
   @override
   void initState() {
@@ -343,6 +338,7 @@ class _InitialPageState extends State<InitialPage> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
+      future: _loadPrefs,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Scaffold(
@@ -366,7 +362,7 @@ class _InitialPageState extends State<InitialPage> {
           );
         } else {
           return Scaffold(
-            body: Container(
+            body: SizedBox(
               height: double.infinity,
               child: Center(
                 child: Column(
