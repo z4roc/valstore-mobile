@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:valstore/models/firebase_skin.dart';
 import 'package:valstore/models/inofficial_api_models.dart';
 import 'package:valstore/models/local_offers.dart';
 import 'package:valstore/services/inofficial_valorant_api.dart';
 import 'package:valstore/services/riot_service.dart';
+import 'package:valstore/v2/valstore_provider.dart';
 
 import '../models/user_offers.dart';
 
@@ -38,45 +41,57 @@ class FireStoreService {
     }
   }
 
-  Future<void> registerSkin(Offers? offer) async {
-    if (offer == null) {
-      return;
+  Future<FirebaseSkin?> getSkinBySkinId(String skinId) async {
+    var docRef = _db.collection("skins").where("skin_id", isEqualTo: skinId);
+
+    var snapshot = await docRef.get();
+
+    if (snapshot.docs.isEmpty) {
+      return null;
+    } else {
+      return FirebaseSkin.fromJson(snapshot.docs.first.data());
     }
-
-    final allItems = await RiotService.getAllSkins();
-
-    final match = allItems!.data!.where((item) {
-      return item.levels?.first.uuid == offer.offerID!;
-    }).first;
-
-    FirebaseSkin newSkin = FirebaseSkin(
-        icon: match.displayIcon,
-        chromas: match.chromas as List<Chroma>,
-        contentTier: ContentTier());
   }
 
-  final contentiers = {
-    875: {
-      "name": "Select",
-      "icon":
-          "https://media.valorant-api.com/contenttiers/12683d76-48d7-84a3-4e09-6985794f0445/displayicon.png",
-    },
-    1275: {
-      "name": "Deluxe",
-      "icon":
-          "https://media.valorant-api.com/contenttiers/0cebb8be-46d7-c12a-d306-e9907bfc5a25/displayicon.png"
-    },
-    1775: {
-      "name": "Premium",
-      "icon":
-          "https://media.valorant-api.com/contenttiers/60bca009-4182-7998-dee7-b8a2558dc369/displayicon.png"
-    },
-    2175: {
-      "name": "Exclusive",
-      "icon":
-          "https://media.valorant-api.com/weaponskinlevels/09fded5d-4add-00e7-d3c4-32b8f21c7944/displayicon.png"
-    },
-  };
+  Future<FirebaseSkin> registerSkin(FirebaseSkin skin) async {
+    final allSkin = await RiotService.getAllSkins();
+
+    final match = allSkin?.data
+        ?.where((adSkin) => adSkin.uuid == skin.skinId)
+        .firstOrNull;
+
+    if (match != null) {
+      skin.offerId = match.levels?[0].uuid;
+      skin.levels = match.levels
+          ?.map((e) => Level(
+                uuid: e.uuid,
+                displayIcon: e.displayIcon,
+                displayName: e.displayName,
+                assetPath: e.assetPath,
+                levelItem: e.levelItem,
+                streamedVideo: e.streamedVideo,
+              ))
+          .toList();
+      skin.chromas = match.chromas
+          ?.map(
+            (e) => Chroma(
+              uuid: e.uuid,
+              displayIcon: e.displayIcon,
+              displayName: e.displayName,
+              assetPath: e.assetPath,
+              fullRender: e.fullRender,
+              swatch: e.swatch,
+              streamedVideo: e.streamedVideo,
+            ),
+          )
+          .toList();
+      final docRef = _db.collection("skins").doc(skin.offerId);
+
+      await docRef.set(skin.toJson());
+    }
+
+    return skin;
+  }
 
   Future<void> addSkinToUserWishlist(String uuid, String offerId) async {
     var docRef = _db.collection("users").doc(uuid);

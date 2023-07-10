@@ -37,7 +37,7 @@ class _StorePageState extends State<StorePage> {
   void initState() {
     super.initState();
     _storeTimer = RiotService.getStoreTimer();
-    _shop = RiotService.getStore(sortOption);
+    _shop = RiotService.getStore();
     BannerAd(
       size: AdSize.banner,
       adUnitId: AdHelper.storeBannerAdUnitId,
@@ -93,7 +93,7 @@ class _StorePageState extends State<StorePage> {
                       () => setState(() {
                             RiotService.playerShop = null;
                             sortOption = 0;
-                            _shop = RiotService.getStore(sortOption);
+                            _shop = RiotService.getStore();
                           }));
 
                   final dif = val.difference(DateTime.now()).inHours / 24;
@@ -161,7 +161,7 @@ class _StorePageState extends State<StorePage> {
             setState(() {
               RiotService.playerShop = null;
               sortOption = 0;
-              _shop = RiotService.getStore(sortOption);
+              _shop = RiotService.getStore();
               _storeTimer = RiotService.getStoreTimer();
             });
           },
@@ -310,7 +310,7 @@ class StoreItemTile extends StatelessWidget {
                         softWrap: false,
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
-                          fontSize: 20,
+                          fontSize: 18,
                           color: Colors.white.withOpacity(.95),
                         ),
                       ),

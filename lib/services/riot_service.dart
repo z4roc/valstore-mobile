@@ -2,11 +2,13 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart';
 import 'package:jwt_decode/jwt_decode.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:valstore/models/auth.dart';
 import 'package:valstore/models/firebase_skin.dart';
+import 'package:valstore/models/loadout.dart';
 import 'package:valstore/models/local_offers.dart';
 import 'package:valstore/models/night_market_model.dart';
 import 'package:valstore/models/player_inventory.dart';
@@ -34,6 +36,7 @@ class RiotService {
   static String entitlements = "";
   static String cookies = "";
   static String userId = "";
+  static List<PlayerLoadoutItem>? playerLoadout;
 
   static late List<Cookie>? authCookies = null;
   static late Player user;
@@ -78,15 +81,76 @@ class RiotService {
   static Future<void> recheckStore() async {
     await reuathenticateUser();
 
-    final store = await getStore(0);
+    final store = await getStore();
 
     final wishlist = await FireStoreService().getUserWishlist(userId);
 
     for (var element in store.skins) {
       if (wishlist.contains(element.offerId)) {
-        showNotification(
-          title: "Skin arrived!",
-          body: "${element.name} is available in your shop",
+        final imageReq = await get(Uri.parse(element.icon!));
+
+        BigPictureStyleInformation bigPictureStyleInformation =
+            BigPictureStyleInformation(
+          ByteArrayAndroidBitmap(imageReq.bodyBytes),
+          contentTitle: element.name,
+        );
+
+        await notifications.show(
+          Random().nextInt(2000),
+          "Skin arrived!",
+          "${element.name} is available in your shop",
+          NotificationDetails(
+            android: AndroidNotificationDetails(
+              "high_importance_channel",
+              "High Importance notifications",
+              importance: Importance.max,
+              styleInformation: bigPictureStyleInformation,
+            ),
+          ),
+        );
+      }
+    }
+  }
+
+  static Future<void> recheckBundle() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    final bundleUid = prefs.getString("currentBundle");
+
+    final bundle = await getUserOffers();
+
+    final newBundleId = bundle.featuredBundle?.bundle?.dataAssetID;
+
+    if (bundleUid != newBundleId) {
+      if (newBundleId != null) {
+        await prefs.setString("currentBundle", newBundleId);
+
+        final bundleData = await get(
+            Uri.parse("https://valorant-api.com/v1/bundles/$newBundleId"));
+
+        final bundleImage = await get(Uri.parse(
+            "https://media.valorant-api.com/bundles/$newBundleId/displayicon.png"));
+
+        final bundleName = jsonDecode(bundleData.body)['data']['displayName'];
+
+        BigPictureStyleInformation bigPictureStyleInformation =
+            BigPictureStyleInformation(
+          ByteArrayAndroidBitmap(bundleImage.bodyBytes),
+          contentTitle: bundleName,
+        );
+
+        await notifications.show(
+          Random().nextInt(2000),
+          "New Bundle Available!",
+          "The $bundleName Bundle is now available for purchase",
+          NotificationDetails(
+            android: AndroidNotificationDetails(
+              "high_importance_channel",
+              "High Importance notifications",
+              importance: Importance.max,
+              styleInformation: bigPictureStyleInformation,
+            ),
+          ),
         );
       }
     }
@@ -123,81 +187,91 @@ class RiotService {
     RiotService.accessToken =
         auth.response?.parameters?.uri?.split('=')[1].split('&')[0] ??
             RiotService.accessToken;
-    //var client = http.Client();
     await getEntitlements();
     getUserId();
-    await RiotService.getUserData();
-    /*var request = http.Request("HEAD", Uri.parse(loginUrl));
-    
-    request.headers['cookie'] = authCookies!
-        .map((cookie) => "${cookie.name}=${cookie.value}")
-        .join("; ");
-
-    request.headers['Content-Type'] = "appliaction/json";
-
-    request.followRedirects = false;
-
-    request.body = json.encode({
-      'client_id': "play-valorant-web-prod",
-      'nonce': 1,
-      'redirect_uri': "https://playvalorant.com/opt_in",
-      'response_type': "token id_token",
-      'scope': "account ban link lol offline_access openid"
-    });
-
-    
-
-    final cookieJar = CookieJar();
-
-    cookieJar.saveFromResponse(
-        Uri.parse("https://auth.riotgames.com"),
-        authCookies!
-            .where(
-                (element) => element.name == "ssid" || element.name == "tdid")
-            .toList());
-
-    dio.interceptors.add(CookieManager(cookieJar));
-
-    //final temp = await cookieJar.loadForRequest(Uri.parse(loginUrl));
-    dio.options.followRedirects = false;
-
-    dio.options.headers['cookie'] = authCookies!
-        .map((cookie) => "${cookie.name}=${cookie.value}")
-        .join("; ");
-
-    final dioRequest = await dio.get(loginUrl);
-
-    //var response = await client.send(request);
-
-    /*if (response.statusCode == 200) {
-      print(response.stream.toString());
-    }*/
-
-    print(dioRequest.headers['set-cookie']);
-
-    if (dioRequest.isRedirect) {
-      print(dioRequest.headers['location']);
-    }*/
+    //await RiotService.getUserData();
   }
 
-  Future<String> getPlayerLadout() async {
-    return "";
+  static Future<Loadout> getPlayerLadout() async {
+    final request = await get(
+      Uri.parse(
+          "https://pd.$region.a.pvp.net/personalization/v2/players/$userId/playerloadout"),
+      headers: {
+        'X-Riot-Entitlements-JWT': entitlements,
+        'Authorization': 'Bearer $accessToken'
+      },
+    );
+
+    final loadoutJson = jsonDecode(request.body);
+
+    final loadout = Loadout.fromJson(loadoutJson);
+
+    return loadout;
   }
 
-  static Future<PlayerShop> getStore(int sort) async {
-    if (playerShop != null) {
-      if (sort == 1) {
-        playerShop!.skins.sort((a, b) {
-          return b.cost! - a.cost!;
-        });
-      } else if (sort == 2) {
-        playerShop!.skins.sort(
-            (a, b) => a.name!.toLowerCase().compareTo(b.name!.toLowerCase()));
-      }
-      return playerShop!;
+  static Future<List<PlayerLoadoutItem>> getPlayerEquipedSkins() async {
+    if (playerLoadout != null) {
+      return playerLoadout!;
     }
 
-    final test = accessToken;
+    final loadout = await getPlayerLadout();
+
+    final allSkins = await getAllSkins();
+
+    List<PlayerLoadoutItem> skins = [];
+
+    for (var item in loadout.guns ?? <Guns>[]) {
+      final fbSkin =
+          await FireStoreService().getSkinBySkinId(item.skinID ?? "");
+
+      FirebaseSkin skin;
+
+      if (fbSkin == null) {
+        final match =
+            allSkins?.data?.where((s) => s.uuid == item.skinID).firstOrNull;
+
+        skin = FirebaseSkin(
+          name: match?.displayName,
+          icon: match?.displayIcon,
+        );
+
+        skin.levels = match?.levels
+            ?.map((e) => Level(
+                  uuid: e.uuid,
+                  displayIcon: e.displayIcon,
+                  displayName: e.displayName,
+                  assetPath: e.assetPath,
+                  levelItem: e.levelItem,
+                  streamedVideo: e.streamedVideo,
+                ))
+            .toList();
+        skin.chromas = match?.chromas
+            ?.map(
+              (e) => Chroma(
+                uuid: e.uuid,
+                displayIcon: e.displayIcon,
+                displayName: e.displayName,
+                assetPath: e.assetPath,
+                fullRender: e.fullRender,
+                swatch: e.swatch,
+                streamedVideo: e.streamedVideo,
+              ),
+            )
+            .toList();
+      } else {
+        skin = fbSkin;
+      }
+
+      skins.add(PlayerLoadoutItem(gun: item, skin: skin));
+    }
+    playerLoadout = skins;
+    return skins;
+  }
+
+  static Future<PlayerShop> getStore() async {
+    if (playerShop != null) {
+      return playerShop!;
+    }
 
     final shopRequest = await get(
       Uri.parse(storeUri),
@@ -213,13 +287,6 @@ class RiotService {
     final shopRemains = allShopJson['SkinsPanelLayout']
         ['SingleItemOffersRemainingDurationInSeconds'];
 
-    /*final offerRequest = await get(
-      Uri.parse("https://api.henrikdev.xyz/valorant/v2/store-offers"),
-    );
-
-    StoreOffers storeOffers =
-        StoreOffers.fromJson(jsonDecode(offerRequest.body));*/
-
     List<FirebaseSkin> shop = [];
 
     for (var item in playerStoreJson) {
@@ -230,22 +297,6 @@ class RiotService {
         shop.add(FirebaseSkin());
       }
     }
-
-    /*for (var offer in playerStoreJson) {
-      var offerData = await get(
-        Uri.parse("https://valorant-api.com/v1/weapons/skinlevels/$offer"),
-      );
-      shop.add(json.decode(offerData.body)['data']);
-    }*/
-    if (sort == 1) {
-      shop.sort((a, b) {
-        return b.cost! - a.cost!;
-      });
-    } else if (sort == 2) {
-      shop.sort(
-          (a, b) => a.name!.toLowerCase().compareTo(b.name!.toLowerCase()));
-    }
-
     playerShop = PlayerShop(storeRemaining: shopRemains, skins: shop);
     return playerShop!;
   }
@@ -331,14 +382,21 @@ class RiotService {
     return shopRemains;
   }
 
-  static Future<Player> getUserData() async {
-    /*final pInfoRequest = await get(
-      Uri.parse("https://auth.riotgames.com/userinfo"),
+  static Future<int?> getPlayerLevel() async {
+    final xpRequest = await get(
+      Uri.parse("https://pd.$region.a.pvp.net/account-xp/v1/players/$userId"),
       headers: {
-        'Authorization': 'Bearer $accessToken',
+        'X-Riot-Entitlements-JWT': entitlements,
+        'Authorization': 'Bearer $accessToken'
       },
-    );*/
+    );
 
+    final progress = PlayerXP.fromJson(jsonDecode(xpRequest.body));
+
+    return progress.progress?.level ?? 0;
+  }
+
+  static Future<Player> getUserData() async {
     final userRequest = await put(
       Uri.parse("https://pd.$region.a.pvp.net/name-service/v2/players"),
       headers: {
@@ -353,11 +411,6 @@ class RiotService {
 
     final userResult = json.decode(userRequest.body);
 
-    final bannerRequest = await get(
-      Uri.parse(
-          'https://api.henrikdev.xyz/valorant/v1/account/${userResult[0]['GameName']}/${userResult[0]['TagLine']}'),
-    );
-
     final balanceRequest = await get(
       Uri.parse("https://pd.$region.a.pvp.net/store/v1/wallet/$userId/"),
       headers: {
@@ -367,10 +420,25 @@ class RiotService {
     );
 
     try {
-      final resultJson = json.decode(bannerRequest.body)['data'];
+      final loadOut = await getPlayerLadout();
       final balanceResult = json.decode(balanceRequest.body);
-
-      PlayerInfo info = PlayerInfo.fromJson(resultJson);
+      final accountLevel = await getPlayerLevel();
+      PlayerInfo info = PlayerInfo(
+        accountLevel: accountLevel ?? 0,
+        card: Card(
+          id: loadOut.identity?.playerCardID ?? "",
+          small:
+              "https://media.valorant-api.com/playercards/${loadOut.identity?.playerCardID}/smallart.png",
+          wide:
+              "https://media.valorant-api.com/playercards/${loadOut.identity?.playerCardID}/wideart.png",
+          large:
+              "https://media.valorant-api.com/playercards/${loadOut.identity?.playerCardID}/largeart.png",
+        ),
+        name: userResult[0]['GameName'],
+        tag: userResult[0]['TagLine'],
+        puuid: userResult[0]['Subject'],
+        region: RiotService.region,
+      );
 
       final levelBorder = (await InofficialValorantAPI().getLevelBorders())
           .borders

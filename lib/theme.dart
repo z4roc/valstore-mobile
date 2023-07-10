@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 ThemeData light = ThemeData(
+  useMaterial3: true,
   brightness: Brightness.dark,
   fontFamily: GoogleFonts.nunito().fontFamily,
   textTheme: const TextTheme(),

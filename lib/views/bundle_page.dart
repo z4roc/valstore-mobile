@@ -221,8 +221,8 @@ class _BundlePageState extends State<BundlePage> {
                                                     )
                                                     .first;
 
-                                            await FireStoreService()
-                                                .registerSkin(localSkin);
+                                            //await FireStoreService()
+                                            //.registerSkin(localSkin);
                                           }
                                         },
                                         child: Padding(

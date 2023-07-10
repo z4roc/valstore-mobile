@@ -63,6 +63,7 @@ dependencies:
   google_fonts: ^4.0.4
   google_nav_bar: ^5.0.6
   cached_network_image: ^3.2.3
+  firebase_auth: ^4.6.3
 
 dev_dependencies:
   change_app_package_name: ^1.1.0

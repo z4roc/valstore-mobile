@@ -18,7 +18,7 @@ class _PlayerShopPageState extends State<PlayerShopPage> {
   @override
   void initState() {
     super.initState();
-    _storeFuture = RiotService.getStore(0);
+    _storeFuture = RiotService.getStore();
   }
 
   @override

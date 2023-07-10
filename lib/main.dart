@@ -3,6 +3,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,35 +13,36 @@ import 'package:valstore/services/notifcation_service.dart';
 import 'package:valstore/services/riot_service.dart';
 import 'package:valstore/theme.dart';
 import 'package:valstore/v2/valstore_provider.dart';
-import 'package:valstore/wishlist_provider.dart';
 import 'package:workmanager/workmanager.dart';
-
-@pragma("vm:entry-point")
-Future<void> onBackgroundMessage(RemoteMessage message) async {
-  if (Firebase.apps.isEmpty) {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-  }
-  RiotService.recheckStore();
-}
 
 @pragma("vm:entry-point")
 void callbackDispatcher() {
   Workmanager().executeTask((taskName, inputData) async {
-    /*await showNotification(
-      title: "Store check executed",
-      body: "Store checked",
-    );*/
     try {
       if (notifications == null) notifications.initialize(initSettings);
       if (Firebase.apps.isEmpty) {
         await Firebase.initializeApp(
+          name: "notification",
           options: DefaultFirebaseOptions.currentPlatform,
         );
+      } else {
+        Firebase.app();
       }
 
-      await RiotService.recheckStore();
+      switch (taskName) {
+        case "ValStoreStoreRenewal":
+          await RiotService.recheckStore();
+          break;
+        case "NightMarketRenewal":
+          // TODO
+          break;
+        case "ValStoreBundleRenewal":
+          await RiotService.recheckBundle();
+          break;
+        default:
+      }
+
+      //await RiotService.recheckStore();
 
       return Future.value(true);
     } catch (e) {
@@ -54,15 +56,18 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   notifications.initialize(initSettings);
   MobileAds.instance.initialize();
+
   if (Firebase.apps.isEmpty) {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
+  } else {
+    Firebase.app();
   }
+
   SystemChrome.setPreferredOrientations(
     [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
   );
-  FirebaseMessaging.onBackgroundMessage(onBackgroundMessage);
   Workmanager().initialize(callbackDispatcher, isInDebugMode: kDebugMode);
 
   runApp(const MyApp());
@@ -103,14 +108,19 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> loadPrefs() async {
     prefs = await SharedPreferences.getInstance();
+    //await prefs.clear();
     bool? login = prefs.getBool('login');
     prefs = await SharedPreferences.getInstance();
     String? cookie = prefs.getString("cookie");
     String? region = prefs.getString("region");
     if (cookie != null && region != null && login != null && login) {
-      await RiotService.reuathenticateUser();
-      navigatorKey.currentState!.pushNamed("/store");
-    } else if (login != null && login) {
+      try {
+        await RiotService.reuathenticateUser();
+        navigatorKey.currentState!.pushNamed("/store");
+      } catch (e) {
+        navigatorKey.currentState!.pushNamed("/login");
+      }
+    } else if (login != null && !login) {
       navigatorKey.currentState!.pushNamed("/login");
     } else if (region == null) {
       navigatorKey.currentState!.pushNamed("/region");
@@ -243,6 +253,31 @@ class _HomeScreenState extends State<HomeScreen> {
                             (states) => Colors.red),
                       ),
                       const Text('Automatically sign me in next time'),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: TextButton(
+                          onPressed: () {},
+                          child: const Row(
+                            children: [
+                              Icon(FontAwesomeIcons.github, size: 22),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Text("Source code"),
+                            ],
+                          ),
+                          style: TextButton.styleFrom(
+                            iconColor: Colors.grey,
+                            foregroundColor: Colors.grey,
+                          ),
+                        ),
+                      ),
                     ],
                   )
                 ],

@@ -1,4 +1,5 @@
 import 'package:valstore/main.dart';
+import 'package:valstore/v2/galery/favorites_page.dart';
 import 'package:valstore/v2/shops/shops_page.dart';
 import 'package:valstore/views/about_page.dart';
 import 'package:valstore/views/bundle_page.dart';
@@ -18,4 +19,5 @@ final routes = {
   '/about': (context) => const AboutPage(),
   '/galery': (context) => const GaleryPage(),
   '/inventory': (context) => const InventoryPage(),
+  '/favorites': (context) => const FavoritesPage(),
 };

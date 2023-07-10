@@ -4,9 +4,7 @@ import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:provider/provider.dart';
-import 'package:valstore/main.dart';
 import 'package:valstore/models/valstore.dart';
-import 'package:valstore/services/riot_service.dart';
 import 'package:valstore/v2/galery/favorites_page.dart';
 import 'package:valstore/v2/galery/galeryv2_page.dart';
 import 'package:valstore/v2/settings/settings_page.dart';
@@ -14,10 +12,10 @@ import 'package:valstore/v2/shops/accessory_store.dart';
 import 'package:valstore/v2/shops/night_market_page.dart';
 import 'package:valstore/v2/shops/player_shop_page.dart';
 import 'package:valstore/v2/valstore_provider.dart';
-import 'package:valstore/views/bundle_page.dart';
 
 import '../../circle_painter.dart';
 import '../account/account_page.dart';
+import 'bundle_pagev2.dart';
 
 class ShopsPage extends StatefulWidget {
   const ShopsPage({super.key});

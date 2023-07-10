@@ -13,7 +13,7 @@ class ValstoreProvider extends ChangeNotifier {
     RiotService.userOffers = await RiotService.getUserOffers();
 
     _instance = Valstore(
-      playerShop: await RiotService.getStore(0),
+      playerShop: await RiotService.getStore(),
       player: await RiotService.getUserData(),
       bundles: await RiotService.getCurrentBundle(),
       playerInventory: await RiotService.getUserOwnedItems(),

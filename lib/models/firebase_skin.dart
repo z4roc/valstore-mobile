@@ -52,8 +52,9 @@ class FirebaseSkin {
         'name': name,
         'offer_id': offerId,
         'skin_id': skinId,
-        'chromas': chromas,
-        'content_tier': contentTier,
+        'levels': levels?.map((e) => e.toJson()),
+        'chromas': chromas?.map((e) => e.toJson()),
+        'content_tier': contentTier?.toJson(),
         'cost': cost,
         'icon': icon,
       };
@@ -71,6 +72,12 @@ class ContentTier {
     color = json['color'];
     icon = json['icon'];
   }
+
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'color': color,
+        'icon': icon,
+      };
 }
 
 class Chroma {
@@ -100,6 +107,16 @@ class Chroma {
     swatch = json['swatch'];
     uuid = json['uuid'];
   }
+
+  Map<String, dynamic> toJson() => {
+        'assetPath': assetPath,
+        'displayIcon': displayIcon,
+        'displayName': displayName,
+        'fullRender': fullRender,
+        'streamedVideo': streamedVideo,
+        'swatch': swatch,
+        'uuid': uuid,
+      };
 }
 
 class Level {
@@ -129,4 +146,13 @@ class Level {
     swatch = json['swatch'];
     uuid = json['uuid'];
   }
+
+  Map<String, dynamic> toJson() => {
+        'assetPath': assetPath,
+        'displayIcon': displayIcon,
+        'displayName': displayName,
+        'streamedVideo': streamedVideo,
+        'swatch': swatch,
+        'uuid': uuid,
+      };
 }

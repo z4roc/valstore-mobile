@@ -220,7 +220,7 @@ Widget newTile(Data skin) {
 }
 
 Widget itemTile(Data skin) {
-  Color color = const Color(0xFF16141a).withOpacity(.8);
+  //Color color = const Color(0xFF16141a).withOpacity(.8);
 
   return GestureDetector(
     onTap: () async {
@@ -233,13 +233,8 @@ Widget itemTile(Data skin) {
     },
     child: Container(
       decoration: const BoxDecoration(
-        //color: color,
-        border: Border(
-          bottom: BorderSide(
-            color: Color.fromARGB(255, 75, 72, 82),
+          //color: color,
           ),
-        ),
-      ),
       height: 150,
       child: Card(
         elevation: 2,

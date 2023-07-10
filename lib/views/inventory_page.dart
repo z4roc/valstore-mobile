@@ -16,15 +16,11 @@ class _InventoryPageState extends State<InventoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //backgroundColor: color,
-      drawer: const NavDrawer(),
-      appBar: AppBar(
-        title: const Text("Inventory"),
-      ),
       body: FutureBuilder(
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return ListView.builder(
+              physics: const BouncingScrollPhysics(),
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
                 final skin = snapshot.data![index];

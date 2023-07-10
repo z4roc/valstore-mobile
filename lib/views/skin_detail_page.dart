@@ -66,7 +66,9 @@ class _SkinDetailPageState extends State<SkinDetailPage> {
                     ),
                   ),
                   const Spacer(),
-                  skin.chromas!.isEmpty ? const SizedBox() : displayRP(15),
+                  skin.chromas?.isEmpty ?? false
+                      ? const SizedBox()
+                      : displayRP(15),
                 ],
               ),
               const SizedBox(
@@ -102,7 +104,7 @@ class _SkinDetailPageState extends State<SkinDetailPage> {
                                 Padding(
                                   padding:
                                       const EdgeInsets.fromLTRB(5, 5, 0, 10),
-                                  child: skin.name! !=
+                                  child: skin.name !=
                                           skin.chromas![index].displayName!
                                       ? Text(
                                           skin.chromas![index].displayName!
@@ -191,7 +193,7 @@ class _SkinDetailPageState extends State<SkinDetailPage> {
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: indicators(skin.chromas!.length, activePage),
+                children: indicators(skin.chromas?.length, activePage),
               ),
               const SizedBox(
                 height: 10,
