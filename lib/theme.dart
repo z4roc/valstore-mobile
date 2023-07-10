@@ -1,25 +1,43 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 ThemeData light = ThemeData(
-  brightness: Brightness.light,
+  useMaterial3: true,
+  brightness: Brightness.dark,
+  fontFamily: GoogleFonts.nunito().fontFamily,
+  textTheme: const TextTheme(),
   appBarTheme: const AppBarTheme(
-    backgroundColor: Colors.red,
-    centerTitle: true,
+    backgroundColor: Color(0xFF16141a),
+    centerTitle: false,
+    elevation: 1,
   ),
+  primaryColor: Color(0xff4655),
+  scaffoldBackgroundColor: Color.fromARGB(0, 37, 37, 52).withOpacity(.5),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
       minimumSize: const Size.fromHeight(50),
-      backgroundColor: Colors.red,
+      backgroundColor: Color.fromARGB(255, 255, 70, 85),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(10),
       ),
+      textStyle: const TextStyle(
+        fontWeight: FontWeight.w700,
+        fontSize: 20,
+      ),
+      elevation: 2,
     ),
+  ),
+  drawerTheme: const DrawerThemeData(
+    backgroundColor: Color(0xFF16141a),
+  ),
+  progressIndicatorTheme: const ProgressIndicatorThemeData(
+    color: Color.fromARGB(255, 255, 70, 85),
   ),
 );
 
-ThemeData dark = ThemeData(
+/*ThemeData dark = ThemeData(
   brightness: Brightness.dark,
   drawerTheme: const DrawerThemeData(
     backgroundColor: Color(0xFF16141a),
@@ -40,7 +58,7 @@ ThemeData dark = ThemeData(
   progressIndicatorTheme: const ProgressIndicatorThemeData(
     color: Colors.red,
   ),
-);
+);*/
 
 class ThemeProvider extends ChangeNotifier {
   ThemeMode themeMode = ThemeMode.dark;

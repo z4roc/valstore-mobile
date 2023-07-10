@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:valstore/flyout_nav.dart';
+import 'package:valstore/services/notifcation_service.dart';
+import 'package:valstore/shared/flyout_nav.dart';
+import 'package:valstore/shared/loading.dart';
+import 'package:workmanager/workmanager.dart';
+
+import '../services/riot_service.dart';
 
 class AboutPage extends StatefulWidget {
   const AboutPage({super.key});
@@ -11,6 +18,22 @@ class AboutPage extends StatefulWidget {
 }
 
 class _AboutPageState extends State<AboutPage> {
+  bool _notificationsOn = false;
+
+  @override
+  void initState() {
+    initPref();
+    super.initState();
+  }
+
+  Future<void> initPref() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      _notificationsOn = prefs.getBool("notify") ?? false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,36 +41,25 @@ class _AboutPageState extends State<AboutPage> {
         title: const Text('About'),
       ),
       drawer: const NavDrawer(),
-      backgroundColor: const Color(0xFF16141a).withOpacity(.8),
+      //backgroundColor: Color.fromARGB(0, 37, 37, 52).withOpacity(.5),
       body: SingleChildScrollView(
         child: Container(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(10),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
-                "Contact me",
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
               ListTile(
                 leading: const FaIcon(
                   FontAwesomeIcons.discord,
                   size: 30,
                 ),
                 title: const Text("Discord"),
-                subtitle: const Text("ZAROC#2375"),
                 onTap: () async {
                   await launchUrl(
                     Uri.parse(
-                      "https://discord.zaroc.de",
+                      "https://discord.gg/usS8XgVYnF",
                     ),
                     mode: LaunchMode.externalApplication,
                   );
@@ -59,7 +71,6 @@ class _AboutPageState extends State<AboutPage> {
                   size: 30,
                 ),
                 title: const Text("Twitter"),
-                subtitle: const Text(""),
                 onTap: () async {
                   await launchUrl(
                     Uri.parse(
@@ -75,7 +86,6 @@ class _AboutPageState extends State<AboutPage> {
                   size: 30,
                 ),
                 title: const Text("Instagram"),
-                subtitle: const Text(""),
                 onTap: () async {
                   await launchUrl(
                     Uri.parse(
@@ -85,26 +95,13 @@ class _AboutPageState extends State<AboutPage> {
                   );
                 },
               ),
-              const SizedBox(
-                height: 10,
-              ),
-              const Text(
-                "Source code",
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
               ListTile(
                 leading: const FaIcon(
                   FontAwesomeIcons.github,
                   size: 30,
                 ),
-                title: const Text("Github"),
-                subtitle: const Text("Public repository"),
+                title: const Text("Docs"),
+                subtitle: const Text("Source Code"),
                 onTap: () async {
                   await launchUrl(
                     Uri.parse(
@@ -114,26 +111,12 @@ class _AboutPageState extends State<AboutPage> {
                   );
                 },
               ),
-              const SizedBox(
-                height: 10,
-              ),
-              const Text(
-                "Donate",
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
               ListTile(
                 leading: const FaIcon(
-                  FontAwesomeIcons.mugSaucer,
+                  FontAwesomeIcons.circleDollarToSlot,
                   size: 30,
                 ),
-                title: const Text("Ko-fi"),
-                subtitle: const Text("Make future projects possible"),
+                title: const Text("Donate"),
                 onTap: () async {
                   await launchUrl(
                     Uri.parse(
@@ -145,6 +128,61 @@ class _AboutPageState extends State<AboutPage> {
               ),
               const SizedBox(
                 height: 10,
+              ),
+              const Text(
+                "Credits",
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              ListTile(
+                leading: const FaIcon(
+                  FontAwesomeIcons.github,
+                  size: 30,
+                ),
+                title: const Text("@techchrism"),
+                subtitle: const Text("valorant-api-docs"),
+                onTap: () async {
+                  await launchUrl(
+                    Uri.parse(
+                      "https://github.com/techchrism/valorant-api-docs",
+                    ),
+                    mode: LaunchMode.externalApplication,
+                  );
+                },
+              ),
+              ListTile(
+                leading: const FaIcon(
+                  FontAwesomeIcons.github,
+                  size: 30,
+                ),
+                title: const Text("@NotOfficer"),
+                subtitle: const Text("Inofficial Valorant API"),
+                onTap: () async {
+                  await launchUrl(
+                    Uri.parse(
+                      "https://github.com/NotOfficer",
+                    ),
+                    mode: LaunchMode.externalApplication,
+                  );
+                },
+              ),
+              ListTile(
+                leading: const FaIcon(
+                  FontAwesomeIcons.github,
+                  size: 30,
+                ),
+                title: const Text("@Henrik-3"),
+                subtitle: const Text("unofficial-valorant-api"),
+                onTap: () async {
+                  await launchUrl(
+                    Uri.parse(
+                      "https://github.com/Henrik-3/unofficial-valorant-api",
+                    ),
+                    mode: LaunchMode.externalApplication,
+                  );
+                },
               ),
               const Text(
                 "Other links",
@@ -202,6 +240,54 @@ class _AboutPageState extends State<AboutPage> {
                   ),
                 ),
               ),
+              ListTile(
+                title: const Text("Enable Wishlist notifications"),
+                leading: Switch(
+                  activeColor: Colors.redAccent,
+                  value: _notificationsOn,
+                  onChanged: (value) async {
+                    setState(() {
+                      _notificationsOn = !_notificationsOn;
+                    });
+
+                    final prefs = await SharedPreferences.getInstance();
+                    prefs.setBool("notify", _notificationsOn);
+
+                    if (_notificationsOn) {
+                      notifications
+                          .resolvePlatformSpecificImplementation<
+                              AndroidFlutterLocalNotificationsPlugin>()
+                          ?.requestPermission();
+
+                      Workmanager().registerPeriodicTask(
+                        "storeCheck${DateTime.now().toString()}",
+                        "ValStoreStoreRenewal",
+                        initialDelay: const Duration(
+                          seconds: 5,
+                        ),
+                        backoffPolicy: BackoffPolicy.linear,
+                        frequency: const Duration(
+                          minutes: 15,
+                        ),
+                        constraints: Constraints(
+                          networkType: NetworkType.connected,
+                        ),
+                      );
+                    } else {
+                      Workmanager().cancelAll();
+                    }
+                  },
+                ),
+              ),
+              /*ElevatedButton(
+                onPressed: () async {
+                  await showNotification(
+                    title: "test",
+                    body: "Test notification",
+                  );
+                },
+                child: const Text("Test"),
+              ),*/
             ],
           ),
         ),

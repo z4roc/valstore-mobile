@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:restart_app/restart_app.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:valstore/main.dart';
 import 'package:valstore/services/riot_service.dart';
-import 'package:valstore/theme.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:workmanager/workmanager.dart';
 
 class NavDrawer extends StatelessWidget {
   const NavDrawer({super.key});
@@ -137,7 +137,29 @@ class NavDrawer extends StatelessWidget {
             height: 75,
             padding: const EdgeInsets.fromLTRB(10, 10, 0, 0),
             child: ListTile(
-              leading: const Icon(Icons.info_outline_rounded),
+              leading: const Icon(Icons.list_rounded),
+              title: const Text('Galery'),
+              onTap: () {
+                navigatorKey.currentState!.pushNamed('/galery');
+              },
+            ),
+          ),
+          Container(
+            height: 75,
+            padding: const EdgeInsets.fromLTRB(10, 10, 0, 0),
+            child: ListTile(
+              leading: const Icon(Icons.inventory),
+              title: const Text('Inventory'),
+              onTap: () {
+                navigatorKey.currentState!.pushNamed('/inventory');
+              },
+            ),
+          ),
+          Container(
+            height: 75,
+            padding: const EdgeInsets.fromLTRB(10, 10, 0, 0),
+            child: ListTile(
+              leading: const Icon(Icons.info),
               title: const Text('About'),
               onTap: () {
                 navigatorKey.currentState!.pushNamed('/about');
@@ -173,6 +195,9 @@ class NavDrawer extends StatelessWidget {
                 await WebViewCookieManager().clearCookies();
                 await WebViewController().clearLocalStorage();
                 await WebViewController().reload();
+                final prefs = await SharedPreferences.getInstance();
+                Workmanager().cancelAll();
+                prefs.clear();
                 RiotService.accessToken = "";
                 RiotService.entitlements = "";
                 Restart.restartApp();

@@ -289,7 +289,7 @@ class Bundles {
     totalDiscountedCost = json['TotalDiscountedCost'] != null
         ? new Cost.fromJson(json['TotalDiscountedCost'])
         : null;
-    totalDiscountPercent = json['TotalDiscountPercent'];
+    totalDiscountPercent = double.tryParse("${json['TotalDiscountPercent']}");
     durationRemainingInSeconds = json['DurationRemainingInSeconds'];
     wholesaleOnly = json['WholesaleOnly'];
   }

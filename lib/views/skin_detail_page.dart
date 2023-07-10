@@ -20,7 +20,7 @@ class _SkinDetailPageState extends State<SkinDetailPage> {
     FirebaseSkin skin = widget.skin;
     String image = skin.icon!;
     return Scaffold(
-      backgroundColor: const Color(0xFF16141a).withOpacity(.8),
+      //backgroundColor: const Color(0xFF16141a).withOpacity(.8),
       appBar: AppBar(
         title: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -66,13 +66,15 @@ class _SkinDetailPageState extends State<SkinDetailPage> {
                     ),
                   ),
                   const Spacer(),
-                  skin.chromas!.isEmpty ? const SizedBox() : displayRP(15),
+                  skin.chromas?.isEmpty ?? false
+                      ? const SizedBox()
+                      : displayRP(15),
                 ],
               ),
               const SizedBox(
                 height: 10,
               ),
-              Container(
+              SizedBox(
                 width: MediaQuery.of(context).size.width,
                 height: 250,
                 child: Card(
@@ -102,7 +104,7 @@ class _SkinDetailPageState extends State<SkinDetailPage> {
                                 Padding(
                                   padding:
                                       const EdgeInsets.fromLTRB(5, 5, 0, 10),
-                                  child: skin.name! !=
+                                  child: skin.name !=
                                           skin.chromas![index].displayName!
                                       ? Text(
                                           skin.chromas![index].displayName!
@@ -157,8 +159,8 @@ class _SkinDetailPageState extends State<SkinDetailPage> {
                                         style: TextButton.styleFrom(
                                           foregroundColor: Colors.redAccent,
                                         ),
-                                        child: Row(
-                                          children: const [
+                                        child: const Row(
+                                          children: [
                                             Icon(
                                               Icons.play_arrow_rounded,
                                             ),
@@ -191,7 +193,7 @@ class _SkinDetailPageState extends State<SkinDetailPage> {
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: indicators(skin.chromas!.length, activePage),
+                children: indicators(skin.chromas?.length, activePage),
               ),
               const SizedBox(
                 height: 10,
@@ -217,53 +219,64 @@ class _SkinDetailPageState extends State<SkinDetailPage> {
                 child: ListView.builder(
                   itemCount: skin.levels != null ? skin.levels!.length : 0,
                   itemBuilder: ((context, index) {
-                    return Container(
-                      height: 75,
-                      child: Card(
-                        elevation: 2,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                    return GestureDetector(
+                      onTap: () => navigatorKey.currentState!.push(
+                        MaterialPageRoute(
+                          builder: (context) => VideoPlayerPage(
+                            url: skin.levels![index].streamedVideo!,
+                          ),
                         ),
-                        color: const Color.fromARGB(255, 31, 28, 37),
-                        child: Row(
-                          children: [
-                            const SizedBox(
-                              width: 15,
-                            ),
-                            Text(
-                              skin.levels![index].levelItem != null
-                                  ? skin.levels![index].levelItem!
-                                      .split('::')
-                                      .last
-                                  : 'Base Skin',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w400,
+                      ),
+                      child: SizedBox(
+                        height: 75,
+                        child: Card(
+                          elevation: 2,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          color: const Color.fromARGB(255, 31, 28, 37),
+                          child: Row(
+                            children: [
+                              const SizedBox(
+                                width: 15,
                               ),
-                            ),
-                            const Spacer(),
-                            skin.levels?[index].streamedVideo != null
-                                ? TextButton(
-                                    onPressed: () => navigatorKey.currentState!
-                                        .push(MaterialPageRoute(
-                                      builder: (context) => VideoPlayerPage(
-                                        url: skin.levels![index].streamedVideo!,
-                                      ),
-                                    )),
-                                    style: TextButton.styleFrom(
-                                      foregroundColor: Colors.redAccent,
-                                    ),
-                                    child: Row(
-                                      children: const [
-                                        Icon(
-                                          Icons.play_arrow_rounded,
+                              Text(
+                                skin.levels![index].levelItem != null
+                                    ? skin.levels![index].levelItem!
+                                        .split('::')
+                                        .last
+                                    : 'Base Skin',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                              const Spacer(),
+                              skin.levels?[index].streamedVideo != null
+                                  ? TextButton(
+                                      onPressed: () => navigatorKey
+                                          .currentState!
+                                          .push(MaterialPageRoute(
+                                        builder: (context) => VideoPlayerPage(
+                                          url: skin
+                                              .levels![index].streamedVideo!,
                                         ),
-                                        Text("Video"),
-                                      ],
-                                    ),
-                                  )
-                                : const SizedBox(),
-                          ],
+                                      )),
+                                      style: TextButton.styleFrom(
+                                        foregroundColor: Colors.redAccent,
+                                      ),
+                                      child: const Row(
+                                        children: [
+                                          Icon(
+                                            Icons.play_arrow_rounded,
+                                          ),
+                                          Text("Video"),
+                                        ],
+                                      ),
+                                    )
+                                  : const SizedBox(),
+                            ],
+                          ),
                         ),
                       ),
                     );

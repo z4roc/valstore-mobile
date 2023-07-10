@@ -1,4 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:valstore/services/firebase_auth.dart';
+import 'package:valstore/services/firestore_service.dart';
 import 'package:valstore/views/store.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -22,15 +25,19 @@ class _WebViewPageState extends State<WebViewPage> {
         }
 
         RiotService.accessToken = request.url.split('=')[1].split('&')[0];
-        await RiotService().getEntitlements();
-        RiotService().getUserId();
-        await RiotService().getUserData();
+        await RiotService.getEntitlements();
+        RiotService.getUserId();
+        await RiotService.getUserData();
+        //await RiotService().getUserOwnedItems();
         //await WebViewCookieManager().clearCookies();
-        navigatorKey.currentState!.push(MaterialPageRoute(
-          builder: (context) {
-            return const StorePage();
-          },
-        ));
+
+        await FireStoreService().registerUser(RiotService.userId);
+
+        if (FirebaseAuth.instance.currentUser == null) {
+          await FirebaseAuthService().signInAnonymous();
+        }
+
+        navigatorKey.currentState!.pushNamed("/store");
         return NavigationDecision.prevent;
       },
     ))
