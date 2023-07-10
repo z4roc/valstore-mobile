@@ -1,12 +1,8 @@
-import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:valstore/models/firebase_skin.dart';
 import 'package:valstore/models/inofficial_api_models.dart';
-import 'package:valstore/models/local_offers.dart';
 import 'package:valstore/services/inofficial_valorant_api.dart';
 import 'package:valstore/services/riot_service.dart';
-import 'package:valstore/v2/valstore_provider.dart';
 
 import '../models/user_offers.dart';
 
@@ -107,7 +103,7 @@ class FireStoreService {
     var userDoc = await docRef.get();
 
     final data = ((await userDoc.data()?["wishlist"]) as List)
-        .map((e) => "$e" as String)
+        .map((e) => e as String)
         .toList();
 
     return data;
@@ -172,7 +168,6 @@ class FireStoreService {
       if (doc.data() != null) {
         skins.add(FirebaseSkin.fromJson(doc.data()!));
       }
-      print(element.offer?.rewards?[0].itemID);
     }
 
     for (int i = 0; i < skins.length; i++) {
