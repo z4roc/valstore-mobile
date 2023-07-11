@@ -132,6 +132,7 @@ class _ShopsPageState extends State<ShopsPage> {
                                     ? TimerWidget(dif: dif, time: time)
                                     : const SizedBox(),
                               ),
+                              const Spacer(),
                               AnimatedOpacity(
                                 opacity: _currentIndex == 4 ? 1 : 0,
                                 duration: const Duration(milliseconds: 500),
@@ -181,7 +182,7 @@ class _ShopsPageState extends State<ShopsPage> {
                                 ),
                               ),
                               const SizedBox(
-                                width: 10,
+                                width: 5,
                               ),
                             ],
                           ),
@@ -227,7 +228,7 @@ class TimerWidget extends StatelessWidget {
         const Text(
           "Next update in",
           style: TextStyle(
-            fontSize: 16,
+            fontSize: 15,
           ),
         ),
         const SizedBox(
@@ -237,16 +238,16 @@ class TimerWidget extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.only(
-                left: 20,
+                left: 15,
               ),
               child: Container(
-                height: 20,
-                width: 20,
+                height: 15,
+                width: 15,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
                     color: Colors.white,
-                    width: 3,
+                    width: 2,
                   ),
                 ),
                 child: CustomPaint(
@@ -255,7 +256,7 @@ class TimerWidget extends StatelessWidget {
               ),
             ),
             const SizedBox(
-              width: 10,
+              width: 5,
             ),
             CountdownTimer(
               endTime: time,
@@ -264,9 +265,9 @@ class TimerWidget extends StatelessWidget {
                 fontWeight: FontWeight.w700,
               ),
             ),
-            const SizedBox(
+            /*const SizedBox(
               width: 10,
-            ),
+            ),*/
           ],
         ),
       ],
@@ -334,12 +335,16 @@ class AccountIcon extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(5),
               ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(5),
-                child: CachedNetworkImage(
-                  fit: BoxFit.contain,
-                  imageUrl: valstore.player.playerInfo?.card?.small ??
-                      "https://media.valorant-api.com/playercards/efaf392a-412d-0d4f-4413-ddbdb70d841d/displayicon.png",
+              child: Hero(
+                tag: valstore.player.playerInfo?.card?.small ??
+                    "https://media.valorant-api.com/playercards/efaf392a-412d-0d4f-4413-ddbdb70d841d/displayicon.png",
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(5),
+                  child: CachedNetworkImage(
+                    fit: BoxFit.contain,
+                    imageUrl: valstore.player.playerInfo?.card?.small ??
+                        "https://media.valorant-api.com/playercards/efaf392a-412d-0d4f-4413-ddbdb70d841d/displayicon.png",
+                  ),
                 ),
               ),
             ),
@@ -354,13 +359,15 @@ class AccountIcon extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
-                      child: Text(
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.left,
-                        "${valstore.player.playerInfo?.name ?? ""}#${valstore.player.playerInfo?.tag ?? ""}",
-                        style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
+                      child: Hero(
+                        tag:
+                            "${valstore.player.playerInfo?.name ?? ""}#${valstore.player.playerInfo?.tag ?? ""}",
+                        child: Text(
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.left,
+                          "${valstore.player.playerInfo?.name ?? ""}#${valstore.player.playerInfo?.tag ?? ""}",
+                          style:
+                              Theme.of(context).primaryTextTheme.displayMedium,
                         ),
                       ),
                     ),

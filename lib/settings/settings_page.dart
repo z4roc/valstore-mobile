@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -238,9 +239,11 @@ class _SettingsPageState extends State<SettingsPage> {
         "storeCheck${DateTime.now().toString()}",
         "ValStoreStoreRenewal",
         tag: "ValStoreStoreRenewal",
-        initialDelay: Duration(
-          minutes: getDelayForSync(),
-        ),
+        initialDelay: kDebugMode
+            ? const Duration(seconds: 5)
+            : Duration(
+                minutes: getDelayForSync(),
+              ),
         backoffPolicy: BackoffPolicy.linear,
         frequency: const Duration(
           days: 1,
