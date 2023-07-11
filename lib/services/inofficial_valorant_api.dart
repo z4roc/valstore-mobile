@@ -33,4 +33,8 @@ class InofficialValorantAPI {
       LevelBorders.fromJson(jsonDecode(
           (await get(Uri.parse("https://valorant-api.com/v1/levelborders")))
               .body));
+
+  Future<String> getCurrentVersion() async =>
+      jsonDecode((await get(Uri.parse("https://valorant-api.com/v1/version")))
+          .body)['data']['version'];
 }

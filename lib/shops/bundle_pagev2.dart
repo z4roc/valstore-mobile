@@ -1,15 +1,15 @@
-import 'package:flutter/foundation.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
 import 'package:provider/provider.dart';
-import 'package:valstore/color_extension.dart';
+import 'package:valstore/shared/color_extension.dart';
 import 'package:valstore/models/firebase_skin.dart';
 import 'package:valstore/services/firestore_service.dart';
-import 'package:valstore/services/riot_service.dart';
-import 'package:valstore/v2/valstore_provider.dart';
+import 'package:valstore/shared/loading.dart';
+import 'package:valstore/valstore_provider.dart';
 
-import '../../main.dart';
-import '../../views/skin_detail_page.dart';
+import '../main.dart';
+import '../shared/skin_detail_page.dart';
 
 class BundlePage extends StatefulWidget {
   const BundlePage({super.key});
@@ -37,89 +37,91 @@ class _BundlePageState extends State<BundlePage> {
 
               return Column(
                 children: [
-                  Container(
-                    height: 150,
-                    padding: const EdgeInsets.only(top: 10),
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color:
-                          const Color.fromARGB(255, 37, 34, 41).withOpacity(.8),
-                      image: DecorationImage(
-                        fit: BoxFit.cover,
-                        image: NetworkImage(
-                          bundle?.bundleData?.verticalPromoImage ?? "",
+                  CachedNetworkImage(
+                    placeholder: (context, url) => const BasicItemLoader(),
+                    imageUrl: bundle?.bundleData?.verticalPromoImage ?? "",
+                    imageBuilder: (context, imageProvider) => Container(
+                      height: 150,
+                      padding: const EdgeInsets.only(top: 10),
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 37, 34, 41)
+                            .withOpacity(.8),
+                        image: DecorationImage(
+                          fit: BoxFit.cover,
+                          image: imageProvider,
+                          opacity: .6,
                         ),
-                        opacity: .6,
                       ),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const Spacer(),
-                        Expanded(
-                          child: Text(
-                            bundle?.bundleData?.displayName ?? "",
-                            overflow: TextOverflow.fade,
-                            softWrap: false,
-                            style: const TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.w500,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const Spacer(),
+                          Expanded(
+                            child: Text(
+                              bundle?.bundleData?.displayName ?? "",
+                              overflow: TextOverflow.fade,
+                              softWrap: false,
+                              style: const TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              bundle?.data?.bundlePrice.toString() ?? "",
-                              overflow: TextOverflow.fade,
-                              style: const TextStyle(
-                                fontSize: 20,
-                                color: Colors.white,
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                bundle?.data?.bundlePrice.toString() ?? "",
+                                overflow: TextOverflow.fade,
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.white,
+                                ),
                               ),
-                            ),
-                            const SizedBox(
-                              width: 5,
-                            ),
-                            const Image(
-                              height: 20,
-                              image: NetworkImage(
-                                "https://media.valorant-api.com/currencies/85ad13f7-3d1b-5128-9eb2-7cd8ee0b5741/displayicon.png",
+                              const SizedBox(
+                                width: 5,
                               ),
-                            ),
-                          ],
-                        ),
-                        const Spacer(),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            const Icon(
-                              Icons.timelapse,
-                              size: 20,
-                            ),
-                            const SizedBox(
-                              width: 5,
-                            ),
-                            CountdownTimer(
-                              endTime: DateTime.now().millisecondsSinceEpoch +
-                                  ((bundle?.data?.secondsRemaining ?? 0) *
-                                      1000),
-                            ),
-                            const SizedBox(
-                              width: 10,
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 5,
-                        ),
-                      ],
+                              const Image(
+                                height: 20,
+                                image: NetworkImage(
+                                  "https://media.valorant-api.com/currencies/85ad13f7-3d1b-5128-9eb2-7cd8ee0b5741/displayicon.png",
+                                ),
+                              ),
+                            ],
+                          ),
+                          const Spacer(),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              const Icon(
+                                Icons.timelapse,
+                                size: 20,
+                              ),
+                              const SizedBox(
+                                width: 5,
+                              ),
+                              CountdownTimer(
+                                endTime: DateTime.now().millisecondsSinceEpoch +
+                                    ((bundle?.data?.secondsRemaining ?? 0) *
+                                        1000),
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   ListView.builder(

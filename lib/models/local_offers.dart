@@ -8,25 +8,25 @@ class LocalOffers {
     if (json['Offers'] != null) {
       offers = <Offers>[];
       json['Offers'].forEach((v) {
-        offers!.add(new Offers.fromJson(v));
+        offers!.add(Offers.fromJson(v));
       });
     }
     if (json['UpgradeCurrencyOffers'] != null) {
       upgradeCurrencyOffers = <UpgradeCurrencyOffers>[];
       json['UpgradeCurrencyOffers'].forEach((v) {
-        upgradeCurrencyOffers!.add(new UpgradeCurrencyOffers.fromJson(v));
+        upgradeCurrencyOffers!.add(UpgradeCurrencyOffers.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.offers != null) {
-      data['Offers'] = this.offers!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (offers != null) {
+      data['Offers'] = offers!.map((v) => v.toJson()).toList();
     }
-    if (this.upgradeCurrencyOffers != null) {
+    if (upgradeCurrencyOffers != null) {
       data['UpgradeCurrencyOffers'] =
-          this.upgradeCurrencyOffers!.map((v) => v.toJson()).toList();
+          upgradeCurrencyOffers!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -50,25 +50,25 @@ class Offers {
     offerID = json['OfferID'];
     isDirectPurchase = json['IsDirectPurchase'];
     startDate = json['StartDate'];
-    cost = json['Cost'] != null ? new Cost.fromJson(json['Cost']) : null;
+    cost = json['Cost'] != null ? Cost.fromJson(json['Cost']) : null;
     if (json['Rewards'] != null) {
       rewards = <Rewards>[];
       json['Rewards'].forEach((v) {
-        rewards!.add(new Rewards.fromJson(v));
+        rewards!.add(Rewards.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['OfferID'] = this.offerID;
-    data['IsDirectPurchase'] = this.isDirectPurchase;
-    data['StartDate'] = this.startDate;
-    if (this.cost != null) {
-      data['Cost'] = this.cost!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['OfferID'] = offerID;
+    data['IsDirectPurchase'] = isDirectPurchase;
+    data['StartDate'] = startDate;
+    if (cost != null) {
+      data['Cost'] = cost!.toJson();
     }
-    if (this.rewards != null) {
-      data['Rewards'] = this.rewards!.map((v) => v.toJson()).toList();
+    if (rewards != null) {
+      data['Rewards'] = rewards!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -85,9 +85,9 @@ class Cost {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['85ad13f7-3d1b-5128-9eb2-7cd8ee0b5741'] =
-        this.i85ad13f73d1b51289eb27cd8ee0b5741;
+        i85ad13f73d1b51289eb27cd8ee0b5741;
     return data;
   }
 }
@@ -106,10 +106,10 @@ class Rewards {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['ItemTypeID'] = this.itemTypeID;
-    data['ItemID'] = this.itemID;
-    data['Quantity'] = this.quantity;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['ItemTypeID'] = itemTypeID;
+    data['ItemID'] = itemID;
+    data['Quantity'] = quantity;
     return data;
   }
 }
@@ -129,18 +129,18 @@ class UpgradeCurrencyOffers {
   UpgradeCurrencyOffers.fromJson(Map<String, dynamic> json) {
     offerID = json['OfferID'];
     storefrontItemID = json['StorefrontItemID'];
-    offer = json['Offer'] != null ? new Offers.fromJson(json['Offer']) : null;
+    offer = json['Offer'] != null ? Offers.fromJson(json['Offer']) : null;
     discountedPercent = json['DiscountedPercent'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['OfferID'] = this.offerID;
-    data['StorefrontItemID'] = this.storefrontItemID;
-    if (this.offer != null) {
-      data['Offer'] = this.offer!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['OfferID'] = offerID;
+    data['StorefrontItemID'] = storefrontItemID;
+    if (offer != null) {
+      data['Offer'] = offer!.toJson();
     }
-    data['DiscountedPercent'] = this.discountedPercent;
+    data['DiscountedPercent'] = discountedPercent;
     return data;
   }
 }

@@ -19,9 +19,9 @@ class RegionPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF16141a),
+      backgroundColor: const Color(0xFF16141a),
       appBar: AppBar(
-        backgroundColor: Color(0xFF16141a),
+        backgroundColor: const Color(0xFF16141a),
         elevation: 0,
         title: const Text("Select Region"),
       ),
@@ -95,7 +95,7 @@ class _DropdownButtonExampleState extends State<DropdownButtonExample> {
         (String value) {
           return DropdownMenuItem<String>(
             value: value,
-            child: Container(child: Text(names[value] ?? value)),
+            child: Text(names[value] ?? value),
           );
         },
       ).toList(),

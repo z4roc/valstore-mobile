@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:valstore/shared/flyout_nav.dart';
 import 'package:valstore/main.dart';
 import 'package:valstore/models/firebase_skin.dart';
 import 'package:valstore/services/firestore_service.dart';
 import 'package:valstore/services/riot_service.dart';
-import 'package:valstore/views/night_market_page.dart';
-import 'package:valstore/views/skin_detail_page.dart';
-import 'package:valstore/wishlist_provider.dart';
+import 'package:valstore/valstore_provider.dart';
+import 'package:valstore/shared/skin_detail_page.dart';
 
 import '../models/val_api_skins.dart';
 import '../shared/loading.dart';
@@ -27,29 +25,14 @@ class _GaleryPageState extends State<GaleryPage> {
   @override
   void initState() {
     _allSkinsFuture = RiotService.getAllSkins();
-    WishlistProvider().initWishlist();
+    //WishlistProvider().initWishlist();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //backgroundColor: const Color(0xFF16141a).withOpacity(.8),
-      drawer: const NavDrawer(),
-      appBar: AppBar(
-        title: const Text("Galery"),
-        actions: [
-          IconButton(
-            onPressed: () async {
-              showSearch(
-                context: context,
-                delegate: SkinSearchDelegate(),
-              );
-            },
-            icon: const Icon(Icons.search),
-          ),
-        ],
-      ),
+      backgroundColor: const Color(0xFF16141a).withOpacity(.8),
       body: FutureBuilder(
         future: _allSkinsFuture,
         builder: (context, snapshot) {
@@ -60,40 +43,71 @@ class _GaleryPageState extends State<GaleryPage> {
               (a, b) => a.displayName!.compareTo(b.displayName!),
             );
 
-            final provider = Provider.of<WishlistProvider>(context);
+            final provider = Provider.of<ValstoreProvider>(context);
 
-            return ListView.builder(
-              itemCount: skins.length,
-              itemBuilder: (context, index) {
-                bool isStared = staredItems.contains(skins[index]);
+            return MediaQuery.removeViewPadding(
+              context: context,
+              removeTop: true,
+              child: Scrollbar(
+                radius: const Radius.circular(2),
+                child: ListView.builder(
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: skins.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      leading: Hero(
+                        tag: skins[index].displayName!,
+                        child: Image.network(
+                          skins[index].levels![0].displayIcon!,
+                          height: 30,
+                          width: 50,
+                        ),
+                      ),
+                      onTap: () async {
+                        try {
+                          final skin = await FireStoreService()
+                              .getSkin(skins[index].levels?[0].uuid);
+                          if (skin != null) {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return SkinDetailPage(skin: skin);
+                                },
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          final snackbar = SnackBar(
+                            content: Text(e.toString()),
+                            backgroundColor: Colors.redAccent,
+                          );
 
-                return ListTile(
-                  leading: Hero(
-                    tag: skins[index].displayName!,
-                    child: Image.network(
-                      skins[index].levels![0].displayIcon!,
-                      height: 30,
-                      width: 50,
-                    ),
-                  ),
-                  title: Text(skins[index].displayName ?? "Skin_display_name"),
-                  trailing: IconButton(
-                    onPressed: () {
-                      provider
-                          .toggleWishlist(skins[index].levels![0].uuid ?? "");
-                    },
-                    color: provider
-                            .isInWishlist(skins[index].levels![0].uuid ?? "")
-                        ? Colors.yellow
-                        : Colors.white,
-                    icon: Icon(
-                      !provider.isInWishlist(skins[index].levels![0].uuid ?? "")
-                          ? Icons.star_border
-                          : Icons.star,
-                    ),
-                  ),
-                );
-              },
+                          Scaffold.of(context)
+                              .showBottomSheet((context) => snackbar);
+                        }
+                      },
+                      title:
+                          Text(skins[index].displayName ?? "Skin_display_name"),
+                      trailing: IconButton(
+                        onPressed: () {
+                          provider.toggleWishlist(
+                              skins[index].levels![0].uuid ?? "");
+                        },
+                        color: provider.isInWishlist(
+                                skins[index].levels![0].uuid ?? "")
+                            ? Colors.yellow
+                            : Colors.white,
+                        icon: Icon(
+                          !provider.isInWishlist(
+                                  skins[index].levels![0].uuid ?? "")
+                              ? Icons.star_border
+                              : Icons.star,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
             );
           } else {
             return ListView.builder(
@@ -131,7 +145,7 @@ class SkinSearchDelegate extends SearchDelegate {
   @override
   Widget buildResults(BuildContext context) {
     return Container(
-      color: color,
+      color: const Color(0x00ff4655),
       child: FutureBuilder(
         future: RiotService.getAllSkins(),
         builder: (context, snapshot) {
@@ -146,7 +160,7 @@ class SkinSearchDelegate extends SearchDelegate {
                           ),
                 )
                 .toList();
-            final provider = Provider.of<WishlistProvider>(context);
+            final provider = Provider.of<ValstoreProvider>(context);
             return ListView.builder(
               itemCount: skins.length,
               itemBuilder: (context, index) {
@@ -194,34 +208,12 @@ class SkinSearchDelegate extends SearchDelegate {
   @override
   Widget buildSuggestions(BuildContext context) {
     return Container(
-      color: color,
+      color: const Color(0x00ff4655),
     );
   }
 }
 
-Widget newTile(Data skin) {
-  Color color = const Color.fromARGB(255, 31, 28, 37);
-
-  return ListTile(
-    leading: Hero(
-      tag: skin.displayName!,
-      child: Image.network(
-        skin.levels![0].displayIcon!,
-        height: 30,
-        width: 50,
-      ),
-    ),
-    title: Text(skin.displayName ?? "Skin_display_name"),
-    trailing: IconButton(
-      onPressed: () {},
-      icon: Icon(Icons.star_border),
-    ),
-  );
-}
-
 Widget itemTile(Data skin) {
-  //Color color = const Color(0xFF16141a).withOpacity(.8);
-
   return GestureDetector(
     onTap: () async {
       FirebaseSkin? firebaseSkin =
@@ -233,8 +225,13 @@ Widget itemTile(Data skin) {
     },
     child: Container(
       decoration: const BoxDecoration(
-          //color: color,
+        //color: color,
+        border: Border(
+          bottom: BorderSide(
+            color: Color.fromARGB(255, 75, 72, 82),
           ),
+        ),
+      ),
       height: 150,
       child: Card(
         elevation: 2,

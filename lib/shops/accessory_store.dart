@@ -1,15 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:valstore/color_extension.dart';
 import 'package:valstore/models/user_offers.dart';
-import 'package:valstore/models/valstore.dart';
 import 'package:valstore/services/firestore_service.dart';
 import 'package:valstore/services/riot_service.dart';
-import 'package:valstore/views/store.dart';
-
-import '../../main.dart';
-import '../../models/firebase_skin.dart';
-import '../../views/skin_detail_page.dart';
+import '../models/firebase_skin.dart';
 
 class AccessoryPage extends StatefulWidget {
   const AccessoryPage({super.key});
@@ -35,8 +28,6 @@ class _AccessoryPageState extends State<AccessoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    //final items = Provider.of<Valstore>(context);
-
     return Padding(
       padding: const EdgeInsets.all(10),
       child: FutureBuilder(

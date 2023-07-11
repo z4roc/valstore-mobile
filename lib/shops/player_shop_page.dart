@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:valstore/color_extension.dart';
+import 'package:valstore/shared/color_extension.dart';
 import 'package:valstore/models/firebase_skin.dart';
 import 'package:valstore/services/riot_service.dart';
 import 'package:valstore/shared/loading.dart';
-import 'package:valstore/views/store.dart';
+import 'package:valstore/shared/store_item.dart';
 
 class PlayerShopPage extends StatefulWidget {
   const PlayerShopPage({super.key});

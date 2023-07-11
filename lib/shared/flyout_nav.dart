@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:restart_app/restart_app.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:valstore/main.dart';
 import 'package:valstore/services/riot_service.dart';
@@ -200,7 +199,6 @@ class NavDrawer extends StatelessWidget {
                 prefs.clear();
                 RiotService.accessToken = "";
                 RiotService.entitlements = "";
-                Restart.restartApp();
               },
             ),
           ),

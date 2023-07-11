@@ -9,16 +9,16 @@ class Inventory {
     if (json['Entitlements'] != null) {
       entitlements = <Entitlements>[];
       json['Entitlements'].forEach((v) {
-        entitlements!.add(new Entitlements.fromJson(v));
+        entitlements!.add(Entitlements.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['ItemTypeID'] = this.itemTypeID;
-    if (this.entitlements != null) {
-      data['Entitlements'] = this.entitlements!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['ItemTypeID'] = itemTypeID;
+    if (entitlements != null) {
+      data['Entitlements'] = entitlements!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -36,9 +36,9 @@ class Entitlements {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['TypeID'] = this.typeID;
-    data['ItemID'] = this.itemID;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['TypeID'] = typeID;
+    data['ItemID'] = itemID;
     return data;
   }
 }

@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:valstore/services/firebase_auth.dart';
 import 'package:valstore/services/firestore_service.dart';
-import 'package:valstore/views/store.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../main.dart';

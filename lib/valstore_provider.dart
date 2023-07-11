@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:valstore/models/valstore.dart';
 import 'package:valstore/services/riot_service.dart';
 
-import '../services/firestore_service.dart';
+import 'services/firestore_service.dart';
 
 class ValstoreProvider extends ChangeNotifier {
   static late Valstore _instance;

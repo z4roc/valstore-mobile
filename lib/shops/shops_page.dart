@@ -5,15 +5,15 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:valstore/models/valstore.dart';
-import 'package:valstore/v2/galery/favorites_page.dart';
-import 'package:valstore/v2/galery/galeryv2_page.dart';
-import 'package:valstore/v2/settings/settings_page.dart';
-import 'package:valstore/v2/shops/accessory_store.dart';
-import 'package:valstore/v2/shops/night_market_page.dart';
-import 'package:valstore/v2/shops/player_shop_page.dart';
-import 'package:valstore/v2/valstore_provider.dart';
+import 'package:valstore/galery/favorites_page.dart';
+import 'package:valstore/galery/galeryv2_page.dart';
+import 'package:valstore/settings/settings_page.dart';
+import 'package:valstore/shops/accessory_store.dart';
+import 'package:valstore/shops/night_market_page.dart';
+import 'package:valstore/shops/player_shop_page.dart';
+import 'package:valstore/valstore_provider.dart';
 
-import '../../circle_painter.dart';
+import '../shared/circle_painter.dart';
 import '../account/account_page.dart';
 import 'bundle_pagev2.dart';
 
@@ -202,7 +202,7 @@ class _ShopsPageState extends State<ShopsPage> {
               ),
             );
           } else {
-            return Scaffold();
+            return const Scaffold();
           }
         },
       ),
