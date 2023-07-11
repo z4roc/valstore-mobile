@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPlayerPage extends StatefulWidget {
-  const VideoPlayerPage({super.key, required this.url});
+  const VideoPlayerPage({super.key, required this.url, required this.title});
 
   final String url;
+  final String title;
 
   @override
   State<VideoPlayerPage> createState() => _VideoPlayerPageState();
@@ -50,7 +51,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Level Video'),
+        title: Text(widget.title),
       ),
       backgroundColor: const Color(0xFF16141a).withOpacity(.8),
       body: Column(

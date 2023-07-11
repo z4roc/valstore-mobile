@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:valstore/color_extension.dart';
+import 'package:valstore/shared/color_extension.dart';
 import 'package:valstore/services/riot_service.dart';
 
 class LoadOutPage extends StatefulWidget {

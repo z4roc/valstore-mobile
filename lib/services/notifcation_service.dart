@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:http/http.dart';
 
 final FlutterLocalNotificationsPlugin notifications =
     FlutterLocalNotificationsPlugin();
@@ -38,3 +41,30 @@ const AndroidNotificationChannel channel = AndroidNotificationChannel(
   "High Importance notifications",
   importance: Importance.max,
 );
+
+Future<void> showNotificationWithImage(
+    {required String title,
+    required String description,
+    required String imageUrl}) async {
+  final imageBytes = (await get(Uri.parse(imageUrl))).bodyBytes;
+
+  BigPictureStyleInformation bigPictureStyleInformation =
+      BigPictureStyleInformation(
+    ByteArrayAndroidBitmap(imageBytes),
+    contentTitle: title,
+  );
+
+  await notifications.show(
+    Random().nextInt(2000),
+    title,
+    description,
+    NotificationDetails(
+      android: AndroidNotificationDetails(
+        "high_importance_channel",
+        "High Importance notifications",
+        importance: Importance.max,
+        styleInformation: bigPictureStyleInformation,
+      ),
+    ),
+  );
+}

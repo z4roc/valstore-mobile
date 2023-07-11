@@ -24,7 +24,7 @@ class StoreItemLoading extends StatelessWidget {
             width: double.infinity,
             child: Shimmer.fromColors(
               child: const Card(),
-              baseColor: Color.fromARGB(255, 49, 47, 47).withOpacity(.8),
+              baseColor: const Color.fromARGB(255, 49, 47, 47).withOpacity(.8),
               highlightColor: Colors.grey.shade700,
             ),
           ),
@@ -34,7 +34,7 @@ class StoreItemLoading extends StatelessWidget {
             width: double.infinity,
             child: Shimmer.fromColors(
               child: const Card(),
-              baseColor: Color.fromARGB(255, 49, 47, 47).withOpacity(.8),
+              baseColor: const Color.fromARGB(255, 49, 47, 47).withOpacity(.8),
               highlightColor: Colors.grey.shade700,
             ),
           ),
@@ -47,7 +47,8 @@ class StoreItemLoading extends StatelessWidget {
                 width: 150,
                 child: Shimmer.fromColors(
                   child: const Card(),
-                  baseColor: Color.fromARGB(255, 49, 47, 47).withOpacity(.8),
+                  baseColor:
+                      const Color.fromARGB(255, 49, 47, 47).withOpacity(.8),
                   highlightColor: Colors.grey.shade700,
                 ),
               ),

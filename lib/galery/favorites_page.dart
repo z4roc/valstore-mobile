@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:valstore/services/riot_service.dart';
-import 'package:valstore/v2/galery/galeryv2_page.dart';
-import 'package:valstore/v2/valstore_provider.dart';
+import 'package:valstore/galery/galeryv2_page.dart';
+import 'package:valstore/valstore_provider.dart';
 
-import '../../models/val_api_skins.dart';
+import '../models/val_api_skins.dart';
 
 class FavoritesPage extends StatefulWidget {
   const FavoritesPage({super.key});

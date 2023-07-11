@@ -1,7 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:valstore/main.dart';
 import 'package:valstore/models/firebase_skin.dart';
-import 'package:valstore/views/video_player_page.dart';
+import 'package:valstore/shared/video_player_page.dart';
 
 class SkinDetailPage extends StatefulWidget {
   const SkinDetailPage({super.key, required this.skin});
@@ -146,14 +146,14 @@ class _SkinDetailPageState extends State<SkinDetailPage> {
                               children: [
                                 skin.chromas?[index].streamedVideo != null
                                     ? TextButton(
-                                        onPressed: () =>
-                                            navigatorKey.currentState!.push(
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                VideoPlayerPage(
-                                              url: skin.chromas![index]
-                                                  .streamedVideo!,
-                                            ),
+                                        onPressed: () => showDialog(
+                                          context: context,
+                                          builder: (context) => VideoPlayerPage(
+                                            url: skin
+                                                .chromas![index].streamedVideo!,
+                                            title: skin.chromas?[index]
+                                                    .displayName ??
+                                                "Chroma ${index + 1}",
                                           ),
                                         ),
                                         style: TextButton.styleFrom(
@@ -220,13 +220,26 @@ class _SkinDetailPageState extends State<SkinDetailPage> {
                   itemCount: skin.levels != null ? skin.levels!.length : 0,
                   itemBuilder: ((context, index) {
                     return GestureDetector(
-                      onTap: () => navigatorKey.currentState!.push(
-                        MaterialPageRoute(
+                      onTap: () async {
+                        /*navigatorKey.currentState!.push(
+                          MaterialPageRoute(
+                            builder: (context) => VideoPlayerPage(
+                              url: skin.levels![index].streamedVideo!,
+                            ),
+                          ),
+                        );*/
+
+                        //initializePlayer(skin.levels![index].streamedVideo!);
+
+                        showCupertinoDialog(
+                          context: context,
                           builder: (context) => VideoPlayerPage(
                             url: skin.levels![index].streamedVideo!,
+                            title:
+                                skin.levels?[index].levelItem ?? "Level $index",
                           ),
-                        ),
-                      ),
+                        );
+                      },
                       child: SizedBox(
                         height: 75,
                         child: Card(
@@ -245,7 +258,7 @@ class _SkinDetailPageState extends State<SkinDetailPage> {
                                     ? skin.levels![index].levelItem!
                                         .split('::')
                                         .last
-                                    : 'Base Skin',
+                                    : "Level ${index + 1}",
                                 style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w400,
@@ -254,14 +267,16 @@ class _SkinDetailPageState extends State<SkinDetailPage> {
                               const Spacer(),
                               skin.levels?[index].streamedVideo != null
                                   ? TextButton(
-                                      onPressed: () => navigatorKey
-                                          .currentState!
-                                          .push(MaterialPageRoute(
+                                      onPressed: () => showDialog(
+                                        context: context,
                                         builder: (context) => VideoPlayerPage(
                                           url: skin
                                               .levels![index].streamedVideo!,
+                                          title:
+                                              skin.levels?[index].displayName ??
+                                                  "Chroma $index",
                                         ),
-                                      )),
+                                      ),
                                       style: TextButton.styleFrom(
                                         foregroundColor: Colors.redAccent,
                                       ),

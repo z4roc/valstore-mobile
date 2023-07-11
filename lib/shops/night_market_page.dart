@@ -1,17 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:valstore/color_extension.dart';
-import 'package:valstore/shared/flyout_nav.dart';
+import 'package:valstore/main.dart';
 import 'package:valstore/models/night_market_model.dart';
-import 'package:valstore/services/riot_service.dart';
-import 'package:valstore/views/skin_detail_page.dart';
-
-import '../main.dart';
-import '../models/firebase_skin.dart';
-
-final color = const Color(0xFF16141a).withOpacity(.8);
+import 'package:valstore/shared/color_extension.dart';
+import 'package:valstore/valstore_provider.dart';
+import 'package:valstore/shared/skin_detail_page.dart';
 
 class NightMarketPage extends StatefulWidget {
   const NightMarketPage({super.key});
@@ -21,29 +16,17 @@ class NightMarketPage extends StatefulWidget {
 }
 
 class _NightMarketPageState extends State<NightMarketPage> {
-  late Future<NightMarket?> _nightMarket;
-
-  @override
-  void initState() {
-    super.initState();
-    _nightMarket = RiotService.getNightMarket();
-  }
-
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: _nightMarket,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return loading();
-        } else if (!snapshot.hasData) {
-          return noNightMarket();
-        } else if (snapshot.hasData) {
-          return nightMarket(snapshot.data!);
-        }
-        return errorLoading();
-      },
-    );
+    final state = Provider.of<ValstoreProvider>(context);
+
+    final nm = state.getInstance.nightMarket;
+
+    if (nm != null) {
+      return nightMarket(nm);
+    } else {
+      return noNightMarket();
+    }
   }
 }
 
@@ -51,8 +34,7 @@ Widget loading() => Scaffold(
       appBar: AppBar(
         title: const Text("Night Market"),
       ),
-      backgroundColor: color,
-      drawer: const NavDrawer(),
+      backgroundColor: const Color(0x00ff4655),
       body: Container(
         height: double.infinity,
         width: double.infinity,
@@ -126,129 +108,6 @@ Widget nightMarket(NightMarket store) => Container(
         },
       ),
     );
-
-/*class Export extends StatelessWidget {
-  const Export({
-    super.key,
-    required this.skin,
-    required this.color,
-  });
-
-  final NightMarketSkin skin;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: (() {
-        navigatorKey.currentState!.push(MaterialPageRoute(builder: ((context) {
-          return SkinDetailPage(skin: skin.skinData!);
-        })));
-      }),
-      child: SizedBox(
-        height: 150,
-        child: Card(
-          elevation: 2,
-          color: color
-              .withBlue((color.blue / 1.7).round())
-              .withRed((color.red / 1.7).round())
-              .withGreen((color.green / 1.7).round()),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                fit: BoxFit.contain,
-                opacity: .2,
-                image: NetworkImage(
-                  store.skins![index]!.skinData!.contentTier!.icon!,
-                ),
-              ),
-            ),
-            padding: const EdgeInsets.fromLTRB(20, 15, 20, 10),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        skin.skinData!.name!,
-                        overflow: TextOverflow.fade,
-                        softWrap: false,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 5,
-                ),
-                Hero(
-                  tag: skin.skinData!.name!,
-                  child: Image.network(
-                    skin.skinData!.icon!,
-                    height: 60,
-                  ),
-                ),
-                const Spacer(),
-                Row(
-                  children: [
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    const Spacer(),
-                    Text(
-                      skin.skinData!.cost!.toString(),
-                      style: const TextStyle(
-                        decoration: TextDecoration.lineThrough,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    Text(
-                      (skin.skinData!.cost! - skin.reducedCost!).toString(),
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.redAccent,
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    const Image(
-                      height: 22,
-                      image: NetworkImage(
-                        "https://media.valorant-api.com/currencies/85ad13f7-3d1b-5128-9eb2-7cd8ee0b5741/displayicon.png",
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    Text(
-                      "(-${skin.percentageReduced!}%)",
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                )
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}*/
 
 class NightMarketItemTile extends StatelessWidget {
   const NightMarketItemTile({

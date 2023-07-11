@@ -7,19 +7,18 @@ class Reauth {
 
   Reauth.fromJson(Map<String, dynamic> json) {
     type = json['type'];
-    response = json['response'] != null
-        ? new Response.fromJson(json['response'])
-        : null;
+    response =
+        json['response'] != null ? Response.fromJson(json['response']) : null;
     country = json['country'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['type'] = this.type;
-    if (this.response != null) {
-      data['response'] = this.response!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['type'] = type;
+    if (response != null) {
+      data['response'] = response!.toJson();
     }
-    data['country'] = this.country;
+    data['country'] = country;
     return data;
   }
 }
@@ -33,15 +32,15 @@ class Response {
   Response.fromJson(Map<String, dynamic> json) {
     mode = json['mode'];
     parameters = json['parameters'] != null
-        ? new Parameters.fromJson(json['parameters'])
+        ? Parameters.fromJson(json['parameters'])
         : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['mode'] = this.mode;
-    if (this.parameters != null) {
-      data['parameters'] = this.parameters!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['mode'] = mode;
+    if (parameters != null) {
+      data['parameters'] = parameters!.toJson();
     }
     return data;
   }
@@ -57,8 +56,8 @@ class Parameters {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['uri'] = this.uri;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['uri'] = uri;
     return data;
   }
 }

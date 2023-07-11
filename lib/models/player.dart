@@ -43,13 +43,12 @@ class PlayerXP {
   PlayerXP.fromJson(Map<String, dynamic> json) {
     version = json['Version'];
     subject = json['Subject'];
-    progress = json['Progress'] != null
-        ? new Progress.fromJson(json['Progress'])
-        : null;
+    progress =
+        json['Progress'] != null ? Progress.fromJson(json['Progress']) : null;
     if (json['History'] != null) {
       history = <History>[];
       json['History'].forEach((v) {
-        history!.add(new History.fromJson(v));
+        history!.add(History.fromJson(v));
       });
     }
     lastTimeGrantedFirstWin = json['LastTimeGrantedFirstWin'];
@@ -57,17 +56,17 @@ class PlayerXP {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['Version'] = this.version;
-    data['Subject'] = this.subject;
-    if (this.progress != null) {
-      data['Progress'] = this.progress!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['Version'] = version;
+    data['Subject'] = subject;
+    if (progress != null) {
+      data['Progress'] = progress!.toJson();
     }
-    if (this.history != null) {
-      data['History'] = this.history!.map((v) => v.toJson()).toList();
+    if (history != null) {
+      data['History'] = history!.map((v) => v.toJson()).toList();
     }
-    data['LastTimeGrantedFirstWin'] = this.lastTimeGrantedFirstWin;
-    data['NextTimeFirstWinAvailable'] = this.nextTimeFirstWinAvailable;
+    data['LastTimeGrantedFirstWin'] = lastTimeGrantedFirstWin;
+    data['NextTimeFirstWinAvailable'] = nextTimeFirstWinAvailable;
     return data;
   }
 }
@@ -84,9 +83,9 @@ class Progress {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['Level'] = this.level;
-    data['XP'] = this.xP;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['Level'] = level;
+    data['XP'] = xP;
     return data;
   }
 }
@@ -113,16 +112,16 @@ class History {
     iD = json['ID'];
     matchStart = json['MatchStart'];
     startProgress = json['StartProgress'] != null
-        ? new Progress.fromJson(json['StartProgress'])
+        ? Progress.fromJson(json['StartProgress'])
         : null;
     endProgress = json['EndProgress'] != null
-        ? new Progress.fromJson(json['EndProgress'])
+        ? Progress.fromJson(json['EndProgress'])
         : null;
     xPDelta = json['XPDelta'];
     if (json['XPSources'] != null) {
       xPSources = <XPSources>[];
       json['XPSources'].forEach((v) {
-        xPSources!.add(new XPSources.fromJson(v));
+        xPSources!.add(XPSources.fromJson(v));
       });
     }
     if (json['XPMultipliers'] != null) {
@@ -134,21 +133,21 @@ class History {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['ID'] = this.iD;
-    data['MatchStart'] = this.matchStart;
-    if (this.startProgress != null) {
-      data['StartProgress'] = this.startProgress!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['ID'] = iD;
+    data['MatchStart'] = matchStart;
+    if (startProgress != null) {
+      data['StartProgress'] = startProgress!.toJson();
     }
-    if (this.endProgress != null) {
-      data['EndProgress'] = this.endProgress!.toJson();
+    if (endProgress != null) {
+      data['EndProgress'] = endProgress!.toJson();
     }
-    data['XPDelta'] = this.xPDelta;
-    if (this.xPSources != null) {
-      data['XPSources'] = this.xPSources!.map((v) => v.toJson()).toList();
+    data['XPDelta'] = xPDelta;
+    if (xPSources != null) {
+      data['XPSources'] = xPSources!.map((v) => v.toJson()).toList();
     }
-    if (this.xPMultipliers != null) {
-      data['XPMultipliers'] = this.xPMultipliers!.toList();
+    if (xPMultipliers != null) {
+      data['XPMultipliers'] = xPMultipliers!.toList();
     }
     return data;
   }
@@ -166,9 +165,9 @@ class XPSources {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['ID'] = this.iD;
-    data['Amount'] = this.amount;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['ID'] = iD;
+    data['Amount'] = amount;
     return data;
   }
 }

@@ -9,14 +9,14 @@ class ValApiSkins {
     if (json['data'] != null) {
       data = <Data>[];
       json['data'].forEach((v) {
-        data!.add(new Data.fromJson(v));
+        data!.add(Data.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['status'] = this.status;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['status'] = status;
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
@@ -57,31 +57,31 @@ class Data {
     if (json['chromas'] != null) {
       chromas = <Chromas>[];
       json['chromas'].forEach((v) {
-        chromas!.add(new Chromas.fromJson(v));
+        chromas!.add(Chromas.fromJson(v));
       });
     }
     if (json['levels'] != null) {
       levels = <Levels>[];
       json['levels'].forEach((v) {
-        levels!.add(new Levels.fromJson(v));
+        levels!.add(Levels.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['uuid'] = this.uuid;
-    data['displayName'] = this.displayName;
-    data['themeUuid'] = this.themeUuid;
-    data['contentTierUuid'] = this.contentTierUuid;
-    data['displayIcon'] = this.displayIcon;
-    data['wallpaper'] = this.wallpaper;
-    data['assetPath'] = this.assetPath;
-    if (this.chromas != null) {
-      data['chromas'] = this.chromas!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['uuid'] = uuid;
+    data['displayName'] = displayName;
+    data['themeUuid'] = themeUuid;
+    data['contentTierUuid'] = contentTierUuid;
+    data['displayIcon'] = displayIcon;
+    data['wallpaper'] = wallpaper;
+    data['assetPath'] = assetPath;
+    if (chromas != null) {
+      data['chromas'] = chromas!.map((v) => v.toJson()).toList();
     }
-    if (this.levels != null) {
-      data['levels'] = this.levels!.map((v) => v.toJson()).toList();
+    if (levels != null) {
+      data['levels'] = levels!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -116,14 +116,14 @@ class Chromas {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['uuid'] = this.uuid;
-    data['displayName'] = this.displayName;
-    data['displayIcon'] = this.displayIcon;
-    data['fullRender'] = this.fullRender;
-    data['swatch'] = this.swatch;
-    data['streamedVideo'] = this.streamedVideo;
-    data['assetPath'] = this.assetPath;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['uuid'] = uuid;
+    data['displayName'] = displayName;
+    data['displayIcon'] = displayIcon;
+    data['fullRender'] = fullRender;
+    data['swatch'] = swatch;
+    data['streamedVideo'] = streamedVideo;
+    data['assetPath'] = assetPath;
     return data;
   }
 }
@@ -154,13 +154,13 @@ class Levels {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['uuid'] = this.uuid;
-    data['displayName'] = this.displayName;
-    data['levelItem'] = this.levelItem;
-    data['displayIcon'] = this.displayIcon;
-    data['streamedVideo'] = this.streamedVideo;
-    data['assetPath'] = this.assetPath;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['uuid'] = uuid;
+    data['displayName'] = displayName;
+    data['levelItem'] = levelItem;
+    data['displayIcon'] = displayIcon;
+    data['streamedVideo'] = streamedVideo;
+    data['assetPath'] = assetPath;
     return data;
   }
 }

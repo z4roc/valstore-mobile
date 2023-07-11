@@ -32,35 +32,34 @@ class Loadout {
     if (json['Guns'] != null) {
       guns = <Guns>[];
       json['Guns'].forEach((v) {
-        guns!.add(new Guns.fromJson(v));
+        guns!.add(Guns.fromJson(v));
       });
     }
     if (json['Sprays'] != null) {
       sprays = <Sprays>[];
       json['Sprays'].forEach((v) {
-        sprays!.add(new Sprays.fromJson(v));
+        sprays!.add(Sprays.fromJson(v));
       });
     }
-    identity = json['Identity'] != null
-        ? new Identity.fromJson(json['Identity'])
-        : null;
+    identity =
+        json['Identity'] != null ? Identity.fromJson(json['Identity']) : null;
     incognito = json['Incognito'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['Subject'] = this.subject;
-    data['Version'] = this.version;
-    if (this.guns != null) {
-      data['Guns'] = this.guns!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['Subject'] = subject;
+    data['Version'] = version;
+    if (guns != null) {
+      data['Guns'] = guns!.map((v) => v.toJson()).toList();
     }
-    if (this.sprays != null) {
-      data['Sprays'] = this.sprays!.map((v) => v.toJson()).toList();
+    if (sprays != null) {
+      data['Sprays'] = sprays!.map((v) => v.toJson()).toList();
     }
-    if (this.identity != null) {
-      data['Identity'] = this.identity!.toJson();
+    if (identity != null) {
+      data['Identity'] = identity!.toJson();
     }
-    data['Incognito'] = this.incognito;
+    data['Incognito'] = incognito;
     return data;
   }
 }
@@ -87,19 +86,19 @@ class Guns {
     if (json['Attachments'] != null) {
       attachments = <Attachment>[];
       json['Attachments'].forEach((v) {
-        attachments!.add(new Attachment.fromJson(v));
+        attachments!.add(Attachment.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['ID'] = this.iD;
-    data['SkinID'] = this.skinID;
-    data['SkinLevelID'] = this.skinLevelID;
-    data['ChromaID'] = this.chromaID;
-    if (this.attachments != null) {
-      data['Attachments'] = this.attachments!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['ID'] = iD;
+    data['SkinID'] = skinID;
+    data['SkinLevelID'] = skinLevelID;
+    data['ChromaID'] = chromaID;
+    if (attachments != null) {
+      data['Attachments'] = attachments!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -119,10 +118,10 @@ class Sprays {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['EquipSlotID'] = this.equipSlotID;
-    data['SprayID'] = this.sprayID;
-    data['SprayLevelID'] = this.sprayLevelID;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['EquipSlotID'] = equipSlotID;
+    data['SprayID'] = sprayID;
+    data['SprayLevelID'] = sprayLevelID;
     return data;
   }
 }
@@ -150,22 +149,22 @@ class Identity {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['PlayerCardID'] = this.playerCardID;
-    data['PlayerTitleID'] = this.playerTitleID;
-    data['AccountLevel'] = this.accountLevel;
-    data['PreferredLevelBorderID'] = this.preferredLevelBorderID;
-    data['HideAccountLevel'] = this.hideAccountLevel;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['PlayerCardID'] = playerCardID;
+    data['PlayerTitleID'] = playerTitleID;
+    data['AccountLevel'] = accountLevel;
+    data['PreferredLevelBorderID'] = preferredLevelBorderID;
+    data['HideAccountLevel'] = hideAccountLevel;
     return data;
   }
 }
 
 class Attachment {
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
 
     return data;
   }
 
-  Attachment.fromJson(Map<String, dynamic> json) {}
+  Attachment.fromJson(Map<String, dynamic> json);
 }

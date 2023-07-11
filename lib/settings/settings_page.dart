@@ -7,7 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:valstore/services/riot_service.dart';
 import 'package:workmanager/workmanager.dart';
 
-import '../../services/notifcation_service.dart';
+import '../services/notifcation_service.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -168,7 +168,8 @@ class _SettingsPageState extends State<SettingsPage> {
                         child: ElevatedButton(
                           onPressed: () async {
                             await launchUrl(
-                                Uri.parse("https://ko-fi.com/zaroc"));
+                                Uri.parse("https://ko-fi.com/zaroc"),
+                                mode: LaunchMode.externalApplication);
                           },
                           child: const Text("Donate"),
                         ),
@@ -177,6 +178,23 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                 ),
               ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 8),
+              child: TextButton(
+                onPressed: () async {
+                  await launchUrl(
+                    Uri.parse(
+                      "https://valostore.zaroc.de/privacy",
+                    ),
+                  );
+                },
+                child: const Text("Privacy Policy"),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.only(left: 16),
+              child: Text("ValStore 2.0.0"),
             ),
           ],
         ),

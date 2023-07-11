@@ -158,6 +158,12 @@ class RiotService {
 
   static Future<void> reuathenticateUser() async {
     final prefs = await SharedPreferences.getInstance();
+    String version = "";
+    try {
+      version = await InofficialValorantAPI().getCurrentVersion();
+    } catch (e) {
+      version = "07.00.00.913116";
+    }
 
     final cookies = authCookies
             ?.map((cookie) => "${cookie.name}=${cookie.value}")
@@ -168,7 +174,7 @@ class RiotService {
       Uri.parse("https://auth.riotgames.com/api/v1/authorization"),
       headers: {
         "User-Agent":
-            "RiotClient/06.11.00.900116 rso-auth (Windows; 10;;Professional, x64)",
+            "RiotClient/$version rso-auth (Windows; 10;;Professional, x64)",
         "Content-Type": "application/json",
         "cookie": cookies,
       },

@@ -30,12 +30,6 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
-
-
-        <meta-data
-            android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-1408435828857197~6178295261"
-        />
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="high_importance_channel" />
