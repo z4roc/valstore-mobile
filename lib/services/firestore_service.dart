@@ -49,6 +49,12 @@ class FireStoreService {
     }
   }
 
+  Future<void> registerFullSkin(FirebaseSkin skin) async {
+    final docRef = _db.collection("skins").doc(skin.offerId);
+
+    await docRef.set(skin.toJson());
+  }
+
   Future<FirebaseSkin> registerSkin(FirebaseSkin skin) async {
     final allSkin = await RiotService.getAllSkins();
 

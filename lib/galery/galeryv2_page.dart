@@ -26,7 +26,6 @@ class _GaleryPageState extends State<GaleryPage> {
   @override
   void initState() {
     _allSkinsFuture = RiotService.getAllPurchasableSkins();
-    //WishlistProvider().initWishlist();
     super.initState();
   }
 
@@ -103,7 +102,7 @@ class _GaleryPageState extends State<GaleryPage> {
                               ),
                             );
 
-                            await FireStoreService().registerSkin(fbSkin);
+                            await FireStoreService().registerFullSkin(fbSkin);
 
                             Navigator.of(context).push(
                               MaterialPageRoute(
@@ -202,6 +201,51 @@ class SkinSearchDelegate extends SearchDelegate {
               itemCount: skins.length,
               itemBuilder: (context, index) {
                 return ListTile(
+                  onTap: () async {
+                    final skin = await FireStoreService()
+                        .getSkinById(skins[index].levels?[0].uuid ?? "");
+
+                    if (skin == null) {
+                      final offer = provider.getInstance.localOffers.offers
+                          ?.where((element) =>
+                              element.offerID == skins[index].levels?[0].uuid)
+                          .firstOrNull;
+
+                      if (offer == null) return;
+
+                      final fbSkin = FirebaseSkin(
+                        chromas: skins[index].chromas,
+                        levels: skins[index].levels,
+                        name: skins[index].displayName,
+                        icon: skins[index].displayIcon,
+                        offerId: skins[index].levels?[0].uuid,
+                        skinId: skins[index].uuid,
+                        cost:
+                            offer.cost?.i85ad13f73d1b51289eb27cd8ee0b5741 ?? 0,
+                        contentTier: getContentTierByCost(
+                          offer.cost?.i85ad13f73d1b51289eb27cd8ee0b5741 ?? 0,
+                        ),
+                      );
+
+                      await FireStoreService().registerFullSkin(fbSkin);
+
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return SkinDetailPage(skin: fbSkin);
+                          },
+                        ),
+                      );
+                    } else {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return SkinDetailPage(skin: skin);
+                          },
+                        ),
+                      );
+                    }
+                  },
                   leading: Hero(
                     tag: skins[index].displayName!,
                     child: Image.network(
