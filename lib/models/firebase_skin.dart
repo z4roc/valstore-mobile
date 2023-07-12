@@ -1,3 +1,5 @@
+import 'package:valstore/models/val_api_skins.dart';
+
 class PlayerShop {
   int? storeRemaining;
   List<FirebaseSkin> skins;
@@ -9,8 +11,8 @@ class FirebaseSkin {
   String? name;
   String? offerId;
   String? skinId;
-  List<Chroma>? chromas;
-  List<Level>? levels;
+  List<Chromas>? chromas;
+  List<Levels>? levels;
   int? cost;
   String? icon;
   ContentTier? contentTier;
@@ -35,15 +37,15 @@ class FirebaseSkin {
         ? ContentTier.fromJson(json['content_tier'])
         : null;
     if (json['chromas'] != null) {
-      chromas = <Chroma>[];
+      chromas = <Chromas>[];
       json['chromas'].forEach((c) {
-        chromas!.add(Chroma.fromJson(c));
+        chromas!.add(Chromas.fromJson(c));
       });
     }
     if (json['levels'] != null) {
-      levels = <Level>[];
+      levels = <Levels>[];
       json['levels'].forEach((c) {
-        levels!.add(Level.fromJson(c));
+        levels!.add(Levels.fromJson(c));
       });
     }
   }

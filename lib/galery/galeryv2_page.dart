@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:valstore/main.dart';
@@ -24,7 +25,7 @@ class _GaleryPageState extends State<GaleryPage> {
 
   @override
   void initState() {
-    _allSkinsFuture = RiotService.getAllSkins();
+    _allSkinsFuture = RiotService.getAllPurchasableSkins();
     //WishlistProvider().initWishlist();
     super.initState();
   }
@@ -57,8 +58,8 @@ class _GaleryPageState extends State<GaleryPage> {
                     return ListTile(
                       leading: Hero(
                         tag: skins[index].displayName!,
-                        child: Image.network(
-                          skins[index].levels![0].displayIcon!,
+                        child: CachedNetworkImage(
+                          imageUrl: skins[index].levels![0].displayIcon!,
                           height: 30,
                           width: 50,
                         ),
@@ -72,6 +73,42 @@ class _GaleryPageState extends State<GaleryPage> {
                               MaterialPageRoute(
                                 builder: (context) {
                                   return SkinDetailPage(skin: skin);
+                                },
+                              ),
+                            );
+                          } else {
+                            final valstore = provider.getInstance;
+
+                            final offer = valstore.localOffers.offers
+                                ?.where((element) =>
+                                    element.offerID ==
+                                    skins[index].levels?[0].uuid)
+                                .firstOrNull;
+
+                            if (offer == null) return;
+
+                            final fbSkin = FirebaseSkin(
+                              chromas: skins[index].chromas,
+                              levels: skins[index].levels,
+                              name: skins[index].displayName,
+                              icon: skins[index].displayIcon,
+                              offerId: skins[index].levels?[0].uuid,
+                              skinId: skins[index].uuid,
+                              cost: offer.cost
+                                      ?.i85ad13f73d1b51289eb27cd8ee0b5741 ??
+                                  0,
+                              contentTier: getContentTierByCost(
+                                offer.cost?.i85ad13f73d1b51289eb27cd8ee0b5741 ??
+                                    0,
+                              ),
+                            );
+
+                            await FireStoreService().registerSkin(fbSkin);
+
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return SkinDetailPage(skin: fbSkin);
                                 },
                               ),
                             );
@@ -276,4 +313,58 @@ Widget itemTile(Data skin) {
       ),
     ),
   );
+}
+
+ContentTier getContentTierByCost(int cost) {
+  String name = "Select";
+  String color = "5b9cdd";
+  String icon =
+      "https://media.valorant-api.com/contenttiers/12683d76-48d7-84a3-4e09-6985794f0445/displayicon.png";
+
+  switch (cost) {
+    case 875:
+      name = "Select";
+      color = "5b9cdd";
+      icon =
+          "https://media.valorant-api.com/contenttiers/12683d76-48d7-84a3-4e09-6985794f0445/displayicon.png";
+      break;
+    case 1275:
+      name = "Deluxe";
+      color = "28bda7";
+      icon =
+          "https://media.valorant-api.com/contenttiers/0cebb8be-46d7-c12a-d306-e9907bfc5a25/displayicon.png";
+      break;
+    case 1775:
+      name = "Premium";
+      color = "cb558d";
+      icon =
+          "https://media.valorant-api.com/contenttiers/60bca009-4182-7998-dee7-b8a2558dc369/displayicon.png";
+      break;
+    case 2175:
+      name = "Exclusive";
+      color = "fd9257";
+      icon =
+          "https://media.valorant-api.com/contenttiers/e046854e-406c-37f4-6607-19a9ba8426fc/displayicon.png";
+      break;
+    case 2475:
+      name = "Ultra";
+      color = "eed878";
+      icon =
+          "https://media.valorant-api.com/contenttiers/411e4a55-4e59-7757-41f0-86a53f101bb5/displayicon.png";
+      break;
+
+    default:
+      if (cost > 2475 && cost < 4950) {
+        color = "fd9257";
+        icon =
+            "https://media.valorant-api.com/contenttiers/e046854e-406c-37f4-6607-19a9ba8426fc/displayicon.png";
+      } else if (cost >= 4950) {
+        color = "eed878";
+        icon =
+            "https://media.valorant-api.com/contenttiers/411e4a55-4e59-7757-41f0-86a53f101bb5/displayicon.png";
+      }
+      break;
+  }
+
+  return ContentTier(name: name, color: color, icon: icon);
 }
