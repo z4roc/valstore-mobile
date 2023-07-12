@@ -30,8 +30,7 @@ class RiotService {
       'https://auth.riotgames.com/login#client_id=play-valorant-web-prod&nonce=1&redirect_uri=https%3A%2F%2Fplayvalorant.com%2Fopt_in&response_type=token%20id_token';
   static String entitlementsUri =
       'https://entitlements.auth.riotgames.com/api/token/v1/';
-  static String storeUri =
-      "https://pd.$region.a.pvp.net/store/v2/storefront/$userId/";
+
   static String accessToken = "";
   static String entitlements = "";
   static String cookies = "";
@@ -48,6 +47,9 @@ class RiotService {
   static void getUserId() {
     userId = Jwt.parseJwt(accessToken)['sub'];
   }
+
+  static String getStoreLink(String uuid, String region) =>
+      "https://pd.$region.a.pvp.net/store/v2/storefront/$uuid/";
 
   static Future<String> getEntitlements() async {
     await saveCookies();
@@ -242,7 +244,7 @@ class RiotService {
         );
 
         skin.levels = match?.levels
-            ?.map((e) => Level(
+            /*?.map((e) => Level(
                   uuid: e.uuid,
                   displayIcon: e.displayIcon,
                   displayName: e.displayName,
@@ -250,9 +252,10 @@ class RiotService {
                   levelItem: e.levelItem,
                   streamedVideo: e.streamedVideo,
                 ))
-            .toList();
+            .toList()*/
+            ;
         skin.chromas = match?.chromas
-            ?.map(
+            /* ?.map(
               (e) => Chroma(
                 uuid: e.uuid,
                 displayIcon: e.displayIcon,
@@ -263,7 +266,8 @@ class RiotService {
                 streamedVideo: e.streamedVideo,
               ),
             )
-            .toList();
+            .toList()*/
+            ;
       } else {
         skin = fbSkin;
       }
@@ -279,8 +283,10 @@ class RiotService {
       return playerShop!;
     }
 
+    //ttps://pd.eu.a.pvp.net/store/v2/storefront/46982260-daba-5fd8-b264-664c3bca700a/
+
     final shopRequest = await get(
-      Uri.parse(storeUri),
+      Uri.parse(getStoreLink(userId, region)),
       headers: {
         'X-Riot-Entitlements-JWT': entitlements,
         'Authorization': 'Bearer $accessToken'
@@ -313,7 +319,7 @@ class RiotService {
     }
 
     final shopRequest = await get(
-      Uri.parse(storeUri),
+      Uri.parse(getStoreLink(userId, region)),
       headers: {
         'X-Riot-Entitlements-JWT': entitlements,
         'Authorization': 'Bearer $accessToken'
@@ -347,7 +353,7 @@ class RiotService {
 
   static Future<UserOffers> getUserOffers() async {
     final shopRequest = await get(
-      Uri.parse(storeUri),
+      Uri.parse(getStoreLink(userId, region)),
       headers: {
         'X-Riot-Entitlements-JWT': entitlements,
         'Authorization': 'Bearer $accessToken'
@@ -361,7 +367,7 @@ class RiotService {
     final shopRequest = await get(
       Uri.parse("https://pd.eu.a.pvp.net/store/v1/offers/"),
       headers: {
-        //'X-Riot-Entitlements-JWT': entitlements,
+        'X-Riot-Entitlements-JWT': entitlements,
         'Authorization': 'Bearer $accessToken'
       },
     );
@@ -374,7 +380,7 @@ class RiotService {
 
   static Future<int> getStoreTimer() async {
     final shopRequest = await get(
-      Uri.parse(storeUri),
+      Uri.parse(getStoreLink(userId, region)),
       headers: {
         'X-Riot-Entitlements-JWT': entitlements,
         'Authorization': 'Bearer $accessToken'
@@ -579,6 +585,23 @@ class RiotService {
         );
       }
     }
+  }
+
+  static Future<ValApiSkins?> getAllPurchasableSkins() async {
+    ValApiSkins? allSkins = await getAllSkins();
+
+    final allOffers = await getLocalOffers();
+
+    final purchasable = <Data?>[];
+
+    allSkins?.data = allSkins.data
+        ?.where((skin) =>
+            allOffers.offers
+                ?.any((offer) => skin.levels?[0].uuid == offer.offerID) ??
+            false)
+        .toList();
+
+    return allSkins;
   }
 }
 

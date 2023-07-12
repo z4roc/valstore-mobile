@@ -121,11 +121,16 @@ class DashboardPage extends StatelessWidget {
                       const SizedBox(
                         width: 20,
                       ),
-                      Text(
-                        "${info.name ?? ""}#${info.tag}",
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
+                      Expanded(
+                        child: Hero(
+                          tag: "${info.name ?? ""}#${info.tag}",
+                          child: Text(
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            "${info.name ?? ""}#${info.tag}",
+                            style:
+                                Theme.of(context).primaryTextTheme.displayLarge,
+                          ),
                         ),
                       ),
                     ],
@@ -293,9 +298,15 @@ class DashboardPage extends StatelessWidget {
                           if (FirebaseAuth.instance.currentUser != null) {
                             await FirebaseAuthService().signOut();
                           }
+
                           RiotService.accessToken = "";
                           RiotService.entitlements = "";
                           RiotService.region = "eu";
+                          RiotService.playerShop = null;
+                          RiotService.nightMarket = null;
+                          RiotService.playerLoadout = null;
+                          RiotService.userId = "";
+
                           Navigator.of(context)
                               .pushNamedAndRemoveUntil("/", (route) => false);
                           //await Restart.restartApp();
@@ -425,7 +436,11 @@ class AccountBadge extends StatelessWidget {
                 padding: const EdgeInsets.all(10),
                 height: 60,
                 width: 60,
-                child: Image.network(info.card?.small ?? ""),
+                child: Hero(
+                  tag: info.card?.small ??
+                      "https://media.valorant-api.com/playercards/efaf392a-412d-0d4f-4413-ddbdb70d841d/displayicon.png",
+                  child: Image.network(info.card?.small ?? ""),
+                ),
               ),
             ),
           ),

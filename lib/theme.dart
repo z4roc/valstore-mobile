@@ -3,6 +3,16 @@ import 'package:google_fonts/google_fonts.dart';
 
 ThemeData themeData = ThemeData(
   useMaterial3: true,
+  primaryTextTheme: const TextTheme(
+    displayLarge: TextStyle(
+      fontSize: 24,
+      fontWeight: FontWeight.bold,
+    ),
+    displayMedium: TextStyle(
+      fontSize: 15,
+      fontWeight: FontWeight.w700,
+    ),
+  ),
   brightness: Brightness.dark,
   fontFamily: GoogleFonts.nunito().fontFamily,
   textTheme: const TextTheme(),

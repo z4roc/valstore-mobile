@@ -49,6 +49,12 @@ class FireStoreService {
     }
   }
 
+  Future<void> registerFullSkin(FirebaseSkin skin) async {
+    final docRef = _db.collection("skins").doc(skin.offerId);
+
+    await docRef.set(skin.toJson());
+  }
+
   Future<FirebaseSkin> registerSkin(FirebaseSkin skin) async {
     final allSkin = await RiotService.getAllSkins();
 
@@ -59,7 +65,7 @@ class FireStoreService {
     if (match != null) {
       skin.offerId = match.levels?[0].uuid;
       skin.levels = match.levels
-          ?.map((e) => Level(
+          /*?.map((e) => Level(
                 uuid: e.uuid,
                 displayIcon: e.displayIcon,
                 displayName: e.displayName,
@@ -67,9 +73,10 @@ class FireStoreService {
                 levelItem: e.levelItem,
                 streamedVideo: e.streamedVideo,
               ))
-          .toList();
+          .toList();*/
+          ;
       skin.chromas = match.chromas
-          ?.map(
+          /* ?.map(
             (e) => Chroma(
               uuid: e.uuid,
               displayIcon: e.displayIcon,
@@ -80,7 +87,8 @@ class FireStoreService {
               streamedVideo: e.streamedVideo,
             ),
           )
-          .toList();
+          .toList()*/
+          ;
       final docRef = _db.collection("skins").doc(skin.offerId);
 
       await docRef.set(skin.toJson());
