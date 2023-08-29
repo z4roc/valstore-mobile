@@ -141,7 +141,7 @@ class Items {
   Item? item;
   int? basePrice;
   String? currencyID;
-  int? discountPercent;
+  double? discountPercent;
   int? discountedPrice;
   bool? isPromoItem;
 
@@ -157,7 +157,7 @@ class Items {
     item = json['Item'] != null ? Item.fromJson(json['Item']) : null;
     basePrice = json['BasePrice'];
     currencyID = json['CurrencyID'];
-    discountPercent = json['DiscountPercent'];
+    discountPercent = double.tryParse("${json['DiscountPercent']}");
     discountedPrice = json['DiscountedPrice'];
     isPromoItem = json['IsPromoItem'];
   }
@@ -276,7 +276,7 @@ class Bundles {
 class ItemOffers {
   String? bundleItemOfferID;
   Offer? offer;
-  int? discountPercent;
+  double? discountPercent;
   Cost? discountedCost;
 
   ItemOffers(
@@ -288,7 +288,7 @@ class ItemOffers {
   ItemOffers.fromJson(Map<String, dynamic> json) {
     bundleItemOfferID = json['BundleItemOfferID'];
     offer = json['Offer'] != null ? Offer.fromJson(json['Offer']) : null;
-    discountPercent = json['DiscountPercent'];
+    discountPercent = double.tryParse("${json['DiscountPercent']}");
     discountedCost = json['DiscountedCost'] != null
         ? Cost.fromJson(json['DiscountedCost'])
         : null;

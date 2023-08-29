@@ -16,6 +16,7 @@ class ValstoreProvider extends ChangeNotifier {
       playerShop: await RiotService.getStore(),
       player: await RiotService.getUserData(),
       bundles: await RiotService.getCurrentBundle(),
+      nightMarket: await RiotService.getNightMarket(),
       playerInventory: await RiotService.getUserOwnedItems(),
       localOffers: await RiotService.getLocalOffers(),
     );

@@ -94,12 +94,23 @@ class _ShopsPageState extends State<ShopsPage> {
             final state = Provider.of<ValstoreProvider>(context);
             final valstore = state.getInstance;
 
-            final time = DateTime.now().millisecondsSinceEpoch +
+            final timeStore = DateTime.now().millisecondsSinceEpoch +
                 ((valstore.playerShop.storeRemaining ?? 0) * 1000);
-            final dif = DateTime.fromMillisecondsSinceEpoch(time)
+            final difStore = DateTime.fromMillisecondsSinceEpoch(timeStore)
                     .difference(DateTime.now())
                     .inHours /
                 24;
+
+            final timeNM = valstore.nightMarket == null
+                ? null
+                : DateTime.now().millisecondsSinceEpoch +
+                    ((valstore.nightMarket?.durationRemain ?? 0) * 1000);
+            final difNM = timeNM == null
+                ? null
+                : DateTime.fromMillisecondsSinceEpoch(timeNM!)
+                        .difference(DateTime.now())
+                        .inHours /
+                    24;
 
             return WillPopScope(
               onWillPop: () async => false,
@@ -129,7 +140,18 @@ class _ShopsPageState extends State<ShopsPage> {
                                 opacity: _currentIndex == 0 ? 1 : 0.0,
                                 duration: const Duration(milliseconds: 500),
                                 child: _currentIndex == 0
-                                    ? TimerWidget(dif: dif, time: time)
+                                    ? TimerWidget(
+                                        dif: difStore, time: timeStore)
+                                    : const SizedBox(),
+                              ),
+                              AnimatedOpacity(
+                                opacity: _currentIndex == 2 ? 1 : 0,
+                                duration: const Duration(
+                                  milliseconds: 500,
+                                ),
+                                child: _currentIndex == 2 && difNM != null
+                                    ? NightMarketTimer(
+                                        dif: difNM, time: timeNM ?? 0)
                                     : const SizedBox(),
                               ),
                               const Spacer(),
@@ -226,6 +248,65 @@ class TimerWidget extends StatelessWidget {
     return Column(
       children: [
         const Text(
+          "Ends in",
+          style: TextStyle(
+            fontSize: 15,
+          ),
+        ),
+        const SizedBox(
+          height: 2,
+        ),
+        Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(
+                left: 15,
+              ),
+              child: Container(
+                height: 15,
+                width: 15,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Colors.white,
+                    width: 2,
+                  ),
+                ),
+                child: CustomPaint(
+                  painter: CirclePaint(dif),
+                ),
+              ),
+            ),
+            const SizedBox(
+              width: 5,
+            ),
+            CountdownTimer(
+              endTime: time,
+              textStyle: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            /*const SizedBox(
+              width: 10,
+            ),*/
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class NightMarketTimer extends StatelessWidget {
+  const NightMarketTimer({super.key, required this.time, required this.dif});
+
+  final int time;
+  final double dif;
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const Text(
           "Next update in",
           style: TextStyle(
             fontSize: 15,
@@ -260,6 +341,8 @@ class TimerWidget extends StatelessWidget {
             ),
             CountdownTimer(
               endTime: time,
+              widgetBuilder: (context, time) =>
+                  Text("${time?.days ?? 0} Days ${time?.hours}h "),
               textStyle: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
