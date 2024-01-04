@@ -158,10 +158,15 @@ class AccessoryItem extends StatelessWidget {
                 ),
                 Hero(
                   tag: skin.name ?? "",
-                  child: Image.network(
-                    skin.icon!,
-                    height: 100,
-                  ),
+                  child: skin.icon != null
+                      ? Image.network(
+                          skin.icon!,
+                          height: 100,
+                        )
+                      : Image.asset(
+                          "assets/playertitle.png",
+                          height: 100,
+                        ),
                 ),
                 const Spacer(),
                 Row(

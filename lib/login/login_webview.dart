@@ -15,8 +15,12 @@ class WebViewPage extends StatefulWidget {
 }
 
 class _WebViewPageState extends State<WebViewPage> {
+  static String userAgent =
+      "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36";
+
   WebViewController controller = WebViewController()
     ..setJavaScriptMode(JavaScriptMode.unrestricted)
+    ..setUserAgent(userAgent)
     ..setNavigationDelegate(NavigationDelegate(
       onNavigationRequest: (request) async {
         if (!request.url.contains("https://playvalorant.com/")) {
@@ -50,7 +54,7 @@ class _WebViewPageState extends State<WebViewPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Riot Games Sing in'),
+        title: const Text('Riot Games Sign In'),
       ),
       body: WebViewWidget(
         controller: controller,

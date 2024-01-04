@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:valstore/models/valstore.dart';
 import 'package:valstore/galery/favorites_page.dart';
 import 'package:valstore/galery/galeryv2_page.dart';
+import 'package:valstore/services/riot_service.dart';
 import 'package:valstore/settings/settings_page.dart';
 import 'package:valstore/shops/accessory_store.dart';
 import 'package:valstore/shops/night_market_page.dart';
@@ -83,7 +84,7 @@ class _ShopsPageState extends State<ShopsPage> {
           ),
           GButton(
             icon: FontAwesomeIcons.grip,
-            text: "Galery",
+            text: "Gallery",
           )
         ],
       ),
@@ -100,6 +101,17 @@ class _ShopsPageState extends State<ShopsPage> {
                     .difference(DateTime.now())
                     .inHours /
                 24;
+            final timeAccessories = DateTime.now().millisecondsSinceEpoch +
+                ((RiotService.userOffers?.accessoryStore
+                            ?.accessoryStoreRemainingDurationInSeconds ??
+                        0) *
+                    1000);
+
+            final difAccessories =
+                DateTime.fromMillisecondsSinceEpoch(timeAccessories)
+                        .difference(DateTime.now())
+                        .inHours /
+                    24;
 
             final timeNM = valstore.nightMarket == null
                 ? null
@@ -133,8 +145,9 @@ class _ShopsPageState extends State<ShopsPage> {
                                 width: 12,
                               ),
                               AccountIcon(
-                                  valstore: valstore,
-                                  currentPage: _currentIndex),
+                                valstore: valstore,
+                                currentPage: _currentIndex,
+                              ),
                               const Spacer(),
                               AnimatedOpacity(
                                 opacity: _currentIndex == 0 ? 1 : 0.0,
@@ -142,6 +155,15 @@ class _ShopsPageState extends State<ShopsPage> {
                                 child: _currentIndex == 0
                                     ? TimerWidget(
                                         dif: difStore, time: timeStore)
+                                    : const SizedBox(),
+                              ),
+                              AnimatedOpacity(
+                                opacity: _currentIndex == 1 ? 1 : 0,
+                                duration: const Duration(milliseconds: 500),
+                                child: _currentIndex == 1
+                                    ? NightMarketTimer(
+                                        dif: difAccessories,
+                                        time: timeAccessories)
                                     : const SizedBox(),
                               ),
                               AnimatedOpacity(
@@ -307,7 +329,7 @@ class NightMarketTimer extends StatelessWidget {
     return Column(
       children: [
         const Text(
-          "Next update in",
+          "Ends in",
           style: TextStyle(
             fontSize: 15,
           ),
@@ -317,32 +339,10 @@ class NightMarketTimer extends StatelessWidget {
         ),
         Row(
           children: [
-            Padding(
-              padding: const EdgeInsets.only(
-                left: 15,
-              ),
-              child: Container(
-                height: 15,
-                width: 15,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: Colors.white,
-                    width: 2,
-                  ),
-                ),
-                child: CustomPaint(
-                  painter: CirclePaint(dif),
-                ),
-              ),
-            ),
-            const SizedBox(
-              width: 5,
-            ),
             CountdownTimer(
               endTime: time,
               widgetBuilder: (context, time) =>
-                  Text("${time?.days ?? 0} Days ${time?.hours}h "),
+                  Text("${time?.days ?? 0} Days ${time?.hours}h ${time?.min}m"),
               textStyle: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,

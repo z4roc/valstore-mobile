@@ -4,6 +4,65 @@ abstract class DisplayableItem {
   String? displayIcon;
 }
 
+class PlayerTitles {
+  int? status;
+  List<PlayerTitle>? data;
+
+  PlayerTitles({this.status, this.data});
+
+  PlayerTitles.fromJson(Map<String, dynamic> json) {
+    status = json['status'];
+    if (json['data'] != null) {
+      data = <PlayerTitle>[];
+      json['data'].forEach((v) {
+        data!.add(new PlayerTitle.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['status'] = this.status;
+    if (this.data != null) {
+      data['data'] = this.data!.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+
+class PlayerTitle extends DisplayableItem {
+  String? uuid;
+  String? displayName;
+  String? titleText;
+  bool? isHiddenIfNotOwned;
+  String? assetPath;
+
+  PlayerTitle(
+      {this.uuid,
+      this.displayName,
+      this.titleText,
+      this.isHiddenIfNotOwned,
+      this.assetPath});
+
+  PlayerTitle.fromJson(Map<String, dynamic> json) {
+    uuid = json['uuid'];
+    displayName = json['displayName'];
+    titleText = json['titleText'];
+    isHiddenIfNotOwned = json['isHiddenIfNotOwned'];
+    assetPath = json['assetPath'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['uuid'] = this.uuid;
+    data['displayName'] = this.displayName;
+    data['titleText'] = this.titleText;
+    data['isHiddenIfNotOwned'] = this.isHiddenIfNotOwned;
+    data['assetPath'] = this.assetPath;
+    return data;
+  }
+}
+
 class Gunbuddies {
   List<Gunbuddie>? sprays;
 
