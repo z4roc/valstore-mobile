@@ -82,9 +82,9 @@ class Bundle {
   String? dataAssetID;
   String? currencyID;
   List<Items>? items;
-  Null itemOffers;
-  Null totalBaseCost;
-  Null totalDiscountedCost;
+  int? itemOffers;
+  int? totalBaseCost;
+  int? totalDiscountedCost;
   int? totalDiscountPercent;
   int? durationRemainingInSeconds;
   bool? wholesaleOnly;

@@ -143,7 +143,7 @@ class FireStoreService {
       if (!doc.exists) {
         final accessories =
             await InofficialValorantAPI().getAllDisplayableItems();
-        print(itemUuid);
+
         final matches = accessories
             .where(
               (item) =>

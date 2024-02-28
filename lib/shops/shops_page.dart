@@ -95,8 +95,10 @@ class _ShopsPageState extends State<ShopsPage> {
             final state = Provider.of<ValstoreProvider>(context);
             final valstore = state.getInstance;
 
+            final store = valstore.playerShop!;
+
             final timeStore = DateTime.now().millisecondsSinceEpoch +
-                ((valstore.playerShop.storeRemaining ?? 0) * 1000);
+                ((store.storeRemaining ?? 0) * 1000);
             final difStore = DateTime.fromMillisecondsSinceEpoch(timeStore)
                     .difference(DateTime.now())
                     .inHours /
@@ -119,7 +121,7 @@ class _ShopsPageState extends State<ShopsPage> {
                     ((valstore.nightMarket?.durationRemain ?? 0) * 1000);
             final difNM = timeNM == null
                 ? null
-                : DateTime.fromMillisecondsSinceEpoch(timeNM!)
+                : DateTime.fromMillisecondsSinceEpoch(timeNM)
                         .difference(DateTime.now())
                         .inHours /
                     24;
@@ -419,13 +421,13 @@ class AccountIcon extends StatelessWidget {
                 borderRadius: BorderRadius.circular(5),
               ),
               child: Hero(
-                tag: valstore.player.playerInfo?.card?.small ??
+                tag: valstore.player?.playerInfo?.card?.small ??
                     "https://media.valorant-api.com/playercards/efaf392a-412d-0d4f-4413-ddbdb70d841d/displayicon.png",
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(5),
                   child: CachedNetworkImage(
                     fit: BoxFit.contain,
-                    imageUrl: valstore.player.playerInfo?.card?.small ??
+                    imageUrl: valstore.player?.playerInfo?.card?.small ??
                         "https://media.valorant-api.com/playercards/efaf392a-412d-0d4f-4413-ddbdb70d841d/displayicon.png",
                   ),
                 ),
@@ -444,11 +446,11 @@ class AccountIcon extends StatelessWidget {
                     Expanded(
                       child: Hero(
                         tag:
-                            "${valstore.player.playerInfo?.name ?? ""}#${valstore.player.playerInfo?.tag ?? ""}",
+                            "${valstore.player?.playerInfo?.name ?? ""}#${valstore.player?.playerInfo?.tag ?? ""}",
                         child: Text(
                           overflow: TextOverflow.ellipsis,
                           textAlign: TextAlign.left,
-                          "${valstore.player.playerInfo?.name ?? ""}#${valstore.player.playerInfo?.tag ?? ""}",
+                          "${valstore.player?.playerInfo?.name ?? ""}#${valstore.player?.playerInfo?.tag ?? ""}",
                           style:
                               Theme.of(context).primaryTextTheme.displayMedium,
                         ),
@@ -468,7 +470,7 @@ class AccountIcon extends StatelessWidget {
                                   width: 5,
                                 ),
                                 Text(
-                                  "${valstore.player.wallet?.valorantPoints ?? 0}",
+                                  "${valstore.player?.wallet?.valorantPoints ?? 0}",
                                   style: const TextStyle(
                                     fontSize: 12,
                                   ),
@@ -486,7 +488,7 @@ class AccountIcon extends StatelessWidget {
                                   width: 5,
                                 ),
                                 Text(
-                                  "${valstore.player.wallet?.radianitePoints ?? 0}",
+                                  "${valstore.player?.wallet?.radianitePoints ?? 0}",
                                   style: const TextStyle(
                                     fontSize: 12,
                                   ),
@@ -507,7 +509,7 @@ class AccountIcon extends StatelessWidget {
                                   width: 5,
                                 ),
                                 Text(
-                                  "${valstore.player.wallet?.kingdomCredits ?? 0}",
+                                  "${valstore.player?.wallet?.kingdomCredits ?? 0}",
                                   style: const TextStyle(
                                     fontSize: 12,
                                   ),

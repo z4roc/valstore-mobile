@@ -45,7 +45,7 @@ class _WebViewPageState extends State<WebViewPage> {
       },
     ))
     ..loadRequest(
-      Uri.parse(RiotService.loginUrl),
+      Uri.parse(RiotService.newLoginUrl),
     )
     ..clearLocalStorage()
     ..clearCache();

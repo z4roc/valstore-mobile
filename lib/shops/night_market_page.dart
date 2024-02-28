@@ -20,17 +20,24 @@ class _NightMarketPageState extends State<NightMarketPage> {
   Widget build(BuildContext context) {
     final state = Provider.of<ValstoreProvider>(context);
 
-    final nm = state.getInstance.nightMarket;
-
-    if (nm != null) {
-      return MediaQuery.removePadding(
-        removeTop: true,
-        child: nightMarket(nm),
-        context: context,
-      );
-    } else {
-      return noNightMarket();
-    }
+    return FutureBuilder<bool>(
+        future: state.getNightMarket(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return MediaQuery.removePadding(
+              removeTop: true,
+              child: nightMarket(state.getInstance.nightMarket!),
+              context: context,
+            );
+          }
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else {
+            return noNightMarket();
+          }
+        });
   }
 }
 

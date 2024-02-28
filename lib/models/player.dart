@@ -97,16 +97,15 @@ class History {
   Progress? endProgress;
   int? xPDelta;
   List<XPSources>? xPSources;
-  List<int>? xPMultipliers;
 
-  History(
-      {this.iD,
-      this.matchStart,
-      this.startProgress,
-      this.endProgress,
-      this.xPDelta,
-      this.xPSources,
-      this.xPMultipliers});
+  History({
+    this.iD,
+    this.matchStart,
+    this.startProgress,
+    this.endProgress,
+    this.xPDelta,
+    this.xPSources,
+  });
 
   History.fromJson(Map<String, dynamic> json) {
     iD = json['ID'];
@@ -124,12 +123,6 @@ class History {
         xPSources!.add(XPSources.fromJson(v));
       });
     }
-    if (json['XPMultipliers'] != null) {
-      xPMultipliers = <int>[];
-      json['XPMultipliers'].forEach((v) {
-        xPMultipliers!.add(int.tryParse(v) ?? 0);
-      });
-    }
   }
 
   Map<String, dynamic> toJson() {
@@ -145,9 +138,6 @@ class History {
     data['XPDelta'] = xPDelta;
     if (xPSources != null) {
       data['XPSources'] = xPSources!.map((v) => v.toJson()).toList();
-    }
-    if (xPMultipliers != null) {
-      data['XPMultipliers'] = xPMultipliers!.toList();
     }
     return data;
   }

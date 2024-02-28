@@ -26,6 +26,8 @@ import 'package:webview_cookie_manager/webview_cookie_manager.dart';
 
 class RiotService {
   static String region = "eu";
+  static String newLoginUrl =
+      "https://auth.riotgames.com/authorize?redirect_uri=https%3A%2F%2Fplayvalorant.com%2Fopt_in&client_id=play-valorant-web-prod&response_type=token%20id_token&nonce=1&scope=account%20openid";
   static String loginUrl =
       'https://auth.riotgames.com/login#client_id=play-valorant-web-prod&nonce=1&redirect_uri=https%3A%2F%2Fplayvalorant.com%2Fopt_in&response_type=token%20id_token';
   static String entitlementsUri =
@@ -402,7 +404,6 @@ class RiotService {
         'Authorization': 'Bearer $accessToken'
       },
     );
-
     final progress = PlayerXP.fromJson(jsonDecode(xpRequest.body));
 
     return progress.progress?.level ?? 0;
@@ -451,6 +452,17 @@ class RiotService {
         puuid: userResult[0]['Subject'],
         region: RiotService.region,
       );
+
+      if (info.card?.id == "00000000-0000-0000-0000-000000000000") {
+        info.card = Card(
+            small:
+                "https://media.valorant-api.com/playercards/9fb348bc-41a0-91ad-8a3e-818035c4e561/smallart.png",
+            large:
+                "https://media.valorant-api.com/playercards/9fb348bc-41a0-91ad-8a3e-818035c4e561/largeart.png",
+            wide:
+                "https://media.valorant-api.com/playercards/9fb348bc-41a0-91ad-8a3e-818035c4e561/wideart.png",
+            id: "9fb348bc-41a0-91ad-8a3e-818035c4e561");
+      }
 
       final levelBorder = (await InofficialValorantAPI().getLevelBorders())
           .borders
