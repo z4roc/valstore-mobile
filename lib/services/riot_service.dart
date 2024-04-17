@@ -164,7 +164,7 @@ class RiotService {
     final prefs = await SharedPreferences.getInstance();
     String version = "";
     try {
-      version = await InofficialValorantAPI().getCurrentVersion();
+      version = (await InofficialValorantAPI().getCurrentVersion())['version'];
     } catch (e) {
       version = "07.00.00.913116";
     }
@@ -208,7 +208,8 @@ class RiotService {
           "https://pd.$region.a.pvp.net/personalization/v2/players/$userId/playerloadout"),
       headers: {
         'X-Riot-Entitlements-JWT': entitlements,
-        'Authorization': 'Bearer $accessToken'
+        'Authorization': 'Bearer $accessToken',
+        ...platformHeaders,
       },
     );
 
@@ -280,6 +281,19 @@ class RiotService {
     return skins;
   }
 
+  static Map<dynamic, String> clientPlatform = {
+    "platformType": "PC",
+    "platformOS": "Windows",
+    "platformOSVersion": "10.0.19042.1.256.64bit",
+    "platformChipset": "Unknown",
+  };
+
+  static Map<dynamic, String> platformHeaders = {
+    "X-Riot-ClientVersion": "release-08.07-shipping-9-2444158",
+    "X-Riot-ClientPlatform":
+        const Base64Encoder().convert(utf8.encode(jsonEncode(clientPlatform)))
+  };
+
   static Future<PlayerShop> getStore() async {
     if (playerShop != null) {
       return playerShop!;
@@ -291,7 +305,8 @@ class RiotService {
       Uri.parse(getStoreLink(userId, region)),
       headers: {
         'X-Riot-Entitlements-JWT': entitlements,
-        'Authorization': 'Bearer $accessToken'
+        'Authorization': 'Bearer $accessToken',
+        ...platformHeaders,
       },
     );
 
@@ -324,7 +339,8 @@ class RiotService {
       Uri.parse(getStoreLink(userId, region)),
       headers: {
         'X-Riot-Entitlements-JWT': entitlements,
-        'Authorization': 'Bearer $accessToken'
+        'Authorization': 'Bearer $accessToken',
+        ...platformHeaders,
       },
     );
 
@@ -358,7 +374,8 @@ class RiotService {
       Uri.parse(getStoreLink(userId, region)),
       headers: {
         'X-Riot-Entitlements-JWT': entitlements,
-        'Authorization': 'Bearer $accessToken'
+        'Authorization': 'Bearer $accessToken',
+        ...platformHeaders,
       },
     );
 
@@ -370,7 +387,8 @@ class RiotService {
       Uri.parse("https://pd.eu.a.pvp.net/store/v1/offers/"),
       headers: {
         'X-Riot-Entitlements-JWT': entitlements,
-        'Authorization': 'Bearer $accessToken'
+        'Authorization': 'Bearer $accessToken',
+        ...platformHeaders,
       },
     );
 
@@ -385,7 +403,8 @@ class RiotService {
       Uri.parse(getStoreLink(userId, region)),
       headers: {
         'X-Riot-Entitlements-JWT': entitlements,
-        'Authorization': 'Bearer $accessToken'
+        'Authorization': 'Bearer $accessToken',
+        ...platformHeaders,
       },
     );
 
@@ -401,7 +420,8 @@ class RiotService {
       Uri.parse("https://pd.$region.a.pvp.net/account-xp/v1/players/$userId"),
       headers: {
         'X-Riot-Entitlements-JWT': entitlements,
-        'Authorization': 'Bearer $accessToken'
+        'Authorization': 'Bearer $accessToken',
+        ...platformHeaders,
       },
     );
     final progress = PlayerXP.fromJson(jsonDecode(xpRequest.body));
@@ -416,6 +436,7 @@ class RiotService {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $accessToken',
         'X-Riot-Entitlements-JWT': entitlements,
+        ...platformHeaders,
       },
       body: jsonEncode(
         <String>[userId],
@@ -429,6 +450,7 @@ class RiotService {
       headers: {
         "X-Riot-Entitlements-JWT": entitlements,
         "Authorization": "Bearer $accessToken",
+        ...platformHeaders,
       },
     );
 
@@ -552,6 +574,7 @@ class RiotService {
         'Content-Type': 'application/json',
         "X-Riot-Entitlements-JWT": entitlements,
         "Authorization": "Bearer $accessToken",
+        ...platformHeaders,
       },
     );
 

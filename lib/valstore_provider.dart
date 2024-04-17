@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:valstore/models/bundle_display_data.dart';
 import 'package:valstore/models/player.dart';
 import 'package:valstore/models/valstore.dart';
+import 'package:valstore/services/inofficial_valorant_api.dart';
 import 'package:valstore/services/riot_service.dart';
 
 import 'services/firestore_service.dart';
@@ -32,7 +33,9 @@ class ValstoreProvider extends ChangeNotifier {
 
   Future<Valstore> initValstore() async {
     RiotService.playerShop = null;
-
+    RiotService.platformHeaders["X-Riot-ClientVersion"] =
+        (await InofficialValorantAPI()
+            .getCurrentVersion())["riotClientVersion"];
     RiotService.userOffers = await RiotService.getUserOffers();
 
     _instance = Valstore();
