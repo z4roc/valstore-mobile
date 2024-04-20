@@ -296,7 +296,9 @@ class RiotService {
 
   static Future<PlayerShop> getStore() async {
     if (playerShop != null) {
-      return playerShop!;
+      if (playerShop!.lastUpdated.difference(DateTime.now()).inHours < 1) {
+        return playerShop!;
+      }
     }
 
     //ttps://pd.eu.a.pvp.net/store/v2/storefront/46982260-daba-5fd8-b264-664c3bca700a/
@@ -326,7 +328,8 @@ class RiotService {
         shop.add(FirebaseSkin());
       }
     }
-    playerShop = PlayerShop(storeRemaining: shopRemains, skins: shop);
+    playerShop = PlayerShop(
+        storeRemaining: shopRemains, skins: shop, lastUpdated: DateTime.now());
     return playerShop!;
   }
 

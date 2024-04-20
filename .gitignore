@@ -47,3 +47,8 @@ app.*.map.json
 
 /lib/firebase_options.dart
 
+/android/
+/ios/
+
+
+/upload-keystore.jks
