@@ -134,6 +134,7 @@ class FireStoreService {
     }
 
     for (var element in uuids) {
+      final itemUuid = element.offer?.rewards?[0].itemID;
       final docRef =
           _db.collection("skins").doc(element.offer?.rewards?[0].itemID);
 
@@ -170,6 +171,7 @@ class FireStoreService {
             });
           }
         }
+
         doc = (await docRef.get());
       }
 

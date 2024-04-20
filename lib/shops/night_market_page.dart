@@ -20,13 +20,24 @@ class _NightMarketPageState extends State<NightMarketPage> {
   Widget build(BuildContext context) {
     final state = Provider.of<ValstoreProvider>(context);
 
-    final nm = state.getInstance.nightMarket;
-
-    if (nm != null) {
-      return nightMarket(nm);
-    } else {
-      return noNightMarket();
-    }
+    return FutureBuilder<bool>(
+        future: state.getNightMarket(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return MediaQuery.removePadding(
+              removeTop: true,
+              child: nightMarket(state.getInstance.nightMarket!),
+              context: context,
+            );
+          }
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else {
+            return noNightMarket();
+          }
+        });
   }
 }
 
@@ -102,7 +113,7 @@ Widget nightMarket(NightMarket store) => Container(
               store.skins?[index]?.skinData?.contentTier?.color != null
                   ? store.skins![index]!.skinData!.contentTier!.color
                   : "252525";
-          final Color color = HexColor(colorString!).withOpacity(.7);
+          final Color color = HexColor(colorString!);
           final skin = store.skins![index]!;
           return NightMarketItemTile(skin: skin, color: color);
         },
@@ -141,20 +152,24 @@ class NightMarketItemTile extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.rectangle,
               borderRadius: BorderRadius.circular(5),
-              boxShadow: const [
+              boxShadow: [
                 BoxShadow(
-                  color: Colors.black,
+                  color: Colors.grey.shade600,
                   blurRadius: 1,
-                )
+                ),
               ],
+              border: Border.all(
+                color: Colors.white,
+                width: .2,
+              ),
               gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
+                begin: Alignment.centerLeft,
+                end: Alignment.topRight,
                 colors: [
                   color
-                      .withBlue((color.blue / 3).round())
-                      .withRed((color.red / 3).round())
-                      .withGreen((color.green / 3).round()),
+                      .withBlue((color.blue / 4).round())
+                      .withRed((color.red / 4).round())
+                      .withGreen((color.green / 4).round()),
                   color
                       .withBlue((color.blue / 2).round())
                       .withRed((color.red / 2).round())
@@ -168,9 +183,10 @@ class NightMarketItemTile extends StatelessWidget {
               image: DecorationImage(
                 alignment: Alignment.bottomLeft,
                 fit: BoxFit.contain,
-                opacity: .2,
+                opacity: skin.skinData?.contentTier?.icon != null ? .2 : 0,
                 image: NetworkImage(
-                  skin.skinData!.contentTier!.icon!,
+                  skin.skinData?.contentTier?.icon ??
+                      "https://www2.tuhh.de/zll/wp-content/uploads/placeholder.png",
                 ),
               ),
             ),
@@ -204,7 +220,7 @@ class NightMarketItemTile extends StatelessWidget {
                   tag: skin.skinData!.name!,
                   child: Image.network(
                     skin.skinData!.icon!,
-                    height: 100,
+                    height: 90,
                   ),
                 ),
                 const Spacer(),

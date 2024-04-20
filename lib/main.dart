@@ -15,7 +15,6 @@ import 'package:workmanager/workmanager.dart';
 void callbackDispatcher() {
   Workmanager().executeTask((taskName, inputData) async {
     try {
-      if (notifications == null) notifications.initialize(initSettings);
       if (Firebase.apps.isEmpty) {
         await Firebase.initializeApp(
           name: "notification",

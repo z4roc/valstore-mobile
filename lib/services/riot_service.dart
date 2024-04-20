@@ -26,6 +26,8 @@ import 'package:webview_cookie_manager/webview_cookie_manager.dart';
 
 class RiotService {
   static String region = "eu";
+  static String newLoginUrl =
+      "https://auth.riotgames.com/authorize?redirect_uri=https%3A%2F%2Fplayvalorant.com%2Fopt_in&client_id=play-valorant-web-prod&response_type=token%20id_token&nonce=1&scope=account%20openid";
   static String loginUrl =
       'https://auth.riotgames.com/login#client_id=play-valorant-web-prod&nonce=1&redirect_uri=https%3A%2F%2Fplayvalorant.com%2Fopt_in&response_type=token%20id_token';
   static String entitlementsUri =
@@ -162,7 +164,7 @@ class RiotService {
     final prefs = await SharedPreferences.getInstance();
     String version = "";
     try {
-      version = await InofficialValorantAPI().getCurrentVersion();
+      version = (await InofficialValorantAPI().getCurrentVersion())['version'];
     } catch (e) {
       version = "07.00.00.913116";
     }
@@ -206,7 +208,8 @@ class RiotService {
           "https://pd.$region.a.pvp.net/personalization/v2/players/$userId/playerloadout"),
       headers: {
         'X-Riot-Entitlements-JWT': entitlements,
-        'Authorization': 'Bearer $accessToken'
+        'Authorization': 'Bearer $accessToken',
+        ...platformHeaders,
       },
     );
 
@@ -278,9 +281,24 @@ class RiotService {
     return skins;
   }
 
+  static Map<dynamic, String> clientPlatform = {
+    "platformType": "PC",
+    "platformOS": "Windows",
+    "platformOSVersion": "10.0.19042.1.256.64bit",
+    "platformChipset": "Unknown",
+  };
+
+  static Map<dynamic, String> platformHeaders = {
+    "X-Riot-ClientVersion": "release-08.07-shipping-9-2444158",
+    "X-Riot-ClientPlatform":
+        const Base64Encoder().convert(utf8.encode(jsonEncode(clientPlatform)))
+  };
+
   static Future<PlayerShop> getStore() async {
     if (playerShop != null) {
-      return playerShop!;
+      if (playerShop!.lastUpdated.difference(DateTime.now()).inHours < 1) {
+        return playerShop!;
+      }
     }
 
     //ttps://pd.eu.a.pvp.net/store/v2/storefront/46982260-daba-5fd8-b264-664c3bca700a/
@@ -289,7 +307,8 @@ class RiotService {
       Uri.parse(getStoreLink(userId, region)),
       headers: {
         'X-Riot-Entitlements-JWT': entitlements,
-        'Authorization': 'Bearer $accessToken'
+        'Authorization': 'Bearer $accessToken',
+        ...platformHeaders,
       },
     );
 
@@ -309,7 +328,8 @@ class RiotService {
         shop.add(FirebaseSkin());
       }
     }
-    playerShop = PlayerShop(storeRemaining: shopRemains, skins: shop);
+    playerShop = PlayerShop(
+        storeRemaining: shopRemains, skins: shop, lastUpdated: DateTime.now());
     return playerShop!;
   }
 
@@ -322,7 +342,8 @@ class RiotService {
       Uri.parse(getStoreLink(userId, region)),
       headers: {
         'X-Riot-Entitlements-JWT': entitlements,
-        'Authorization': 'Bearer $accessToken'
+        'Authorization': 'Bearer $accessToken',
+        ...platformHeaders,
       },
     );
 
@@ -356,7 +377,8 @@ class RiotService {
       Uri.parse(getStoreLink(userId, region)),
       headers: {
         'X-Riot-Entitlements-JWT': entitlements,
-        'Authorization': 'Bearer $accessToken'
+        'Authorization': 'Bearer $accessToken',
+        ...platformHeaders,
       },
     );
 
@@ -368,7 +390,8 @@ class RiotService {
       Uri.parse("https://pd.eu.a.pvp.net/store/v1/offers/"),
       headers: {
         'X-Riot-Entitlements-JWT': entitlements,
-        'Authorization': 'Bearer $accessToken'
+        'Authorization': 'Bearer $accessToken',
+        ...platformHeaders,
       },
     );
 
@@ -383,7 +406,8 @@ class RiotService {
       Uri.parse(getStoreLink(userId, region)),
       headers: {
         'X-Riot-Entitlements-JWT': entitlements,
-        'Authorization': 'Bearer $accessToken'
+        'Authorization': 'Bearer $accessToken',
+        ...platformHeaders,
       },
     );
 
@@ -399,10 +423,10 @@ class RiotService {
       Uri.parse("https://pd.$region.a.pvp.net/account-xp/v1/players/$userId"),
       headers: {
         'X-Riot-Entitlements-JWT': entitlements,
-        'Authorization': 'Bearer $accessToken'
+        'Authorization': 'Bearer $accessToken',
+        ...platformHeaders,
       },
     );
-
     final progress = PlayerXP.fromJson(jsonDecode(xpRequest.body));
 
     return progress.progress?.level ?? 0;
@@ -415,6 +439,7 @@ class RiotService {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $accessToken',
         'X-Riot-Entitlements-JWT': entitlements,
+        ...platformHeaders,
       },
       body: jsonEncode(
         <String>[userId],
@@ -428,6 +453,7 @@ class RiotService {
       headers: {
         "X-Riot-Entitlements-JWT": entitlements,
         "Authorization": "Bearer $accessToken",
+        ...platformHeaders,
       },
     );
 
@@ -451,6 +477,17 @@ class RiotService {
         puuid: userResult[0]['Subject'],
         region: RiotService.region,
       );
+
+      if (info.card?.id == "00000000-0000-0000-0000-000000000000") {
+        info.card = Card(
+            small:
+                "https://media.valorant-api.com/playercards/9fb348bc-41a0-91ad-8a3e-818035c4e561/smallart.png",
+            large:
+                "https://media.valorant-api.com/playercards/9fb348bc-41a0-91ad-8a3e-818035c4e561/largeart.png",
+            wide:
+                "https://media.valorant-api.com/playercards/9fb348bc-41a0-91ad-8a3e-818035c4e561/wideart.png",
+            id: "9fb348bc-41a0-91ad-8a3e-818035c4e561");
+      }
 
       final levelBorder = (await InofficialValorantAPI().getLevelBorders())
           .borders
@@ -540,6 +577,7 @@ class RiotService {
         'Content-Type': 'application/json',
         "X-Riot-Entitlements-JWT": entitlements,
         "Authorization": "Bearer $accessToken",
+        ...platformHeaders,
       },
     );
 

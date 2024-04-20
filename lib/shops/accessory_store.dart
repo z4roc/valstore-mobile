@@ -41,7 +41,8 @@ class _AccessoryPageState extends State<AccessoryPage> {
                 physics: const BouncingScrollPhysics(),
                 itemBuilder: (context, index) {
                   return AccessoryItem(
-                    skin: snapshot.data?[index] ?? FirebaseSkin(),
+                    skin: snapshot.data?[index] ??
+                        FirebaseSkin(name: "Error", cost: 0, icon: null),
                     color: const Color.fromARGB(255, 78, 72, 94),
                   );
                 },
@@ -157,11 +158,17 @@ class AccessoryItem extends StatelessWidget {
                   height: 5,
                 ),
                 Hero(
-                  tag: skin.name ?? "",
-                  child: Image.network(
-                    skin.icon!,
-                    height: 100,
-                  ),
+                  tag: skin.name ?? "Unknown",
+                  child: skin.icon != null
+                      ? Image.network(
+                          skin.icon ??
+                              "https://www2.tuhh.de/zll/wp-content/uploads/placeholder.png",
+                          height: 100,
+                        )
+                      : Image.asset(
+                          "assets/playertitle.png",
+                          height: 100,
+                        ),
                 ),
                 const Spacer(),
                 Row(

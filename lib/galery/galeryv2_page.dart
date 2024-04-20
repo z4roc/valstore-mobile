@@ -78,7 +78,7 @@ class _GaleryPageState extends State<GaleryPage> {
                           } else {
                             final valstore = provider.getInstance;
 
-                            final offer = valstore.localOffers.offers
+                            final offer = valstore.localOffers?.offers
                                 ?.where((element) =>
                                     element.offerID ==
                                     skins[index].levels?[0].uuid)
@@ -206,7 +206,7 @@ class SkinSearchDelegate extends SearchDelegate {
                         .getSkinById(skins[index].levels?[0].uuid ?? "");
 
                     if (skin == null) {
-                      final offer = provider.getInstance.localOffers.offers
+                      final offer = provider.getInstance.localOffers?.offers
                           ?.where((element) =>
                               element.offerID == skins[index].levels?[0].uuid)
                           .firstOrNull;

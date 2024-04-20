@@ -6,19 +6,19 @@ import 'package:valstore/models/player.dart';
 import 'package:valstore/models/val_api_skins.dart';
 
 class Valstore {
-  final PlayerShop playerShop;
-  final Player player;
-  final NightMarket? nightMarket;
-  final List<BundleDisplayData?> bundles;
-  final List<Data?>? playerInventory;
-  final LocalOffers localOffers;
+  PlayerShop? playerShop;
+  Player? player;
+  NightMarket? nightMarket;
+  List<BundleDisplayData?>? bundles;
+  List<Data?>? playerInventory;
+  LocalOffers? localOffers;
 
   Valstore({
-    required this.playerShop,
-    required this.player,
+    this.playerShop,
+    this.player,
     this.nightMarket,
-    required this.bundles,
-    required this.playerInventory,
-    required this.localOffers,
+    this.bundles,
+    this.playerInventory,
+    this.localOffers,
   });
 }

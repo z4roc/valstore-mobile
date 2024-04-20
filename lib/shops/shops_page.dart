@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:valstore/models/valstore.dart';
 import 'package:valstore/galery/favorites_page.dart';
 import 'package:valstore/galery/galeryv2_page.dart';
+import 'package:valstore/services/riot_service.dart';
 import 'package:valstore/settings/settings_page.dart';
 import 'package:valstore/shops/accessory_store.dart';
 import 'package:valstore/shops/night_market_page.dart';
@@ -83,7 +84,7 @@ class _ShopsPageState extends State<ShopsPage> {
           ),
           GButton(
             icon: FontAwesomeIcons.grip,
-            text: "Galery",
+            text: "Gallery",
           )
         ],
       ),
@@ -94,12 +95,36 @@ class _ShopsPageState extends State<ShopsPage> {
             final state = Provider.of<ValstoreProvider>(context);
             final valstore = state.getInstance;
 
-            final time = DateTime.now().millisecondsSinceEpoch +
-                ((valstore.playerShop.storeRemaining ?? 0) * 1000);
-            final dif = DateTime.fromMillisecondsSinceEpoch(time)
+            final store = valstore.playerShop!;
+
+            final timeStore = DateTime.now().millisecondsSinceEpoch +
+                ((store.storeRemaining ?? 0) * 1000);
+            final difStore = DateTime.fromMillisecondsSinceEpoch(timeStore)
                     .difference(DateTime.now())
                     .inHours /
                 24;
+            final timeAccessories = DateTime.now().millisecondsSinceEpoch +
+                ((RiotService.userOffers?.accessoryStore
+                            ?.accessoryStoreRemainingDurationInSeconds ??
+                        0) *
+                    1000);
+
+            final difAccessories =
+                DateTime.fromMillisecondsSinceEpoch(timeAccessories)
+                        .difference(DateTime.now())
+                        .inHours /
+                    24;
+
+            final timeNM = valstore.nightMarket == null
+                ? null
+                : DateTime.now().millisecondsSinceEpoch +
+                    ((valstore.nightMarket?.durationRemain ?? 0) * 1000);
+            final difNM = timeNM == null
+                ? null
+                : DateTime.fromMillisecondsSinceEpoch(timeNM)
+                        .difference(DateTime.now())
+                        .inHours /
+                    24;
 
             return WillPopScope(
               onWillPop: () async => false,
@@ -122,14 +147,35 @@ class _ShopsPageState extends State<ShopsPage> {
                                 width: 12,
                               ),
                               AccountIcon(
-                                  valstore: valstore,
-                                  currentPage: _currentIndex),
+                                valstore: valstore,
+                                currentPage: _currentIndex,
+                              ),
                               const Spacer(),
                               AnimatedOpacity(
                                 opacity: _currentIndex == 0 ? 1 : 0.0,
                                 duration: const Duration(milliseconds: 500),
                                 child: _currentIndex == 0
-                                    ? TimerWidget(dif: dif, time: time)
+                                    ? TimerWidget(
+                                        dif: difStore, time: timeStore)
+                                    : const SizedBox(),
+                              ),
+                              AnimatedOpacity(
+                                opacity: _currentIndex == 1 ? 1 : 0,
+                                duration: const Duration(milliseconds: 500),
+                                child: _currentIndex == 1
+                                    ? NightMarketTimer(
+                                        dif: difAccessories,
+                                        time: timeAccessories)
+                                    : const SizedBox(),
+                              ),
+                              AnimatedOpacity(
+                                opacity: _currentIndex == 2 ? 1 : 0,
+                                duration: const Duration(
+                                  milliseconds: 500,
+                                ),
+                                child: _currentIndex == 2 && difNM != null
+                                    ? NightMarketTimer(
+                                        dif: difNM, time: timeNM ?? 0)
                                     : const SizedBox(),
                               ),
                               const Spacer(),
@@ -226,7 +272,7 @@ class TimerWidget extends StatelessWidget {
     return Column(
       children: [
         const Text(
-          "Next update in",
+          "Ends in",
           style: TextStyle(
             fontSize: 15,
           ),
@@ -260,6 +306,45 @@ class TimerWidget extends StatelessWidget {
             ),
             CountdownTimer(
               endTime: time,
+              textStyle: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            /*const SizedBox(
+              width: 10,
+            ),*/
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class NightMarketTimer extends StatelessWidget {
+  const NightMarketTimer({super.key, required this.time, required this.dif});
+
+  final int time;
+  final double dif;
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const Text(
+          "Ends in",
+          style: TextStyle(
+            fontSize: 15,
+          ),
+        ),
+        const SizedBox(
+          height: 2,
+        ),
+        Row(
+          children: [
+            CountdownTimer(
+              endTime: time,
+              widgetBuilder: (context, time) =>
+                  Text("${time?.days ?? 0} Days ${time?.hours}h ${time?.min}m"),
               textStyle: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
@@ -336,13 +421,13 @@ class AccountIcon extends StatelessWidget {
                 borderRadius: BorderRadius.circular(5),
               ),
               child: Hero(
-                tag: valstore.player.playerInfo?.card?.small ??
+                tag: valstore.player?.playerInfo?.card?.small ??
                     "https://media.valorant-api.com/playercards/efaf392a-412d-0d4f-4413-ddbdb70d841d/displayicon.png",
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(5),
                   child: CachedNetworkImage(
                     fit: BoxFit.contain,
-                    imageUrl: valstore.player.playerInfo?.card?.small ??
+                    imageUrl: valstore.player?.playerInfo?.card?.small ??
                         "https://media.valorant-api.com/playercards/efaf392a-412d-0d4f-4413-ddbdb70d841d/displayicon.png",
                   ),
                 ),
@@ -361,11 +446,11 @@ class AccountIcon extends StatelessWidget {
                     Expanded(
                       child: Hero(
                         tag:
-                            "${valstore.player.playerInfo?.name ?? ""}#${valstore.player.playerInfo?.tag ?? ""}",
+                            "${valstore.player?.playerInfo?.name ?? ""}#${valstore.player?.playerInfo?.tag ?? ""}",
                         child: Text(
                           overflow: TextOverflow.ellipsis,
                           textAlign: TextAlign.left,
-                          "${valstore.player.playerInfo?.name ?? ""}#${valstore.player.playerInfo?.tag ?? ""}",
+                          "${valstore.player?.playerInfo?.name ?? ""}#${valstore.player?.playerInfo?.tag ?? ""}",
                           style:
                               Theme.of(context).primaryTextTheme.displayMedium,
                         ),
@@ -385,7 +470,7 @@ class AccountIcon extends StatelessWidget {
                                   width: 5,
                                 ),
                                 Text(
-                                  "${valstore.player.wallet?.valorantPoints ?? 0}",
+                                  "${valstore.player?.wallet?.valorantPoints ?? 0}",
                                   style: const TextStyle(
                                     fontSize: 12,
                                   ),
@@ -403,7 +488,7 @@ class AccountIcon extends StatelessWidget {
                                   width: 5,
                                 ),
                                 Text(
-                                  "${valstore.player.wallet?.radianitePoints ?? 0}",
+                                  "${valstore.player?.wallet?.radianitePoints ?? 0}",
                                   style: const TextStyle(
                                     fontSize: 12,
                                   ),
@@ -424,7 +509,7 @@ class AccountIcon extends StatelessWidget {
                                   width: 5,
                                 ),
                                 Text(
-                                  "${valstore.player.wallet?.kingdomCredits ?? 0}",
+                                  "${valstore.player?.wallet?.kingdomCredits ?? 0}",
                                   style: const TextStyle(
                                     fontSize: 12,
                                   ),
