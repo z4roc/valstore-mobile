@@ -11,6 +11,7 @@ import 'package:valstore/models/valstore.dart';
 import 'package:valstore/galery/favorites_page.dart';
 import 'package:valstore/galery/galeryv2_page.dart';
 import 'package:valstore/services/riot_service.dart';
+import 'package:valstore/services/riot_service.dart';
 import 'package:valstore/settings/settings_page.dart';
 import 'package:valstore/shops/accessory_store.dart';
 import 'package:valstore/shops/night_market_page.dart';

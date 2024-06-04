@@ -170,6 +170,7 @@ class RiotService {
     String version = "";
     try {
       version = (await InofficialValorantAPI().getCurrentVersion())['version'];
+      version = (await InofficialValorantAPI().getCurrentVersion())['version'];
     } catch (e) {
       version = "08.09.00.2521387";
     }
@@ -212,6 +213,8 @@ class RiotService {
           "https://pd.$region.a.pvp.net/personalization/v2/players/$userId/playerloadout"),
       headers: {
         'X-Riot-Entitlements-JWT': entitlements,
+        'Authorization': 'Bearer $accessToken',
+        ...platformHeaders,
         'Authorization': 'Bearer $accessToken',
         ...platformHeaders,
       },
@@ -303,6 +306,9 @@ class RiotService {
       if (playerShop!.lastUpdated.difference(DateTime.now()).inHours < 1) {
         return playerShop!;
       }
+      if (playerShop!.lastUpdated.difference(DateTime.now()).inHours < 1) {
+        return playerShop!;
+      }
     }
 
     //ttps://pd.eu.a.pvp.net/store/v2/storefront/46982260-daba-5fd8-b264-664c3bca700a/
@@ -311,6 +317,8 @@ class RiotService {
       Uri.parse(getStoreLink(userId, region!)),
       headers: {
         'X-Riot-Entitlements-JWT': entitlements,
+        'Authorization': 'Bearer $accessToken',
+        ...platformHeaders,
         'Authorization': 'Bearer $accessToken',
         ...platformHeaders,
       },
@@ -334,6 +342,8 @@ class RiotService {
     }
     playerShop = PlayerShop(
         storeRemaining: shopRemains, skins: shop, lastUpdated: DateTime.now());
+    playerShop = PlayerShop(
+        storeRemaining: shopRemains, skins: shop, lastUpdated: DateTime.now());
     return playerShop!;
   }
 
@@ -346,6 +356,8 @@ class RiotService {
       Uri.parse(getStoreLink(userId, region!)),
       headers: {
         'X-Riot-Entitlements-JWT': entitlements,
+        'Authorization': 'Bearer $accessToken',
+        ...platformHeaders,
         'Authorization': 'Bearer $accessToken',
         ...platformHeaders,
       },
@@ -383,6 +395,8 @@ class RiotService {
         'X-Riot-Entitlements-JWT': entitlements,
         'Authorization': 'Bearer $accessToken',
         ...platformHeaders,
+        'Authorization': 'Bearer $accessToken',
+        ...platformHeaders,
       },
     );
 
@@ -394,6 +408,8 @@ class RiotService {
       Uri.parse("https://pd.$region.a.pvp.net/store/v1/offers/"),
       headers: {
         'X-Riot-Entitlements-JWT': entitlements,
+        'Authorization': 'Bearer $accessToken',
+        ...platformHeaders,
         'Authorization': 'Bearer $accessToken',
         ...platformHeaders,
       },
@@ -410,6 +426,8 @@ class RiotService {
       Uri.parse(getStoreLink(userId, region!)),
       headers: {
         'X-Riot-Entitlements-JWT': entitlements,
+        'Authorization': 'Bearer $accessToken',
+        ...platformHeaders,
         'Authorization': 'Bearer $accessToken',
         ...platformHeaders,
       },
@@ -429,6 +447,8 @@ class RiotService {
         'X-Riot-Entitlements-JWT': entitlements,
         'Authorization': 'Bearer $accessToken',
         ...platformHeaders,
+        'Authorization': 'Bearer $accessToken',
+        ...platformHeaders,
       },
     );
     final progress = PlayerXP.fromJson(jsonDecode(xpRequest.body));
@@ -444,6 +464,7 @@ class RiotService {
         'Authorization': 'Bearer $accessToken',
         'X-Riot-Entitlements-JWT': entitlements,
         ...platformHeaders,
+        ...platformHeaders,
       },
       body: jsonEncode(
         <String>[userId],
@@ -457,6 +478,7 @@ class RiotService {
       headers: {
         "X-Riot-Entitlements-JWT": entitlements,
         "Authorization": "Bearer $accessToken",
+        ...platformHeaders,
         ...platformHeaders,
       },
     );
@@ -481,6 +503,17 @@ class RiotService {
         puuid: userResult[0]['Subject'],
         region: RiotService.region,
       );
+
+      if (info.card?.id == "00000000-0000-0000-0000-000000000000") {
+        info.card = Card(
+            small:
+                "https://media.valorant-api.com/playercards/9fb348bc-41a0-91ad-8a3e-818035c4e561/smallart.png",
+            large:
+                "https://media.valorant-api.com/playercards/9fb348bc-41a0-91ad-8a3e-818035c4e561/largeart.png",
+            wide:
+                "https://media.valorant-api.com/playercards/9fb348bc-41a0-91ad-8a3e-818035c4e561/wideart.png",
+            id: "9fb348bc-41a0-91ad-8a3e-818035c4e561");
+      }
 
       if (info.card?.id == "00000000-0000-0000-0000-000000000000") {
         info.card = Card(
@@ -676,6 +709,7 @@ class RiotService {
         'Content-Type': 'application/json',
         "X-Riot-Entitlements-JWT": entitlements,
         "Authorization": "Bearer $accessToken",
+        ...platformHeaders,
         ...platformHeaders,
       },
     );

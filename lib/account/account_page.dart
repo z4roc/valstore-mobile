@@ -308,14 +308,6 @@ class DashboardPage extends StatelessWidget {
                                     await FirebaseAuthService().signOut();
                                   }
 
-                                  RiotService.accessToken = "";
-                                  RiotService.entitlements = "";
-                                  RiotService.region = null;
-                                  RiotService.playerShop = null;
-                                  RiotService.nightMarket = null;
-                                  RiotService.playerLoadout = null;
-                                  RiotService.userId = "";
-
                                   Navigator.of(context).pushNamedAndRemoveUntil(
                                       "/", (route) => false);
                                   //await Restart.restartApp();
