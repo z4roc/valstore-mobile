@@ -1,8 +1,13 @@
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:valstore/services/riot_service.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../main.dart';
 
@@ -24,24 +29,75 @@ class _HomeScreenState extends State<HomeScreen> {
     prefs = await SharedPreferences.getInstance();
     String? cookie = prefs.getString("cookie");
     String? region = prefs.getString("region");
+
+    final versionReq = await get(Uri.parse("https://valostore.zaroc.de/api"));
+
+    if (versionReq.statusCode == 200) {
+      String? version = jsonDecode(versionReq.body)["app_version"];
+      PackageInfo packageInfo = await PackageInfo.fromPlatform();
+
+      if (version != packageInfo.version && version != null) {
+        if (kDebugMode) {
+          print(packageInfo.version);
+        }
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text("Update available"),
+              content: const Text(
+                  "An update is available for ValStore. Please download the latest version from Google Play or GitHub."),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    launchUrl(
+                      Uri.parse(
+                          "https://play.google.com/store/apps/details?id=de.zaroc.valstore&hl=de"),
+                    );
+                  },
+                  child: const Text("Google Play"),
+                ),
+                TextButton(
+                  onPressed: () {
+                    launchUrl(
+                      Uri.parse(
+                          "https://github.com/z4roc/valstore-mobile/releases"),
+                    );
+                  },
+                  child: const Text("GitHub"),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text("Close"),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    }
+
     if (!(login ?? false)) {
       return;
     }
 
-    if (cookie != null && region != null && login != null && login) {
+    if (cookie != null && region != null) {
       try {
         await RiotService.reuathenticateUser();
+
         navigatorKey.currentState!.pushNamed("/store");
       } catch (e) {
-        navigatorKey.currentState!.pushNamed("/login");
+        navigatorKey.currentState!.pushNamed("/region");
       }
-    } else if (login != null && !login) {
-      navigatorKey.currentState!.pushNamed("/login");
     } else if (region == null) {
       navigatorKey.currentState!.pushNamed("/region");
+    } else {
+      navigatorKey.currentState!.pushNamed("/login");
     }
     setState(() {
-      isChecked = login ?? false;
+      // isChecked = login ?? false;
     });
   }
 
@@ -163,12 +219,13 @@ class _HomeScreenState extends State<HomeScreen> {
                           });
                           prefs.setBool('login', value!);
                         },
-                        fillColor: MaterialStateProperty.resolveWith(
+                        fillColor: WidgetStateProperty.resolveWith(
                           (states) => const Color.fromARGB(255, 255, 70, 85),
                         ),
                         checkColor: Colors.white,
                       ),
-                      const Text('Automatically sign me in next time'),
+                      const Text(
+                          'Directly navigate to login page on next start'),
                     ],
                   ),
                   Row(

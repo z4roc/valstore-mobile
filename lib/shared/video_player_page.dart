@@ -17,7 +17,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
   ChewieController? chewieController;
 
   Future<void> initializePlayer() async {
-    _controller = VideoPlayerController.network(widget.url);
+    _controller = VideoPlayerController.networkUrl(Uri.parse(widget.url));
     await _controller.initialize();
     createChewieController();
     setState(() {});

@@ -3,8 +3,12 @@ import 'package:valstore/models/val_api_skins.dart';
 class PlayerShop {
   int? storeRemaining;
   List<FirebaseSkin> skins;
+  DateTime lastUpdated;
 
-  PlayerShop({required this.storeRemaining, required this.skins});
+  PlayerShop(
+      {required this.storeRemaining,
+      required this.skins,
+      required this.lastUpdated});
 }
 
 class FirebaseSkin {

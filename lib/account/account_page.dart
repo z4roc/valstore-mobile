@@ -94,247 +94,262 @@ class DashboardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<ValstoreProvider>(context);
-    p.PlayerInfo info = provider.getInstance.player.playerInfo!;
-    p.Player user = provider.getInstance.player;
-    LevelBorder border = provider.getInstance.player.levelBorder!;
 
-    return Column(
-      children: [
-        //BannerCard(info: info, border: border),
-        Container(
-          height: 500,
-          width: double.infinity,
-          padding: const EdgeInsets.all(10),
-          child: Card(
-            color: const Color.fromARGB(255, 31, 28, 37),
-            elevation: 1,
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      AccountBadge(info: info, border: border),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      Expanded(
-                        child: Hero(
-                          tag: "${info.name ?? ""}#${info.tag}",
-                          child: Text(
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                            "${info.name ?? ""}#${info.tag}",
-                            style:
-                                Theme.of(context).primaryTextTheme.displayLarge,
+    return FutureBuilder(
+        future: provider.getPlayerInfo(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            p.PlayerInfo info = provider.getInstance.player!.playerInfo!;
+            p.Player user = provider.getInstance.player!;
+            LevelBorder border =
+                provider.getInstance.player?.levelBorder ?? LevelBorder();
+            return Column(
+              children: [
+                //BannerCard(info: info, border: border),
+                Container(
+                  height: 500,
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(10),
+                  child: Card(
+                    color: const Color.fromARGB(255, 31, 28, 37),
+                    elevation: 1,
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              AccountBadge(info: info, border: border),
+                              const SizedBox(
+                                width: 20,
+                              ),
+                              Expanded(
+                                child: Hero(
+                                  tag: "${info.name ?? ""}#${info.tag}",
+                                  child: Text(
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    "${info.name ?? ""}#${info.tag}",
+                                    style: Theme.of(context)
+                                        .primaryTextTheme
+                                        .displayLarge,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        "Valorant Points",
-                        style: TextStyle(
-                          fontSize: 20,
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 5,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(1),
-                        child: Row(
-                          children: [
-                            CachedNetworkImage(
-                              height: 40,
-                              width: 40,
-                              imageUrl:
-                                  "https://media.valorant-api.com/currencies/85ad13f7-3d1b-5128-9eb2-7cd8ee0b5741/displayicon.png",
-                            ),
-                            const SizedBox(
-                              width: 20,
-                            ),
-                            Text(
-                              "${user.wallet?.valorantPoints ?? 0}",
-                              style: const TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.w600,
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                "Valorant Points",
+                                style: TextStyle(
+                                  fontSize: 20,
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        "Radianite Points",
-                        style: TextStyle(
-                          fontSize: 20,
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 5,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(1),
-                        child: Row(
-                          children: [
-                            CachedNetworkImage(
-                              height: 40,
-                              width: 40,
-                              imageUrl:
-                                  "https://media.valorant-api.com/currencies/e59aa87c-4cbf-517a-5983-6e81511be9b7/displayicon.png",
-                            ),
-                            const SizedBox(
-                              width: 20,
-                            ),
-                            Text(
-                              "${user.wallet?.radianitePoints ?? 0}",
-                              style: const TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.w600,
+                              const SizedBox(
+                                height: 5,
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        "Kingdom Credits",
-                        style: TextStyle(
-                          fontSize: 20,
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 5,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(1),
-                        child: Row(
-                          children: [
-                            CachedNetworkImage(
-                              height: 40,
-                              width: 40,
-                              imageUrl:
-                                  "https://media.valorant-api.com/currencies/85ca954a-41f2-ce94-9b45-8ca3dd39a00d/displayicon.png",
-                            ),
-                            const SizedBox(
-                              width: 20,
-                            ),
-                            Text(
-                              "${user.wallet?.kingdomCredits ?? 0}",
-                              style: const TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.w600,
+                              Padding(
+                                padding: const EdgeInsets.all(1),
+                                child: Row(
+                                  children: [
+                                    CachedNetworkImage(
+                                      height: 40,
+                                      width: 40,
+                                      imageUrl:
+                                          "https://media.valorant-api.com/currencies/85ad13f7-3d1b-5128-9eb2-7cd8ee0b5741/displayicon.png",
+                                    ),
+                                    const SizedBox(
+                                      width: 20,
+                                    ),
+                                    Text(
+                                      "${user.wallet?.valorantPoints ?? 0}",
+                                      style: const TextStyle(
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
+                            ],
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                "Radianite Points",
+                                style: TextStyle(
+                                  fontSize: 20,
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 5,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(1),
+                                child: Row(
+                                  children: [
+                                    CachedNetworkImage(
+                                      height: 40,
+                                      width: 40,
+                                      imageUrl:
+                                          "https://media.valorant-api.com/currencies/e59aa87c-4cbf-517a-5983-6e81511be9b7/displayicon.png",
+                                    ),
+                                    const SizedBox(
+                                      width: 20,
+                                    ),
+                                    Text(
+                                      "${user.wallet?.radianitePoints ?? 0}",
+                                      style: const TextStyle(
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                "Kingdom Credits",
+                                style: TextStyle(
+                                  fontSize: 20,
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 5,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(1),
+                                child: Row(
+                                  children: [
+                                    CachedNetworkImage(
+                                      height: 40,
+                                      width: 40,
+                                      imageUrl:
+                                          "https://media.valorant-api.com/currencies/85ca954a-41f2-ce94-9b45-8ca3dd39a00d/displayicon.png",
+                                    ),
+                                    const SizedBox(
+                                      width: 20,
+                                    ),
+                                    Text(
+                                      "${user.wallet?.kingdomCredits ?? 0}",
+                                      style: const TextStyle(
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
-                ],
-              ),
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(5),
-          child: TextButton(
-              onPressed: () async {
-                await launchUrl(
-                  Uri.parse(
-                      "https://support-valorant.riotgames.com/hc/en-us/articles/360045132434-Checking-Your-Purchase-History-"),
-                );
-              },
-              child: const Text("How much money did i spend on VALORANT?")),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(20),
-          child: ElevatedButton(
-            onPressed: () async {
-              await showDialog(
-                context: context,
-                builder: (context) {
-                  return AlertDialog(
-                    title: const Text("Sign out"),
-                    content:
-                        const Text("Are you sure that you want to sign out?"),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(5),
+                  child: TextButton(
+                      onPressed: () async {
+                        await launchUrl(
+                          Uri.parse(
+                              "https://support-valorant.riotgames.com/hc/en-us/articles/360045132434-Checking-Your-Purchase-History-"),
+                        );
+                      },
+                      child: const Text(
+                          "How much money did i spend on VALORANT?")),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      await showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: const Text("Sign out"),
+                            content: const Text(
+                                "Are you sure that you want to sign out?"),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text(
+                                  "Cancel",
+                                ),
+                                style: TextButton.styleFrom(
+                                  textStyle: const TextStyle(
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ),
+                              ElevatedButton(
+                                onPressed: () async {
+                                  await WebViewCookieManager().clearCookies();
+                                  await WebViewController().clearLocalStorage();
+                                  await WebViewController().reload();
+                                  final prefs =
+                                      await SharedPreferences.getInstance();
+                                  await Workmanager().cancelAll();
+                                  await prefs.clear();
+                                  if (FirebaseAuth.instance.currentUser !=
+                                      null) {
+                                    await FirebaseAuthService().signOut();
+                                  }
+
+                                  RiotService.accessToken = "";
+                                  RiotService.entitlements = "";
+                                  RiotService.region = null;
+                                  RiotService.playerShop = null;
+                                  RiotService.nightMarket = null;
+                                  RiotService.playerLoadout = null;
+                                  RiotService.userId = "";
+
+                                  Navigator.of(context).pushNamedAndRemoveUntil(
+                                      "/", (route) => false);
+                                  //await Restart.restartApp();
+                                },
+                                child: const Text("Yes"),
+                                style: ElevatedButton.styleFrom(
+                                  minimumSize: Size.zero,
+                                  textStyle: const TextStyle(
+                                    fontSize: 16,
+                                  ),
+                                  padding: const EdgeInsets.only(
+                                    left: 20,
+                                    right: 20,
+                                    top: 10,
+                                    bottom: 10,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
                         },
-                        child: const Text(
-                          "Cancel",
-                        ),
-                        style: TextButton.styleFrom(
-                          textStyle: const TextStyle(
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
-                      ElevatedButton(
-                        onPressed: () async {
-                          await WebViewCookieManager().clearCookies();
-                          await WebViewController().clearLocalStorage();
-                          await WebViewController().reload();
-                          final prefs = await SharedPreferences.getInstance();
-                          await Workmanager().cancelAll();
-                          await prefs.clear();
-                          if (FirebaseAuth.instance.currentUser != null) {
-                            await FirebaseAuthService().signOut();
-                          }
-
-                          RiotService.accessToken = "";
-                          RiotService.entitlements = "";
-                          RiotService.region = "eu";
-                          RiotService.playerShop = null;
-                          RiotService.nightMarket = null;
-                          RiotService.playerLoadout = null;
-                          RiotService.userId = "";
-
-                          Navigator.of(context)
-                              .pushNamedAndRemoveUntil("/", (route) => false);
-                          //await Restart.restartApp();
-                        },
-                        child: const Text("Yes"),
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: Size.zero,
-                          textStyle: const TextStyle(
-                            fontSize: 16,
-                          ),
-                          padding: const EdgeInsets.only(
-                            left: 20,
-                            right: 20,
-                            top: 10,
-                            bottom: 10,
-                          ),
-                        ),
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
-            child: const Text("Sign out"),
-          ),
-        ),
-      ],
-    );
+                      );
+                    },
+                    child: const Text("Sign out"),
+                  ),
+                ),
+              ],
+            );
+          } else {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        });
   }
 }
 
@@ -451,7 +466,7 @@ class AccountBadge extends StatelessWidget {
             decoration: BoxDecoration(
               image: DecorationImage(
                 image: NetworkImage(
-                  border.levelNumberAppearance!,
+                  border.levelNumberAppearance ?? "",
                 ),
               ),
             ),

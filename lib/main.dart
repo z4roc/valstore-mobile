@@ -15,7 +15,6 @@ import 'package:workmanager/workmanager.dart';
 void callbackDispatcher() {
   Workmanager().executeTask((taskName, inputData) async {
     try {
-      if (notifications == null) notifications.initialize(initSettings);
       if (Firebase.apps.isEmpty) {
         await Firebase.initializeApp(
           name: "notification",
@@ -27,7 +26,13 @@ void callbackDispatcher() {
 
       switch (taskName) {
         case "ValStoreStoreRenewal":
-          await RiotService.recheckStore();
+          try {
+            await RiotService.recheckStore();
+          } catch (e) {
+            if (kDebugMode) {
+              print(e);
+            }
+          }
           break;
         case "NightMarketRenewal":
           await RiotService.recheckNightmarket();
@@ -39,6 +44,9 @@ void callbackDispatcher() {
       }
       return Future.value(true);
     } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
       return Future.value(false);
     }
   });

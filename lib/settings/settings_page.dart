@@ -87,7 +87,7 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.only(left: 16.0, top: 8),
               child: ListTile(
                 visualDensity: VisualDensity.compact,
                 onTap: () async {
@@ -102,6 +102,24 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                 ),
                 leading: const Icon(FontAwesomeIcons.github),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0, bottom: 8, top: 4),
+              child: ListTile(
+                visualDensity: VisualDensity.compact,
+                onTap: () async {
+                  await launchUrl(
+                    Uri.parse("https://twitter.com/zaroc_dev"),
+                  );
+                },
+                title: const Text(
+                  "Follow Me on Twitter/X",
+                  style: TextStyle(
+                    fontSize: 16,
+                  ),
+                ),
+                leading: const Icon(FontAwesomeIcons.xTwitter),
               ),
             ),
             const Padding(
@@ -195,7 +213,7 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
             const Padding(
               padding: EdgeInsets.only(left: 16),
-              child: Text("ValStore 2.0.0"),
+              child: Text("ValStore 2.0.4"),
             ),
           ],
         ),
@@ -203,7 +221,7 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Padding switchTile(Future<void> enableNotificationFunction(bool on),
+  Padding switchTile(Future<void> Function(bool on) enableNotificationFunction,
       String content, bool state) {
     return Padding(
       padding: const EdgeInsets.all(5.0),

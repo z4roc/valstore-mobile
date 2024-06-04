@@ -49,8 +49,8 @@ class RegionPage extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () async {
-                final prefs = await SharedPreferences.getInstance();
-                prefs.setString("region", RiotService.region);
+                //final prefs = await SharedPreferences.getInstance();
+                //prefs.setString("region", RiotService.region);
                 navigatorKey.currentState!.pushNamed("/login");
               },
               child: const Text("Continue"),
@@ -84,12 +84,13 @@ class _DropdownButtonExampleState extends State<DropdownButtonExample> {
         fontSize: 18,
       ),
       underline: const SizedBox(),
-      onChanged: (String? value) {
-        // This is called when the user selects an item.
+      onChanged: (String? value) async {
         setState(() {
           dropdownValue = value!;
           RiotService.region = value;
         });
+        final prefs = await SharedPreferences.getInstance();
+        prefs.setString("region", value!);
       },
       items: list.map<DropdownMenuItem<String>>(
         (String value) {

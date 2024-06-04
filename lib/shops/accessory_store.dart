@@ -13,13 +13,12 @@ class AccessoryPage extends StatefulWidget {
 
 class _AccessoryPageState extends State<AccessoryPage> {
   late Future<List<FirebaseSkin>> _skinsFuture;
-
+  late AccessoryStore store;
   @override
   void initState() {
     super.initState();
 
-    AccessoryStore store =
-        RiotService.userOffers?.accessoryStore ?? AccessoryStore();
+    store = RiotService.userOffers?.accessoryStore ?? AccessoryStore();
 
     _skinsFuture = FireStoreService().getSkinsById(
       store.accessoryStoreOffers,
@@ -41,8 +40,11 @@ class _AccessoryPageState extends State<AccessoryPage> {
                 physics: const BouncingScrollPhysics(),
                 itemBuilder: (context, index) {
                   return AccessoryItem(
-                    skin: snapshot.data?[index] ?? FirebaseSkin(),
+                    skin: snapshot.data?[index] ??
+                        FirebaseSkin(name: "Error", cost: 0, icon: null),
                     color: const Color.fromARGB(255, 78, 72, 94),
+                    cost: store.accessoryStoreOffers?[index].offer?.cost ??
+                        Cost(i85ad13f73d1b51289eb27cd8ee0b5741: 0),
                   );
                 },
                 itemCount: snapshot.data?.length ?? 0,
@@ -60,14 +62,16 @@ class _AccessoryPageState extends State<AccessoryPage> {
 }
 
 class AccessoryItem extends StatelessWidget {
-  const AccessoryItem({
-    super.key,
-    required this.skin,
-    required this.color,
-  });
+  const AccessoryItem(
+      {super.key,
+      required this.skin,
+      required this.color,
+      required this.cost,
+      s});
 
   final FirebaseSkin skin;
   final Color color;
+  final Cost cost;
 
   @override
   Widget build(BuildContext context) {
@@ -157,11 +161,17 @@ class AccessoryItem extends StatelessWidget {
                   height: 5,
                 ),
                 Hero(
-                  tag: skin.name ?? "",
-                  child: Image.network(
-                    skin.icon!,
-                    height: 100,
-                  ),
+                  tag: skin.name ?? "Unknown",
+                  child: skin.icon != null
+                      ? Image.network(
+                          skin.icon ??
+                              "https://www2.tuhh.de/zll/wp-content/uploads/placeholder.png",
+                          height: 100,
+                        )
+                      : Image.asset(
+                          "assets/playertitle.png",
+                          height: 100,
+                        ),
                 ),
                 const Spacer(),
                 Row(
@@ -171,7 +181,7 @@ class AccessoryItem extends StatelessWidget {
                     ),
                     const Spacer(),
                     Text(
-                      skin.cost?.toString() ?? "",
+                      cost.i85ad13f73d1b51289eb27cd8ee0b5741.toString() ?? "",
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w500,

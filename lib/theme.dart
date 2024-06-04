@@ -8,7 +8,7 @@ ThemeData themeData = ThemeData(
       fontSize: 24,
       fontWeight: FontWeight.bold,
     ),
-    displayMedium: TextStyle(
+    displayMedium: TextStyle( 
       fontSize: 15,
       fontWeight: FontWeight.w700,
     ),
@@ -25,6 +25,7 @@ ThemeData themeData = ThemeData(
   scaffoldBackgroundColor: const Color.fromARGB(0, 37, 37, 52).withOpacity(.5),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
+      foregroundColor: Colors.white,
       minimumSize: const Size.fromHeight(50),
       backgroundColor: const Color.fromARGB(255, 255, 70, 85),
       shape: RoundedRectangleBorder(

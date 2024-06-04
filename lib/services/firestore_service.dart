@@ -170,6 +170,7 @@ class FireStoreService {
             });
           }
         }
+
         doc = (await docRef.get());
       }
 

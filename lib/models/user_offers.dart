@@ -82,9 +82,9 @@ class Bundle {
   String? dataAssetID;
   String? currencyID;
   List<Items>? items;
-  Null itemOffers;
-  Null totalBaseCost;
-  Null totalDiscountedCost;
+  int? itemOffers;
+  int? totalBaseCost;
+  int? totalDiscountedCost;
   int? totalDiscountPercent;
   int? durationRemainingInSeconds;
   bool? wholesaleOnly;
@@ -141,7 +141,7 @@ class Items {
   Item? item;
   int? basePrice;
   String? currencyID;
-  int? discountPercent;
+  double? discountPercent;
   int? discountedPrice;
   bool? isPromoItem;
 
@@ -157,7 +157,7 @@ class Items {
     item = json['Item'] != null ? Item.fromJson(json['Item']) : null;
     basePrice = json['BasePrice'];
     currencyID = json['CurrencyID'];
-    discountPercent = json['DiscountPercent'];
+    discountPercent = double.tryParse("${json['DiscountPercent']}");
     discountedPrice = json['DiscountedPrice'];
     isPromoItem = json['IsPromoItem'];
   }
@@ -276,7 +276,7 @@ class Bundles {
 class ItemOffers {
   String? bundleItemOfferID;
   Offer? offer;
-  int? discountPercent;
+  double? discountPercent;
   Cost? discountedCost;
 
   ItemOffers(
@@ -288,7 +288,7 @@ class ItemOffers {
   ItemOffers.fromJson(Map<String, dynamic> json) {
     bundleItemOfferID = json['BundleItemOfferID'];
     offer = json['Offer'] != null ? Offer.fromJson(json['Offer']) : null;
-    discountPercent = json['DiscountPercent'];
+    discountPercent = double.tryParse("${json['DiscountPercent']}");
     discountedCost = json['DiscountedCost'] != null
         ? Cost.fromJson(json['DiscountedCost'])
         : null;
@@ -357,7 +357,8 @@ class Cost {
 
   Cost.fromJson(Map<String, dynamic> json) {
     i85ad13f73d1b51289eb27cd8ee0b5741 =
-        json['85ca954a-41f2-ce94-9b45-8ca3dd39a00d'];
+        json['85ad13f7-3d1b-5128-9eb2-7cd8ee0b5741'] ??
+            json['85ca954a-41f2-ce94-9b45-8ca3dd39a00d'];
   }
 
   Map<String, dynamic> toJson() {

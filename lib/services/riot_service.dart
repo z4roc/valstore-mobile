@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart';
 import 'package:jwt_decode/jwt_decode.dart';
@@ -13,9 +14,8 @@ import 'package:valstore/models/local_offers.dart';
 import 'package:valstore/models/night_market_model.dart';
 import 'package:valstore/models/player_inventory.dart';
 import 'package:valstore/models/store_models.dart';
-import 'package:valstore/models/user_offers.dart';
+import 'package:valstore/models/user_offers.dart' as uo;
 import 'package:valstore/models/val_api_bundle.dart';
-import 'package:valstore/models/bundle.dart' as b;
 import 'package:valstore/models/bundle_display_data.dart';
 import 'package:valstore/models/player.dart';
 import 'package:valstore/models/val_api_skins.dart';
@@ -25,7 +25,9 @@ import 'package:valstore/services/notifcation_service.dart';
 import 'package:webview_cookie_manager/webview_cookie_manager.dart';
 
 class RiotService {
-  static String region = "eu";
+  static String? region = null;
+  static String newLoginUrl =
+      "https://auth.riotgames.com/authorize?redirect_uri=https%3A%2F%2Fplayvalorant.com%2Fopt_in&client_id=play-valorant-web-prod&response_type=token%20id_token&nonce=1&scope=account%20openid";
   static String loginUrl =
       'https://auth.riotgames.com/login#client_id=play-valorant-web-prod&nonce=1&redirect_uri=https%3A%2F%2Fplayvalorant.com%2Fopt_in&response_type=token%20id_token';
   static String entitlementsUri =
@@ -42,7 +44,7 @@ class RiotService {
   static late PlayerShop? playerShop = null;
   static late NightMarket? nightMarket = null;
 
-  static late UserOffers? userOffers;
+  static late uo.UserOffers? userOffers;
 
   static void getUserId() {
     userId = Jwt.parseJwt(accessToken)['sub'];
@@ -81,36 +83,41 @@ class RiotService {
   }
 
   static Future<void> recheckStore() async {
-    await reuathenticateUser();
+    try {
+      await reuathenticateUser();
+      final prefs = await SharedPreferences.getInstance();
+      region ??= prefs.getString("region") ?? "eu";
+      final store = await getStore();
 
-    final store = await getStore();
+      final wishlist = await FireStoreService().getUserWishlist(userId);
 
-    final wishlist = await FireStoreService().getUserWishlist(userId);
+      for (var element in store.skins) {
+        if (wishlist.contains(element.offerId)) {
+          final imageReq = await get(Uri.parse(element.icon!));
 
-    for (var element in store.skins) {
-      if (wishlist.contains(element.offerId)) {
-        final imageReq = await get(Uri.parse(element.icon!));
+          BigPictureStyleInformation bigPictureStyleInformation =
+              BigPictureStyleInformation(
+            ByteArrayAndroidBitmap(imageReq.bodyBytes),
+            contentTitle: element.name,
+          );
 
-        BigPictureStyleInformation bigPictureStyleInformation =
-            BigPictureStyleInformation(
-          ByteArrayAndroidBitmap(imageReq.bodyBytes),
-          contentTitle: element.name,
-        );
-
-        await notifications.show(
-          Random().nextInt(2000),
-          "Skin arrived!",
-          "${element.name} is available in your shop",
-          NotificationDetails(
-            android: AndroidNotificationDetails(
-              "high_importance_channel",
-              "High Importance notifications",
-              importance: Importance.max,
-              styleInformation: bigPictureStyleInformation,
+          await notifications.show(
+            Random().nextInt(2000),
+            "Skin arrived!",
+            "${element.name} is available in your shop",
+            NotificationDetails(
+              android: AndroidNotificationDetails(
+                "high_importance_channel",
+                "High Importance notifications",
+                importance: Importance.max,
+                styleInformation: bigPictureStyleInformation,
+              ),
             ),
-          ),
-        );
+          );
+        }
       }
+    } catch (e) {
+      if (kDebugMode) print(e);
     }
   }
 
@@ -162,9 +169,9 @@ class RiotService {
     final prefs = await SharedPreferences.getInstance();
     String version = "";
     try {
-      version = await InofficialValorantAPI().getCurrentVersion();
+      version = (await InofficialValorantAPI().getCurrentVersion())['version'];
     } catch (e) {
-      version = "07.00.00.913116";
+      version = "08.09.00.2521387";
     }
 
     final cookies = authCookies
@@ -182,14 +189,13 @@ class RiotService {
       },
       body: jsonEncode({
         "client_id": "play-valorant-web-prod",
-        "nonce": 1,
+        "nonce": "1",
         "redirect_uri": "https://playvalorant.com/opt_in",
         "response_type": "token id_token",
         "response_mode": "query",
         "scope": "account openid",
       }),
     );
-
     final auth = Reauth.fromJson(jsonDecode(res.body));
 
     RiotService.accessToken =
@@ -206,7 +212,8 @@ class RiotService {
           "https://pd.$region.a.pvp.net/personalization/v2/players/$userId/playerloadout"),
       headers: {
         'X-Riot-Entitlements-JWT': entitlements,
-        'Authorization': 'Bearer $accessToken'
+        'Authorization': 'Bearer $accessToken',
+        ...platformHeaders,
       },
     );
 
@@ -278,18 +285,34 @@ class RiotService {
     return skins;
   }
 
+  static Map<dynamic, String> clientPlatform = {
+    "platformType": "PC",
+    "platformOS": "Windows",
+    "platformOSVersion": "10.0.19042.1.256.64bit",
+    "platformChipset": "Unknown",
+  };
+
+  static Map<dynamic, String> platformHeaders = {
+    "X-Riot-ClientVersion": "release-08.07-shipping-9-2444158",
+    "X-Riot-ClientPlatform":
+        const Base64Encoder().convert(utf8.encode(jsonEncode(clientPlatform)))
+  };
+
   static Future<PlayerShop> getStore() async {
     if (playerShop != null) {
-      return playerShop!;
+      if (playerShop!.lastUpdated.difference(DateTime.now()).inHours < 1) {
+        return playerShop!;
+      }
     }
 
     //ttps://pd.eu.a.pvp.net/store/v2/storefront/46982260-daba-5fd8-b264-664c3bca700a/
 
     final shopRequest = await get(
-      Uri.parse(getStoreLink(userId, region)),
+      Uri.parse(getStoreLink(userId, region!)),
       headers: {
         'X-Riot-Entitlements-JWT': entitlements,
-        'Authorization': 'Bearer $accessToken'
+        'Authorization': 'Bearer $accessToken',
+        ...platformHeaders,
       },
     );
 
@@ -309,7 +332,8 @@ class RiotService {
         shop.add(FirebaseSkin());
       }
     }
-    playerShop = PlayerShop(storeRemaining: shopRemains, skins: shop);
+    playerShop = PlayerShop(
+        storeRemaining: shopRemains, skins: shop, lastUpdated: DateTime.now());
     return playerShop!;
   }
 
@@ -319,10 +343,11 @@ class RiotService {
     }
 
     final shopRequest = await get(
-      Uri.parse(getStoreLink(userId, region)),
+      Uri.parse(getStoreLink(userId, region!)),
       headers: {
         'X-Riot-Entitlements-JWT': entitlements,
-        'Authorization': 'Bearer $accessToken'
+        'Authorization': 'Bearer $accessToken',
+        ...platformHeaders,
       },
     );
 
@@ -351,24 +376,26 @@ class RiotService {
     return nightMarket;
   }
 
-  static Future<UserOffers> getUserOffers() async {
+  static Future<uo.UserOffers> getUserOffers() async {
     final shopRequest = await get(
-      Uri.parse(getStoreLink(userId, region)),
+      Uri.parse(getStoreLink(userId, region!)),
       headers: {
         'X-Riot-Entitlements-JWT': entitlements,
-        'Authorization': 'Bearer $accessToken'
+        'Authorization': 'Bearer $accessToken',
+        ...platformHeaders,
       },
     );
 
-    return UserOffers.fromJson(jsonDecode(shopRequest.body));
+    return uo.UserOffers.fromJson(jsonDecode(shopRequest.body));
   }
 
   static Future<LocalOffers> getLocalOffers() async {
     final shopRequest = await get(
-      Uri.parse("https://pd.eu.a.pvp.net/store/v1/offers/"),
+      Uri.parse("https://pd.$region.a.pvp.net/store/v1/offers/"),
       headers: {
         'X-Riot-Entitlements-JWT': entitlements,
-        'Authorization': 'Bearer $accessToken'
+        'Authorization': 'Bearer $accessToken',
+        ...platformHeaders,
       },
     );
 
@@ -380,10 +407,11 @@ class RiotService {
 
   static Future<int> getStoreTimer() async {
     final shopRequest = await get(
-      Uri.parse(getStoreLink(userId, region)),
+      Uri.parse(getStoreLink(userId, region!)),
       headers: {
         'X-Riot-Entitlements-JWT': entitlements,
-        'Authorization': 'Bearer $accessToken'
+        'Authorization': 'Bearer $accessToken',
+        ...platformHeaders,
       },
     );
 
@@ -399,10 +427,10 @@ class RiotService {
       Uri.parse("https://pd.$region.a.pvp.net/account-xp/v1/players/$userId"),
       headers: {
         'X-Riot-Entitlements-JWT': entitlements,
-        'Authorization': 'Bearer $accessToken'
+        'Authorization': 'Bearer $accessToken',
+        ...platformHeaders,
       },
     );
-
     final progress = PlayerXP.fromJson(jsonDecode(xpRequest.body));
 
     return progress.progress?.level ?? 0;
@@ -415,6 +443,7 @@ class RiotService {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $accessToken',
         'X-Riot-Entitlements-JWT': entitlements,
+        ...platformHeaders,
       },
       body: jsonEncode(
         <String>[userId],
@@ -428,6 +457,7 @@ class RiotService {
       headers: {
         "X-Riot-Entitlements-JWT": entitlements,
         "Authorization": "Bearer $accessToken",
+        ...platformHeaders,
       },
     );
 
@@ -451,6 +481,17 @@ class RiotService {
         puuid: userResult[0]['Subject'],
         region: RiotService.region,
       );
+
+      if (info.card?.id == "00000000-0000-0000-0000-000000000000") {
+        info.card = Card(
+            small:
+                "https://media.valorant-api.com/playercards/9fb348bc-41a0-91ad-8a3e-818035c4e561/smallart.png",
+            large:
+                "https://media.valorant-api.com/playercards/9fb348bc-41a0-91ad-8a3e-818035c4e561/largeart.png",
+            wide:
+                "https://media.valorant-api.com/playercards/9fb348bc-41a0-91ad-8a3e-818035c4e561/wideart.png",
+            id: "9fb348bc-41a0-91ad-8a3e-818035c4e561");
+      }
 
       final levelBorder = (await InofficialValorantAPI().getLevelBorders())
           .borders
@@ -485,7 +526,7 @@ class RiotService {
       user = Player(
         playerInfo: PlayerInfo(
           name: "Unknown",
-          tag: "EUW",
+          tag: "Player",
           accountLevel: 0,
           card: Card(
             wide:
@@ -504,32 +545,127 @@ class RiotService {
   }
 
   static Future<List<BundleDisplayData?>> getCurrentBundle() async {
-    final bundleRequest = await get(
+    final bundleLocal = await getUserOffers();
+    final allsSkins = await getAllSkins();
+    final uo.FeaturedBundle? bundleData = bundleLocal.featuredBundle;
+
+    /*final bundleRequest = await get(
       Uri.parse('https://api.henrikdev.xyz/valorant/v2/store-featured'),
     );
 
     final bundleJson = json.decode(bundleRequest.body);
 
     b.Bundle bundle = b.Bundle.fromJson(bundleJson);
-
+*/
     List<BundleDisplayData> bundles = [];
 
-    for (var item in bundle.data!) {
+    for (var item in bundleData?.bundles ?? <uo.Bundles>[]) {
+      if (kDebugMode) {
+        for (var debugOffer in item.itemOffers ?? <uo.ItemOffers>[]) {
+          print(debugOffer.offer?.offerID);
+        }
+        print("-----------------");
+        for (var debugOffer in item.itemOffers ?? <uo.ItemOffers>[]) {
+          print(debugOffer.bundleItemOfferID);
+        }
+        print("-----------------");
+        for (var debugOffer in item.items ?? <uo.Items>[]) {
+          print(debugOffer.item?.itemID);
+        }
+      }
       final imgRequest = await get(
         Uri.parse(
-          'https://valorant-api.com/v1/bundles/${item.bundleUuid!}',
+          'https://valorant-api.com/v1/bundles/${item.dataAssetID!}',
         ),
       );
 
       final valApiJson = json.decode(imgRequest.body);
 
       ValApiBundle apiBundle = ValApiBundle.fromJson(valApiJson);
-      item.items!.sort(((a, b) => b.basePrice! - a.basePrice!));
+      //item.items!.sort(((a, b) => b.basePrice! - a.basePrice!));
 
-      bundles.add(BundleDisplayData(bundleData: apiBundle.data, data: item));
+      final skins = <FirebaseSkin>[];
+      for (var offer in item.itemOffers ?? <uo.ItemOffers>[]) {
+        final skin = allsSkins?.data
+            ?.where(
+                (element) => element.levels?[0].uuid == offer.offer?.offerID)
+            .firstOrNull;
+
+        if (skin != null) {
+          int cost = item.items!
+                  .where(
+                      (element) => element.item?.itemID == offer.offer?.offerID)
+                  .firstOrNull
+                  ?.basePrice ??
+              0;
+
+          skins.add(FirebaseSkin(
+            name: skin.displayName,
+            cost: cost,
+            contentTier: getContentTierByCost(cost),
+            icon: skin.displayIcon,
+            levels: skin.levels,
+            chromas: skin.chromas,
+            offerId: offer.offer?.offerID,
+            skinId: skin.uuid,
+          ));
+        }
+        if (kDebugMode) {
+          print(skin);
+        }
+      }
+      final newBundleItem = BundleDisplayData(
+          bundleData: apiBundle.data, data: item, skins: skins);
+
+      bundles.add(newBundleItem);
     }
 
     return bundles;
+  }
+
+  static ContentTier getContentTierByCost(int cost) {
+    String color = "";
+    String icon = "";
+    switch (cost) {
+      case 875:
+        color = "5b9cdd";
+        icon =
+            "https://media.valorant-api.com/contenttiers/12683d76-48d7-84a3-4e09-6985794f0445/displayicon.png";
+        break;
+      case 1275:
+        color = "28bda7";
+        icon =
+            "https://media.valorant-api.com/contenttiers/0cebb8be-46d7-c12a-d306-e9907bfc5a25/displayicon.png";
+        break;
+      case 1775:
+        color = "cb558d";
+        icon =
+            "https://media.valorant-api.com/contenttiers/60bca009-4182-7998-dee7-b8a2558dc369/displayicon.png";
+        break;
+      case 2175:
+        color = "fd9257";
+        icon =
+            "https://media.valorant-api.com/contenttiers/e046854e-406c-37f4-6607-19a9ba8426fc/displayicon.png";
+        break;
+      case 2475:
+        color = "eed878";
+        icon =
+            "https://media.valorant-api.com/contenttiers/411e4a55-4e59-7757-41f0-86a53f101bb5/displayicon.png";
+        break;
+
+      default:
+        if (cost > 2475 && cost < 4950) {
+          color = "fd9257";
+          icon =
+              "https://media.valorant-api.com/contenttiers/e046854e-406c-37f4-6607-19a9ba8426fc/displayicon.png";
+        } else if (cost >= 4950) {
+          color = "eed878";
+          icon =
+              "https://media.valorant-api.com/contenttiers/411e4a55-4e59-7757-41f0-86a53f101bb5/displayicon.png";
+        }
+        break;
+    }
+    return ContentTier(color: color, icon: icon);
   }
 
   static Future<List<Data?>?> getUserOwnedItems() async {
@@ -540,6 +676,7 @@ class RiotService {
         'Content-Type': 'application/json',
         "X-Riot-Entitlements-JWT": entitlements,
         "Authorization": "Bearer $accessToken",
+        ...platformHeaders,
       },
     );
 
@@ -591,8 +728,6 @@ class RiotService {
     ValApiSkins? allSkins = await getAllSkins();
 
     final allOffers = await getLocalOffers();
-
-    final purchasable = <Data?>[];
 
     allSkins?.data = allSkins.data
         ?.where((skin) =>
