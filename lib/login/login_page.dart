@@ -33,10 +33,10 @@ class _HomeScreenState extends State<HomeScreen> {
     final versionReq = await get(Uri.parse("https://valostore.zaroc.de/api"));
 
     if (versionReq.statusCode == 200) {
-      String? version = jsonDecode(versionReq.body)["app_version"];
+      String version = jsonDecode(versionReq.body)["app_version"] ?? "2.1.0";
       PackageInfo packageInfo = await PackageInfo.fromPlatform();
 
-      if (version != packageInfo.version && version != null) {
+      if (version != packageInfo.version) {
         if (kDebugMode) {
           print(packageInfo.version);
         }
@@ -46,17 +46,8 @@ class _HomeScreenState extends State<HomeScreen> {
             return AlertDialog(
               title: const Text("Update available"),
               content: const Text(
-                  "An update is available for ValStore. Please download the latest version from Google Play or GitHub."),
+                  "An update is available for ValStore. Please download the latest version from GitHub."),
               actions: [
-                TextButton(
-                  onPressed: () {
-                    launchUrl(
-                      Uri.parse(
-                          "https://play.google.com/store/apps/details?id=de.zaroc.valstore&hl=de"),
-                    );
-                  },
-                  child: const Text("Google Play"),
-                ),
                 TextButton(
                   onPressed: () {
                     launchUrl(
@@ -76,6 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           },
         );
+        return;
       }
     }
 

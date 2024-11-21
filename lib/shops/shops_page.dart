@@ -91,6 +91,7 @@ class _ShopsPageState extends State<ShopsPage> {
   @override
   void initState() {
     super.initState();
+
     _initValstore = ValstoreProvider().initValstore();
     _initNotificationCount = loadNotifications();
   }
