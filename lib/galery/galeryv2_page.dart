@@ -25,7 +25,7 @@ class _GaleryPageState extends State<GaleryPage> {
 
   @override
   void initState() {
-    _allSkinsFuture = RiotService.getAllPurchasableSkins();
+    _allSkinsFuture = RiotService.getAllSkins();
     super.initState();
   }
 

@@ -4,7 +4,7 @@ import 'package:valstore/models/inofficial_api_models.dart';
 import 'package:valstore/services/inofficial_valorant_api.dart';
 import 'package:valstore/services/riot_service.dart';
 
-import '../models/user_offers.dart';
+import "package:valstore/models/storefront.dart";
 
 class FireStoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -126,7 +126,7 @@ class FireStoreService {
   }
 
   Future<List<FirebaseSkin>> getSkinsById(
-      List<AccessoryStoreOffers>? uuids) async {
+      List<AccessoryStoreOffer>? uuids) async {
     List<FirebaseSkin> skins = [];
 
     if (uuids == null) {
@@ -134,9 +134,8 @@ class FireStoreService {
     }
 
     for (var element in uuids) {
-      final itemUuid = element.offer?.rewards?[0].itemID;
       final docRef =
-          _db.collection("skins").doc(element.offer?.rewards?[0].itemID);
+          _db.collection("skins").doc(element.offer.rewards[0].itemID);
 
       var doc = (await docRef.get());
 
@@ -183,7 +182,7 @@ class FireStoreService {
     for (int i = 0; i < skins.length; i++) {
       if (skins[i].cost == null) {
         skins[i].cost =
-            uuids[i].offer?.cost?.i85ad13f73d1b51289eb27cd8ee0b5741 ?? 0;
+            uuids[i].offer?.cost?["i85ad13f73d1b51289eb27cd8ee0b5741"] ?? 0;
       }
     }
 

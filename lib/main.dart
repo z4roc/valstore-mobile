@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -26,13 +28,7 @@ void callbackDispatcher() {
 
       switch (taskName) {
         case "ValStoreStoreRenewal":
-          try {
-            await RiotService.recheckStore();
-          } catch (e) {
-            if (kDebugMode) {
-              print(e);
-            }
-          }
+          await RiotService.recheckStore();
           break;
         case "NightMarketRenewal":
           await RiotService.recheckNightmarket();
@@ -54,7 +50,6 @@ void callbackDispatcher() {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  notifications.initialize(initSettings);
 
   if (Firebase.apps.isEmpty) {
     await Firebase.initializeApp(
@@ -64,10 +59,14 @@ void main() async {
     Firebase.app();
   }
 
-  SystemChrome.setPreferredOrientations(
-    [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
-  );
-  Workmanager().initialize(callbackDispatcher, isInDebugMode: kDebugMode);
+  if (!kIsWeb) {
+    SystemChrome.setPreferredOrientations(
+      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
+    );
+    Workmanager().initialize(callbackDispatcher, isInDebugMode: kDebugMode);
+  }
+
+  await NotificationService.initialize();
 
   runApp(const MyApp());
 }

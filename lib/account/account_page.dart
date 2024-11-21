@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:provider/provider.dart';
@@ -14,10 +15,7 @@ import 'package:valstore/account/loadout_page.dart';
 import 'package:valstore/galery/favorites_page.dart';
 import 'package:valstore/valstore_provider.dart';
 import 'package:valstore/account/inventory_page.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 import 'package:workmanager/workmanager.dart';
-
-import '../services/riot_service.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
@@ -296,12 +294,10 @@ class DashboardPage extends StatelessWidget {
                               ),
                               ElevatedButton(
                                 onPressed: () async {
-                                  await WebViewCookieManager().clearCookies();
-                                  await WebViewController().clearLocalStorage();
-                                  await WebViewController().reload();
                                   final prefs =
                                       await SharedPreferences.getInstance();
                                   await Workmanager().cancelAll();
+                                  await CookieManager().deleteAllCookies();
                                   await prefs.clear();
                                   if (FirebaseAuth.instance.currentUser !=
                                       null) {

@@ -1,9 +1,8 @@
 import 'dart:convert';
-import 'dart:io';
-import 'dart:math';
+import "dart:developer";
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:http/http.dart';
 import 'package:jwt_decode/jwt_decode.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,7 +13,7 @@ import 'package:valstore/models/local_offers.dart';
 import 'package:valstore/models/night_market_model.dart';
 import 'package:valstore/models/player_inventory.dart';
 import 'package:valstore/models/store_models.dart';
-import 'package:valstore/models/user_offers.dart' as uo;
+import 'package:valstore/models/storefront.dart' as sf;
 import 'package:valstore/models/val_api_bundle.dart';
 import 'package:valstore/models/bundle_display_data.dart';
 import 'package:valstore/models/player.dart';
@@ -22,7 +21,6 @@ import 'package:valstore/models/val_api_skins.dart';
 import 'package:valstore/services/firestore_service.dart';
 import 'package:valstore/services/inofficial_valorant_api.dart';
 import 'package:valstore/services/notifcation_service.dart';
-import 'package:webview_cookie_manager/webview_cookie_manager.dart';
 
 class RiotService {
   static String? region = null;
@@ -44,14 +42,14 @@ class RiotService {
   static late PlayerShop? playerShop = null;
   static late NightMarket? nightMarket = null;
 
-  static late uo.UserOffers? userOffers;
+  static late sf.Storefront? userOffers;
 
   static void getUserId() {
     userId = Jwt.parseJwt(accessToken)['sub'];
   }
 
   static String getStoreLink(String uuid, String region) =>
-      "https://pd.$region.a.pvp.net/store/v3/storefront/$uuid/";
+      "https://pd.$region.a.pvp.net/store/v3/storefront/$uuid";
 
   static Future<String> getEntitlements() async {
     await saveCookies();
@@ -70,10 +68,15 @@ class RiotService {
   }
 
   static Future<void> saveCookies() async {
-    authCookies = await WebviewCookieManager()
-        .getCookies("https://auth.riotgames.com/login");
+    CookieManager cookieManager = CookieManager.instance();
     final prefs = await SharedPreferences.getInstance();
-
+    authCookies = await cookieManager.getCookies(
+      url: WebUri("https://auth.riotgames.com/login"),
+    );
+    /*authCookies = await WebviewCookieManager()
+        .getCookies("https://auth.riotgames.com/login");
+    
+    */
     prefs.setString(
         "cookie",
         authCookies
@@ -83,41 +86,23 @@ class RiotService {
   }
 
   static Future<void> recheckStore() async {
-    try {
-      await reuathenticateUser();
-      final prefs = await SharedPreferences.getInstance();
-      region ??= prefs.getString("region") ?? "eu";
-      final store = await getStore();
+    await reuathenticateUser();
+    final prefs = await SharedPreferences.getInstance();
+    region ??= prefs.getString("region") ?? "eu";
+    final store = await getStore();
 
-      final wishlist = await FireStoreService().getUserWishlist(userId);
+    final wishlist = await FireStoreService().getUserWishlist(userId);
 
-      for (var element in store.skins) {
-        if (wishlist.contains(element.offerId)) {
-          final imageReq = await get(Uri.parse(element.icon!));
-
-          BigPictureStyleInformation bigPictureStyleInformation =
-              BigPictureStyleInformation(
-            ByteArrayAndroidBitmap(imageReq.bodyBytes),
-            contentTitle: element.name,
-          );
-
-          await notifications.show(
-            Random().nextInt(2000),
-            "Skin arrived!",
-            "${element.name} is available in your shop",
-            NotificationDetails(
-              android: AndroidNotificationDetails(
-                "high_importance_channel",
-                "High Importance notifications",
-                importance: Importance.max,
-                styleInformation: bigPictureStyleInformation,
-              ),
-            ),
-          );
-        }
+    for (var element in store.skins) {
+      if (wishlist.contains(element.offerId)) {
+        final imageReq = await get(Uri.parse(element.icon!));
+        final image = imageReq.bodyBytes;
+        await NotificationService.showInstantNotification(
+          "Skin arrived!",
+          "${element.name} is available in your shop",
+          image,
+        );
       }
-    } catch (e) {
-      if (kDebugMode) print(e);
     }
   }
 
@@ -141,25 +126,10 @@ class RiotService {
             "https://media.valorant-api.com/bundles/$newBundleId/displayicon.png"));
 
         final bundleName = jsonDecode(bundleData.body)['data']['displayName'];
-
-        BigPictureStyleInformation bigPictureStyleInformation =
-            BigPictureStyleInformation(
-          ByteArrayAndroidBitmap(bundleImage.bodyBytes),
-          contentTitle: bundleName,
-        );
-
-        await notifications.show(
-          Random().nextInt(2000),
+        await NotificationService.showInstantNotification(
           "New Bundle Available!",
           "The $bundleName Bundle is now available for purchase",
-          NotificationDetails(
-            android: AndroidNotificationDetails(
-              "high_importance_channel",
-              "High Importance notifications",
-              importance: Importance.max,
-              styleInformation: bigPictureStyleInformation,
-            ),
-          ),
+          bundleImage.bodyBytes,
         );
       }
     }
@@ -169,7 +139,6 @@ class RiotService {
     final prefs = await SharedPreferences.getInstance();
     String version = "";
     try {
-      version = (await InofficialValorantAPI().getCurrentVersion())['version'];
       version = (await InofficialValorantAPI().getCurrentVersion())['version'];
     } catch (e) {
       version = "08.09.00.2521387";
@@ -204,7 +173,6 @@ class RiotService {
             RiotService.accessToken;
     await getEntitlements();
     getUserId();
-    //await RiotService.getUserData();
   }
 
   static Future<Loadout> getPlayerLadout() async {
@@ -213,8 +181,6 @@ class RiotService {
           "https://pd.$region.a.pvp.net/personalization/v2/players/$userId/playerloadout"),
       headers: {
         'X-Riot-Entitlements-JWT': entitlements,
-        'Authorization': 'Bearer $accessToken',
-        ...platformHeaders,
         'Authorization': 'Bearer $accessToken',
         ...platformHeaders,
       },
@@ -253,31 +219,8 @@ class RiotService {
           icon: match?.displayIcon,
         );
 
-        skin.levels = match?.levels
-            /*?.map((e) => Level(
-                  uuid: e.uuid,
-                  displayIcon: e.displayIcon,
-                  displayName: e.displayName,
-                  assetPath: e.assetPath,
-                  levelItem: e.levelItem,
-                  streamedVideo: e.streamedVideo,
-                ))
-            .toList()*/
-            ;
-        skin.chromas = match?.chromas
-            /* ?.map(
-              (e) => Chroma(
-                uuid: e.uuid,
-                displayIcon: e.displayIcon,
-                displayName: e.displayName,
-                assetPath: e.assetPath,
-                fullRender: e.fullRender,
-                swatch: e.swatch,
-                streamedVideo: e.streamedVideo,
-              ),
-            )
-            .toList()*/
-            ;
+        skin.levels = match?.levels;
+        skin.chromas = match?.chromas;
       } else {
         skin = fbSkin;
       }
@@ -296,9 +239,9 @@ class RiotService {
   };
 
   static Map<dynamic, String> platformHeaders = {
-    "X-Riot-ClientVersion": "release-08.07-shipping-9-2444158",
+    "X-Riot-ClientVersion": "release-09.09-shipping-11-2953160",
     "X-Riot-ClientPlatform":
-        const Base64Encoder().convert(utf8.encode(jsonEncode(clientPlatform)))
+        const Base64Encoder().convert(utf8.encode(jsonEncode(clientPlatform))),
   };
 
   static Future<PlayerShop> getStore() async {
@@ -387,23 +330,27 @@ class RiotService {
     return nightMarket;
   }
 
-  static Future<uo.UserOffers> getUserOffers() async {
+  static Future<sf.Storefront> getUserOffers() async {
     final shopRequest = await post(
       Uri.parse(getStoreLink(userId, region!)),
       headers: {
         'X-Riot-Entitlements-JWT': entitlements,
         'Authorization': 'Bearer $accessToken',
+        "Content-Type": "application/json",
         ...platformHeaders,
       },
       body: jsonEncode({}),
     );
-
-    return uo.UserOffers.fromJson(jsonDecode(shopRequest.body));
+    final offers = jsonDecode(shopRequest.body);
+    if (kDebugMode) {
+      log(shopRequest.body);
+    }
+    return sf.Storefront.fromJson(offers);
   }
 
   static Future<LocalOffers> getLocalOffers() async {
     final shopRequest = await get(
-      Uri.parse("https://pd.$region.a.pvp.net/store/v1/offers/"),
+      Uri.parse("https://pd.$region.a.pvp.net/store/v2/offers/"),
       headers: {
         'X-Riot-Entitlements-JWT': entitlements,
         'Authorization': 'Bearer $accessToken',
@@ -523,13 +470,11 @@ class RiotService {
       user = Player(
         playerInfo: info,
         wallet: Wallet(
-          valorantPoints: balanceResult["Balances"]
-              [currencies["valorantPoints"]],
+          valorantPoints: balanceResult["Balances"][Currencies.valorantPoints],
           radianitePoints: balanceResult["Balances"]
-              [currencies["radianitePoints"]],
-          freeAgents: balanceResult["Balances"][currencies["freeAgents"]],
-          kingdomCredits: balanceResult["Balances"]
-              [currencies["kingdomCredits"]],
+              [Currencies.radianitePoints],
+          freeAgents: balanceResult["Balances"][Currencies.freeAgents],
+          kingdomCredits: balanceResult["Balances"][Currencies.kingdomCredits],
         ),
         levelBorder: levelBorder,
       );
@@ -559,30 +504,22 @@ class RiotService {
   static Future<List<BundleDisplayData?>> getCurrentBundle() async {
     final bundleLocal = await getUserOffers();
     final allsSkins = await getAllSkins();
-    final uo.FeaturedBundle? bundleData = bundleLocal.featuredBundle;
+    final sf.FeaturedBundle? bundleData = bundleLocal.featuredBundle;
 
-    /*final bundleRequest = await get(
-      Uri.parse('https://api.henrikdev.xyz/valorant/v2/store-featured'),
-    );
-
-    final bundleJson = json.decode(bundleRequest.body);
-
-    b.Bundle bundle = b.Bundle.fromJson(bundleJson);
-*/
     List<BundleDisplayData> bundles = [];
 
-    for (var item in bundleData?.bundles ?? <uo.Bundles>[]) {
+    for (var item in bundleData?.bundles ?? <sf.Bundle>[]) {
       if (kDebugMode) {
-        for (var debugOffer in item.itemOffers ?? <uo.ItemOffers>[]) {
-          print(debugOffer.offer?.offerID);
+        for (var debugOffer in item.itemOffers) {
+          print(debugOffer.offer.offerID);
         }
         print("-----------------");
-        for (var debugOffer in item.itemOffers ?? <uo.ItemOffers>[]) {
+        for (var debugOffer in item.itemOffers) {
           print(debugOffer.bundleItemOfferID);
         }
         print("-----------------");
-        for (var debugOffer in item.items ?? <uo.Items>[]) {
-          print(debugOffer.item?.itemID);
+        for (var debugOffer in item.items) {
+          print(debugOffer.item.itemID);
         }
       }
       final imgRequest = await get(
@@ -594,19 +531,17 @@ class RiotService {
       final valApiJson = json.decode(imgRequest.body);
 
       ValApiBundle apiBundle = ValApiBundle.fromJson(valApiJson);
-      //item.items!.sort(((a, b) => b.basePrice! - a.basePrice!));
 
       final skins = <FirebaseSkin>[];
-      for (var offer in item.itemOffers ?? <uo.ItemOffers>[]) {
+      for (var offer in item.itemOffers) {
         final skin = allsSkins?.data
-            ?.where(
-                (element) => element.levels?[0].uuid == offer.offer?.offerID)
+            ?.where((element) => element.levels?[0].uuid == offer.offer.offerID)
             .firstOrNull;
 
         if (skin != null) {
           int cost = item.items!
                   .where(
-                      (element) => element.item?.itemID == offer.offer?.offerID)
+                      (element) => element.item?.itemID == offer.offer.offerID)
                   .firstOrNull
                   ?.basePrice ??
               0;
@@ -727,10 +662,9 @@ class RiotService {
       if (prefs.getBool("didNotifyNM") ?? false) {
         return;
       } else {
-        await showNotification(
-          id: Random().nextInt(2000),
-          title: "Night market is back!",
-          body: "The Night Market is available again.",
+        await NotificationService.showInstantNotificationWithoutPicture(
+          "Night market is back!",
+          "The Night Market is available again.",
         );
       }
     }
@@ -752,12 +686,12 @@ class RiotService {
   }
 }
 
-Map<String, String> currencies = {
-  "valorantPoints": "85ad13f7-3d1b-5128-9eb2-7cd8ee0b5741",
-  "radianitePoints": "e59aa87c-4cbf-517a-5983-6e81511be9b7",
-  "freeAgents": "f08d4ae3-939c-4576-ab26-09ce1f23bb37",
-  "kingdomCredits": "85ca954a-41f2-ce94-9b45-8ca3dd39a00d",
-};
+class Currencies {
+  static const String valorantPoints = "85ad13f7-3d1b-5128-9eb2-7cd8ee0b5741";
+  static const String radianitePoints = "e59aa87c-4cbf-517a-5983-6e81511be9b7";
+  static const String freeAgents = "f08d4ae3-939c-4576-ab26-09ce1f23bb37";
+  static const String kingdomCredits = "85ca954a-41f2-ce94-9b45-8ca3dd39a00d";
+}
 
 Map<String, String> itemTypes = {
   "agents": "01bb38e1-da47-4e6a-9b3d-945fe4655707",

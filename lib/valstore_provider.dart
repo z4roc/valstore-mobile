@@ -1,12 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:valstore/main.dart';
 import 'package:valstore/models/bundle_display_data.dart';
 import 'package:valstore/models/player.dart';
 import 'package:valstore/models/valstore.dart';
-import 'package:valstore/services/inofficial_valorant_api.dart';
 import 'package:valstore/services/inofficial_valorant_api.dart';
 import 'package:valstore/services/riot_service.dart';
 

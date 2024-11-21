@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:valstore/main.dart';
 import 'package:valstore/services/riot_service.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 import 'package:workmanager/workmanager.dart';
 
 class NavDrawer extends StatelessWidget {
@@ -191,9 +190,6 @@ class NavDrawer extends StatelessWidget {
               leading: const Icon(Icons.logout_rounded),
               title: const Text('Logout'),
               onTap: () async {
-                await WebViewCookieManager().clearCookies();
-                await WebViewController().clearLocalStorage();
-                await WebViewController().reload();
                 final prefs = await SharedPreferences.getInstance();
                 Workmanager().cancelAll();
                 prefs.clear();

@@ -4,9 +4,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:valstore/main.dart';
 import 'package:valstore/services/riot_service.dart';
 
-const List<String> list = <String>['eu', 'na', 'ap', 'kr'];
+const List<String> list = <String>['none', 'eu', 'na', 'ap', 'kr'];
 
 Map<String, String> names = {
+  "none": "Select Region",
   "eu": "Europe",
   "na": "North America",
   "ap": "Asia / Pacific",
@@ -49,8 +50,27 @@ class RegionPage extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () async {
-                //final prefs = await SharedPreferences.getInstance();
-                //prefs.setString("region", RiotService.region);
+                if (RiotService.region == null ||
+                    RiotService.region == "none") {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        content:
+                            const Text("You have to select a region first"),
+                        actions: [
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text("Okay"),
+                          )
+                        ],
+                      );
+                    },
+                  );
+                  return;
+                }
                 navigatorKey.currentState!.pushNamed("/login");
               },
               child: const Text("Continue"),

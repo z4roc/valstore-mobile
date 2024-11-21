@@ -1,70 +1,117 @@
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:http/http.dart';
 
-final FlutterLocalNotificationsPlugin notifications =
-    FlutterLocalNotificationsPlugin();
+class NotificationService {
+  static final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
 
-AndroidInitializationSettings initAndroid =
-    const AndroidInitializationSettings("launcher_notifcation");
+  static Future<void> initialize() async {
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings("@mipmap/launcher_icon");
 
-final initIOS = DarwinInitializationSettings(
-  requestAlertPermission: true,
-  requestBadgePermission: true,
-  requestSoundPermission: true,
-  onDidReceiveLocalNotification: (id, title, body, payload) async {},
-);
+    const DarwinInitializationSettings initializationSettingsIOS =
+        DarwinInitializationSettings();
 
-final initSettings = InitializationSettings(android: initAndroid, iOS: initIOS);
+    const InitializationSettings initializationSettings =
+        InitializationSettings(
+      android: initializationSettingsAndroid,
+      iOS: initializationSettingsIOS,
+    );
 
-Future showNotification(
-    {int id = 0, String? title, String? body, String? payLoad}) async {
-  return notifications.show(id, title, body, await notificationDetails());
-}
+    await flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse: onDidReceiveNotificationResponse,
+      onDidReceiveBackgroundNotificationResponse:
+          onDidReceiveNotificationResponse,
+    );
+  }
 
-notificationDetails() {
-  return const NotificationDetails(
-    android: AndroidNotificationDetails(
-      "channelId",
-      "channelName",
+  static Future<void> onDidReceiveNotificationResponse(
+      NotificationResponse notificationResponse) async {
+    // Handle notification response
+  }
+
+  static Future<void> requestPermission() async {
+    if ((await flutterLocalNotificationsPlugin.pendingNotificationRequests())
+        .isNotEmpty) {
+      return;
+    }
+
+    await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.requestNotificationsPermission();
+  }
+
+  static Future<void> showInstantNotification(
+    String title,
+    String body,
+    Uint8List? imageBytes,
+  ) async {
+    if (imageBytes == null) {
+      return;
+    }
+
+    BigPictureStyleInformation bigPictureStyleInformation =
+        BigPictureStyleInformation(
+      ByteArrayAndroidBitmap(imageBytes),
+      contentTitle: title,
+    );
+
+    final AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+      'instant_notification',
+      'Instant Notification',
       importance: Importance.max,
-    ),
-    iOS: DarwinNotificationDetails(),
-  );
-}
+      priority: Priority.high,
+      showWhen: false,
+      styleInformation: bigPictureStyleInformation,
+    );
 
-void onDidReceiveBackgroundNotificationResponse(NotificationResponse details) {}
+    const DarwinNotificationDetails iOSPlatformChannelSpecifics =
+        DarwinNotificationDetails();
 
-const AndroidNotificationChannel channel = AndroidNotificationChannel(
-  "high_importance_channel",
-  "High Importance notifications",
-  importance: Importance.max,
-);
+    final NotificationDetails platformChannelSpecifics = NotificationDetails(
+      android: androidPlatformChannelSpecifics,
+      iOS: iOSPlatformChannelSpecifics,
+    );
 
-Future<void> showNotificationWithImage(
-    {required String title,
-    required String description,
-    required String imageUrl}) async {
-  final imageBytes = (await get(Uri.parse(imageUrl))).bodyBytes;
+    await flutterLocalNotificationsPlugin.show(
+      Random().nextInt(100),
+      title,
+      body,
+      platformChannelSpecifics,
+    );
+  }
 
-  BigPictureStyleInformation bigPictureStyleInformation =
-      BigPictureStyleInformation(
-    ByteArrayAndroidBitmap(imageBytes),
-    contentTitle: title,
-  );
+  static Future<void> showInstantNotificationWithoutPicture(
+    String title,
+    String body,
+  ) async {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+      'instant_notification',
+      'Instant Notification',
+      importance: Importance.max,
+      priority: Priority.high,
+      showWhen: false,
+    );
 
-  await notifications.show(
-    Random().nextInt(2000),
-    title,
-    description,
-    NotificationDetails(
-      android: AndroidNotificationDetails(
-        "high_importance_channel",
-        "High Importance notifications",
-        importance: Importance.max,
-        styleInformation: bigPictureStyleInformation,
-      ),
-    ),
-  );
+    const DarwinNotificationDetails iOSPlatformChannelSpecifics =
+        DarwinNotificationDetails();
+
+    const NotificationDetails platformChannelSpecifics = NotificationDetails(
+      android: androidPlatformChannelSpecifics,
+      iOS: iOSPlatformChannelSpecifics,
+    );
+
+    await flutterLocalNotificationsPlugin.show(
+      Random().nextInt(100),
+      title,
+      body,
+      platformChannelSpecifics,
+    );
+  }
 }

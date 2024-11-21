@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:valstore/models/user_offers.dart';
+import 'package:valstore/models/storefront.dart';
 import 'package:valstore/services/firestore_service.dart';
 import 'package:valstore/services/riot_service.dart';
 import '../models/firebase_skin.dart';
@@ -13,15 +13,15 @@ class AccessoryPage extends StatefulWidget {
 
 class _AccessoryPageState extends State<AccessoryPage> {
   late Future<List<FirebaseSkin>> _skinsFuture;
-  late AccessoryStore store;
+  late AccessoryStore? store;
   @override
   void initState() {
     super.initState();
 
-    store = RiotService.userOffers?.accessoryStore ?? AccessoryStore();
+    store = RiotService.userOffers?.accessoryStore;
 
     _skinsFuture = FireStoreService().getSkinsById(
-      store.accessoryStoreOffers,
+      store?.accessoryStoreOffers,
     );
   }
 
@@ -43,8 +43,7 @@ class _AccessoryPageState extends State<AccessoryPage> {
                     skin: snapshot.data?[index] ??
                         FirebaseSkin(name: "Error", cost: 0, icon: null),
                     color: const Color.fromARGB(255, 78, 72, 94),
-                    cost: store.accessoryStoreOffers?[index].offer?.cost ??
-                        Cost(i85ad13f73d1b51289eb27cd8ee0b5741: 0),
+                    cost: store?.accessoryStoreOffers[index].offer.cost ?? {},
                   );
                 },
                 itemCount: snapshot.data?.length ?? 0,
@@ -71,7 +70,7 @@ class AccessoryItem extends StatelessWidget {
 
   final FirebaseSkin skin;
   final Color color;
-  final Cost cost;
+  final Map<String, int> cost;
 
   @override
   Widget build(BuildContext context) {
@@ -181,7 +180,7 @@ class AccessoryItem extends StatelessWidget {
                     ),
                     const Spacer(),
                     Text(
-                      cost.i85ad13f73d1b51289eb27cd8ee0b5741.toString() ?? "",
+                      cost[Currencies.kingdomCredits].toString() ?? "0",
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w500,

@@ -108,8 +108,10 @@ class _BundlePageState extends State<BundlePage> {
                                             MainAxisAlignment.center,
                                         children: [
                                           Text(
-                                            bundle?.data?.totalBaseCost
-                                                    ?.i85ad13f73d1b51289eb27cd8ee0b5741
+                                            bundle
+                                                    ?.data
+                                                    ?.totalBaseCost[
+                                                        "85ad13f7-3d1b-5128-9eb2-7cd8ee0b5741"]
                                                     ?.toString() ??
                                                 "",
                                             overflow: TextOverflow.fade,
@@ -171,9 +173,10 @@ class _BundlePageState extends State<BundlePage> {
                             physics: const ClampingScrollPhysics(),
                             itemBuilder: (context, index) {
                               bundle?.data?.items = bundle.data?.items
-                                  ?.where(
-                                      (element) => element.basePrice! >= 875)
-                                  .toList();
+                                      .where(
+                                          (element) => element.basePrice >= 875)
+                                      .toList() ??
+                                  [];
 
                               final skinData = bundle?.data?.items?[index];
                               String? color;

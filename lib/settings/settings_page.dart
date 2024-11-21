@@ -1,14 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:valstore/services/notifcation_service.dart';
 import 'package:valstore/services/riot_service.dart';
 import 'package:workmanager/workmanager.dart';
-
-import '../services/notifcation_service.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -211,6 +209,12 @@ class _SettingsPageState extends State<SettingsPage> {
                 child: const Text("Privacy Policy"),
               ),
             ),
+            ElevatedButton(
+              onPressed: () async {
+                await RiotService.recheckStore();
+              },
+              child: const Text("Debug Info"),
+            ),
             const Padding(
               padding: EdgeInsets.only(left: 16),
               child: Text("ValStore 2.0.4"),
@@ -248,11 +252,13 @@ class _SettingsPageState extends State<SettingsPage> {
     prefs.setBool("notify", _notificationsOn);
 
     if (_notificationsOn) {
-      await notifications
+      /*await notifications
           .resolvePlatformSpecificImplementation<
               AndroidFlutterLocalNotificationsPlugin>()
           ?.requestPermission();
+      */
 
+      await NotificationService.requestPermission();
       Workmanager().registerPeriodicTask(
         "storeCheck${DateTime.now().toString()}",
         "ValStoreStoreRenewal",
@@ -284,11 +290,12 @@ class _SettingsPageState extends State<SettingsPage> {
     prefs.setBool("notifyNM", _nmNotificationsOn);
 
     if (_nmNotificationsOn) {
-      await notifications
+      /*await notifications
           .resolvePlatformSpecificImplementation<
               AndroidFlutterLocalNotificationsPlugin>()
           ?.requestPermission();
-
+      */
+      await NotificationService.requestPermission();
       await prefs.setBool("didNotifyNM", false);
 
       await Workmanager().registerPeriodicTask(
@@ -315,11 +322,12 @@ class _SettingsPageState extends State<SettingsPage> {
     prefs.setBool("notifyBundle", _bundleNotificationsOn);
 
     if (_bundleNotificationsOn) {
-      await notifications
+      /*await notifications
           .resolvePlatformSpecificImplementation<
               AndroidFlutterLocalNotificationsPlugin>()
           ?.requestPermission();
-
+      */
+      await NotificationService.requestPermission();
       final currentBundle = (await RiotService.getUserOffers())
           .featuredBundle
           ?.bundle

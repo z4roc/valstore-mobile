@@ -55,5 +55,9 @@ app.*.map.json
 upload-keystore.jks
 ios/Runner/GoogleService-Info.plist
 android/app/google-services.json
-/android/
-/ios/
+
+firebase.json
+
+/web
+/windows
+/ios
