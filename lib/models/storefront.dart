@@ -5,10 +5,10 @@ class Storefront {
   final AccessoryStore? accessoryStore;
 
   Storefront({
-    required this.featuredBundle,
-    required this.skinsPanelLayout,
-    required this.upgradeCurrencyStore,
-    required this.accessoryStore,
+    this.featuredBundle,
+    this.skinsPanelLayout,
+    this.upgradeCurrencyStore,
+    this.accessoryStore,
   });
 
   factory Storefront.fromJson(Map<String, dynamic> json) {
@@ -23,14 +23,14 @@ class Storefront {
 }
 
 class FeaturedBundle {
-  final Bundle bundle;
-  final List<Bundle> bundles;
-  final int bundleRemainingDurationInSeconds;
+  final Bundle? bundle;
+  final List<Bundle>? bundles;
+  final int? bundleRemainingDurationInSeconds;
 
   FeaturedBundle({
-    required this.bundle,
-    required this.bundles,
-    required this.bundleRemainingDurationInSeconds,
+    this.bundle,
+    this.bundles,
+    this.bundleRemainingDurationInSeconds,
   });
 
   factory FeaturedBundle.fromJson(Map<String, dynamic> json) {
@@ -45,17 +45,17 @@ class FeaturedBundle {
 }
 
 class Bundle {
-  final String id;
-  final String dataAssetID;
-  final String currencyID;
-  List<Item> items;
-  List<ItemOffer> itemOffers;
-  final Map<String, int> totalBaseCost;
-  final Map<String, int> totalDiscountedCost;
-  final double totalDiscountPercent;
-  final int durationRemainingInSeconds;
-  final bool wholesaleOnly;
-  final int isGiftable;
+  final String? id;
+  final String? dataAssetID;
+  final String? currencyID;
+  List<Item>? items;
+  List<ItemOffer>? itemOffers;
+  final Map<String, int>? totalBaseCost;
+  final Map<String, int>? totalDiscountedCost;
+  final num? totalDiscountPercent;
+  final int? durationRemainingInSeconds;
+  final bool? wholesaleOnly;
+  final int? isGiftable;
 
   Bundle({
     required this.id,
@@ -94,7 +94,7 @@ class Item {
   final ItemDetails item;
   final int basePrice;
   final String currencyID;
-  final double discountPercent;
+  final num discountPercent;
   final int discountedPrice;
   final bool isPromoItem;
 
@@ -142,7 +142,7 @@ class ItemDetails {
 class ItemOffer {
   final String bundleItemOfferID;
   final Offer offer;
-  final double discountPercent;
+  final num discountPercent;
   final Map<String, int> discountedCost;
 
   ItemOffer({
@@ -279,7 +279,7 @@ class UpgradeCurrencyOffer {
   final String offerID;
   final String storefrontItemID;
   final Offer offer;
-  final double discountedPercent;
+  final num discountedPercent;
 
   UpgradeCurrencyOffer({
     required this.offerID,

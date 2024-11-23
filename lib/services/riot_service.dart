@@ -254,8 +254,6 @@ class RiotService {
       }
     }
 
-    //ttps://pd.eu.a.pvp.net/store/v2/storefront/46982260-daba-5fd8-b264-664c3bca700a/
-
     final shopRequest = await post(
       Uri.parse(getStoreLink(userId, region!)),
       headers: {
@@ -284,8 +282,6 @@ class RiotService {
     }
     playerShop = PlayerShop(
         storeRemaining: shopRemains, skins: shop, lastUpdated: DateTime.now());
-    playerShop = PlayerShop(
-        storeRemaining: shopRemains, skins: shop, lastUpdated: DateTime.now());
     return playerShop!;
   }
 
@@ -298,8 +294,6 @@ class RiotService {
       Uri.parse(getStoreLink(userId, region!)),
       headers: {
         'X-Riot-Entitlements-JWT': entitlements,
-        'Authorization': 'Bearer $accessToken',
-        ...platformHeaders,
         'Authorization': 'Bearer $accessToken',
         ...platformHeaders,
       },
@@ -345,7 +339,8 @@ class RiotService {
     if (kDebugMode) {
       log(shopRequest.body);
     }
-    return sf.Storefront.fromJson(offers);
+    final shopRemains = sf.Storefront.fromJson(offers);
+    return shopRemains;
   }
 
   static Future<LocalOffers> getLocalOffers() async {
@@ -509,19 +504,6 @@ class RiotService {
     List<BundleDisplayData> bundles = [];
 
     for (var item in bundleData?.bundles ?? <sf.Bundle>[]) {
-      if (kDebugMode) {
-        for (var debugOffer in item.itemOffers) {
-          print(debugOffer.offer.offerID);
-        }
-        print("-----------------");
-        for (var debugOffer in item.itemOffers) {
-          print(debugOffer.bundleItemOfferID);
-        }
-        print("-----------------");
-        for (var debugOffer in item.items) {
-          print(debugOffer.item.itemID);
-        }
-      }
       final imgRequest = await get(
         Uri.parse(
           'https://valorant-api.com/v1/bundles/${item.dataAssetID!}',
@@ -533,7 +515,7 @@ class RiotService {
       ValApiBundle apiBundle = ValApiBundle.fromJson(valApiJson);
 
       final skins = <FirebaseSkin>[];
-      for (var offer in item.itemOffers) {
+      for (var offer in item.itemOffers ?? <sf.ItemOffer>[]) {
         final skin = allsSkins?.data
             ?.where((element) => element.levels?[0].uuid == offer.offer.offerID)
             .firstOrNull;
@@ -541,7 +523,7 @@ class RiotService {
         if (skin != null) {
           int cost = item.items!
                   .where(
-                      (element) => element.item?.itemID == offer.offer.offerID)
+                      (element) => element.item.itemID == offer.offer.offerID)
                   .firstOrNull
                   ?.basePrice ??
               0;

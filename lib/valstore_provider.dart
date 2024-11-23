@@ -38,26 +38,27 @@ class ValstoreProvider extends ChangeNotifier {
   }
 
   Future<Valstore> initValstore() async {
-    final prefs = await SharedPreferences.getInstance();
-    String? region = prefs.getString("region");
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      String? region = prefs.getString("region");
 
-    if (region == null) {
-      navigatorKey.currentState!.pushNamed("/region");
-    }
+      if (region == null) {
+        navigatorKey.currentState!.pushNamed("/region");
+      }
 
-    RiotService.playerShop = null;
-    RiotService.region = region!;
-    RiotService.platformHeaders["X-Riot-ClientVersion"] =
-        (await InofficialValorantAPI()
-            .getCurrentVersion())["riotClientVersion"];
-    RiotService.userOffers = await RiotService.getUserOffers();
+      RiotService.playerShop = null;
+      RiotService.region = region!;
+      RiotService.platformHeaders["X-Riot-ClientVersion"] =
+          (await InofficialValorantAPI()
+              .getCurrentVersion())["riotClientVersion"];
+      RiotService.userOffers = await RiotService.getUserOffers();
 
-    _instance = Valstore();
+      _instance = Valstore();
 
-    _instance.playerShop = await RiotService.getStore();
-    _instance.player = await RiotService.getUserData();
+      _instance.playerShop = await RiotService.getStore();
+      _instance.player = await RiotService.getUserData();
 
-    /*
+      /*
     _instance = Valstore();
 
     _instance.playerShop = await RiotService.getStore();
@@ -74,10 +75,14 @@ class ValstoreProvider extends ChangeNotifier {
       localOffers: await RiotService.getLocalOffers(),
     );*/
     );*/
-    await initWishlist();
-    notifyListeners();
+      await initWishlist();
+      notifyListeners();
 
-    return _instance;
+      return _instance;
+    } catch (e) {
+      rethrow;
+      // return _instance;
+    }
   }
 
   static List<String> _skins = [];

@@ -109,7 +109,7 @@ class _BundlePageState extends State<BundlePage> {
                                           Text(
                                             bundle
                                                     ?.data
-                                                    ?.totalBaseCost[
+                                                    ?.totalBaseCost?[
                                                         "85ad13f7-3d1b-5128-9eb2-7cd8ee0b5741"]
                                                     ?.toString() ??
                                                 "",
@@ -172,7 +172,7 @@ class _BundlePageState extends State<BundlePage> {
                             physics: const ClampingScrollPhysics(),
                             itemBuilder: (context, index) {
                               bundle?.data?.items = bundle.data?.items
-                                      .where(
+                                      ?.where(
                                           (element) => element.basePrice >= 875)
                                       .toList() ??
                                   [];
