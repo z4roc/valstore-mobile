@@ -32,7 +32,7 @@ class _GaleryPageState extends State<GaleryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF16141a).withOpacity(.8),
+      backgroundColor: const Color(0xFF16141a).withValues(alpha: .8),
       body: FutureBuilder(
         future: _allSkinsFuture,
         builder: (context, snapshot) {

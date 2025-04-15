@@ -64,7 +64,7 @@ class _BundlePageState extends State<BundlePage> {
                                   width: double.infinity,
                                   decoration: BoxDecoration(
                                     color: const Color.fromARGB(255, 37, 34, 41)
-                                        .withOpacity(.8),
+                                        .withValues(alpha: .8),
                                     borderRadius: BorderRadius.circular(10),
                                     boxShadow: [
                                       BoxShadow(
@@ -182,7 +182,6 @@ class _BundlePageState extends State<BundlePage> {
                               String? icon;
                               final offerData =
                                   bundle?.data?.itemOffers?[index];
-                              ;
                               switch (skinData?.basePrice) {
                                 case 875:
                                   color = "5b9cdd";
@@ -278,7 +277,7 @@ class BundleItemTile extends StatelessWidget {
                 .push(MaterialPageRoute(builder: ((context) {
               return SkinDetailPage(skin: fbSkin!);
             })));
-          } catch (e) {}
+          } catch (e) {rethrow;}
         },
         child: SizedBox(
           height: 200,
@@ -306,17 +305,17 @@ class BundleItemTile extends StatelessWidget {
                   end: Alignment.topRight,
                   colors: [
                     color
-                        .withBlue((color.blue / 4).round())
-                        .withRed((color.red / 4).round())
-                        .withGreen((color.green / 4).round()),
+                        .withBlue((color.b / 4).round())
+                        .withRed((color.r / 4).round())
+                        .withGreen((color.g / 4).round()),
                     color
-                        .withBlue((color.blue / 2).round())
-                        .withRed((color.red / 2).round())
-                        .withGreen((color.green / 2).round()),
+                        .withBlue((color.b / 2).round())
+                        .withRed((color.r / 2).round())
+                        .withGreen((color.g / 2).round()),
                     color
-                        .withBlue((color.blue / 1).round())
-                        .withRed((color.red / 1).round())
-                        .withGreen((color.green / 1).round()),
+                        .withBlue((color.b / 1).round())
+                        .withRed((color.r / 1).round())
+                        .withGreen((color.g / 1).round()),
                   ],
                 ),
                 image: DecorationImage(
@@ -342,7 +341,7 @@ class BundleItemTile extends StatelessWidget {
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 20,
-                            color: Colors.white.withOpacity(.95),
+                            color: Colors.white.withValues(alpha: .95),
                           ),
                         ),
                       ),
@@ -378,7 +377,7 @@ class BundleItemTile extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w700,
-                          color: Colors.white.withOpacity(.95),
+                          color: Colors.white.withValues(alpha: .95),
                         ),
                       ),
                       const SizedBox(

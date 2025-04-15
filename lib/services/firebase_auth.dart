@@ -6,7 +6,7 @@ class FirebaseAuthService {
       if (FirebaseAuth.instance.currentUser == null) {
         FirebaseAuth.instance.signInAnonymously();
       }
-    } catch (e) {}
+    } catch (e) {rethrow;}
   }
 
   Future<void> signOut() async {

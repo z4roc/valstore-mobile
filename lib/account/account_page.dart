@@ -40,7 +40,7 @@ class _AccountPageState extends State<AccountPage> {
       bottomNavigationBar: GNav(
         backgroundColor: Colors.transparent,
         activeColor: Colors.white,
-        tabBackgroundColor: const Color.fromARGB(0, 37, 37, 52).withOpacity(.5),
+        tabBackgroundColor: const Color.fromARGB(0, 37, 37, 52).withValues(alpha: .5),
         gap: 8,
         selectedIndex: _currentIndex,
         padding: const EdgeInsets.all(5),
@@ -366,8 +366,8 @@ class BannerCard extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.bottomCenter,
           colors: [
-            Colors.black.withOpacity(1),
-            Colors.black.withOpacity(.2),
+            Colors.black.withValues(alpha: 1),
+            Colors.black.withValues(alpha: .2),
           ],
         ),
       ),

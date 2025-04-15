@@ -102,7 +102,7 @@ class _ShopsPageState extends State<ShopsPage> {
       bottomNavigationBar: GNav(
         backgroundColor: Colors.transparent,
         activeColor: Colors.white,
-        tabBackgroundColor: const Color.fromARGB(0, 37, 37, 52).withOpacity(.5),
+        tabBackgroundColor: const Color.fromARGB(0, 37, 37, 52).withValues(alpha: .5),
         gap: 8,
         selectedIndex: _currentIndex,
         padding: const EdgeInsets.all(5),
