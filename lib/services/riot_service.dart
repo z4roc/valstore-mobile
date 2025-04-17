@@ -330,31 +330,51 @@ class RiotService {
       return nightMarket;
     }
 
-    final shopRequest = await get(
+    final shopRequest = await post(
       Uri.parse(getStoreLink(userId, region!)),
       headers: {
         'X-Riot-Entitlements-JWT': entitlements,
         'Authorization': 'Bearer $accessToken',
+        "Content-Type": "application/json",
         ...platformHeaders,
       },
+      body: jsonEncode({}),
     );
 
     final body = shopRequest.body;
     final allShopJson = json.decode(body);
 
     var shop = Shop.fromJson(allShopJson);
-    if (shop.bonusStore == null) return null;
+    if (shop.bonusStore == null) {
+      return null;
+    }
 
     List<NightMarketSkin> nightMarketSkins = [];
+    final allSkins = await getAllSkins();
 
     for (var offer in shop.bonusStore!.bonusStoreOffers!) {
-      var firebaseSkin =
-          await FireStoreService().getSkin(offer.offer!.offerID!);
-
-      nightMarketSkins.add(NightMarketSkin(
-        skinData: firebaseSkin,
-        percentageReduced: offer.discountPercent,
-      ));
+      // var firebaseSkin = await FireStoreService().getSkin(offer.offer!.offerID!);
+      final skin = allSkins?.data
+          ?.where((element) => element.levels?[0].uuid == offer.offer!.offerID)
+          .firstOrNull;
+      if (skin != null) {
+        int cost = offer.offer!.cost?.i85ad13f73d1b51289eb27cd8ee0b5741 ?? 0;
+        final firebaseSkin = FirebaseSkin(
+          name: skin.displayName,
+          cost: cost,
+          contentTier: getContentTierByCost(cost),
+          icon: skin.displayIcon ?? skin.levels?[0].displayIcon,
+          levels: skin.levels,
+          chromas: skin.chromas,
+          offerId: offer.offer!.offerID,
+          skinId: skin.uuid,
+        );
+        nightMarketSkins.add(NightMarketSkin(
+          skinData: firebaseSkin,
+          percentageReduced: offer.discountPercent,
+        ));
+        await FireStoreService().registerSkin(firebaseSkin);
+      }
     }
     nightMarket = NightMarket(
       durationRemain: shop.bonusStore!.bonusStoreRemainingDurationInSeconds,
