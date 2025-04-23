@@ -120,7 +120,7 @@ class Bundle {
   List<ItemOffers>? itemOffers;
   int? totalBaseCost;
   int? totalDiscountedCost;
-  int? totalDiscountPercent;
+  double? totalDiscountPercent;
   int? durationRemainingInSeconds;
   bool? wholesaleOnly;
 
@@ -148,13 +148,12 @@ class Bundle {
     }
     if (json['ItemOffers'] != null) {
       itemOffers = <ItemOffers>[];
-      json['Items'].forEach((v) {
+      json['ItemOffers'].forEach((v) {
         itemOffers!.add(ItemOffers.fromJson(v));
       });
     }
-    itemOffers = json['ItemOffers'];
-    totalBaseCost = json['TotalBaseCost'];
-    totalDiscountedCost = json['TotalDiscountedCost'];
+    totalBaseCost = json['TotalBaseCost']['85ad13f7-3d1b-5128-9eb2-7cd8ee0b5741'];
+    totalDiscountedCost = json['TotalDiscountedCost']['85ad13f7-3d1b-5128-9eb2-7cd8ee0b5741'];
     totalDiscountPercent = json['TotalDiscountPercent'];
     durationRemainingInSeconds = json['DurationRemainingInSeconds'];
     wholesaleOnly = json['WholesaleOnly'];

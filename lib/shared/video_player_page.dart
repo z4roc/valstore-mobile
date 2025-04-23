@@ -53,7 +53,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      backgroundColor: const Color(0xFF16141a).withOpacity(.8),
+      backgroundColor: const Color(0xFF16141a).withValues(alpha: .8),
       body: Column(
         children: [
           Expanded(

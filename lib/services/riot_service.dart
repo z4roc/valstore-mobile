@@ -23,7 +23,7 @@ import 'package:valstore/services/inofficial_valorant_api.dart';
 import 'package:valstore/services/notifcation_service.dart';
 
 class RiotService {
-  static String? region = null;
+  static String? region;
   static String newLoginUrl =
       "https://auth.riotgames.com/authorize?redirect_uri=https%3A%2F%2Fplayvalorant.com%2Fopt_in&client_id=play-valorant-web-prod&response_type=token%20id_token&nonce=1&scope=account%20openid";
   static String loginUrl =
@@ -37,10 +37,10 @@ class RiotService {
   static String userId = "";
   static List<PlayerLoadoutItem>? playerLoadout;
 
-  static late List<Cookie>? authCookies = null;
+  static List<Cookie>? authCookies;
   static late Player user;
-  static late PlayerShop? playerShop = null;
-  static late NightMarket? nightMarket = null;
+  static PlayerShop? playerShop;
+  static NightMarket? nightMarket;
 
   static late sf.Storefront? userOffers;
 
@@ -244,7 +244,7 @@ class RiotService {
         const Base64Encoder().convert(utf8.encode(jsonEncode(clientPlatform))),
   };
 
-  static Future<PlayerShop> getStore() async {
+  static Future<PlayerShop> getStoreOld() async {
     if (playerShop != null) {
       if (playerShop!.lastUpdated.difference(DateTime.now()).inHours < 1) {
         return playerShop!;
@@ -285,36 +285,96 @@ class RiotService {
     return playerShop!;
   }
 
+  static Future<PlayerShop> getStore() async {
+    if (playerShop != null) {
+      if (playerShop!.lastUpdated.difference(DateTime.now()).inHours < 1) {
+        return playerShop!;
+      }
+    }
+
+    final userOffers = await getUserOffers();
+    final allSkins = await getAllSkins();
+    final sf.SkinsPanelLayout? shopData = userOffers.skinsPanelLayout;
+    final shopRemains = userOffers.skinsPanelLayout?.singleItemOffersRemainingDurationInSeconds;
+
+    List<FirebaseSkin> shop = [];
+
+    for (var item in shopData?.singleItemStoreOffers ?? <sf.SingleItemStoreOffer>[]) {
+      final skin = allSkins?.data
+          ?.where((element) => element.levels?[0].uuid == item.offerID)
+          .firstOrNull;
+
+      if (skin != null) {
+        int cost = item.cost["85ad13f7-3d1b-5128-9eb2-7cd8ee0b5741"] ?? 0;
+        final firebaseSkin = FirebaseSkin(
+          name: skin.displayName,
+          cost: cost,
+          contentTier: getContentTierByCost(cost),
+          icon: skin.displayIcon,
+          levels: skin.levels,
+          chromas: skin.chromas,
+          offerId: item.offerID,
+          skinId: skin.uuid,
+        );
+        shop.add(firebaseSkin);
+        await FireStoreService().registerSkin(firebaseSkin);
+      }
+    }
+    playerShop = PlayerShop(
+        storeRemaining: shopRemains, skins: shop, lastUpdated: DateTime.now());
+    return playerShop!;
+  }
+
   static Future<NightMarket?> getNightMarket() async {
     if (nightMarket != null) {
       return nightMarket;
     }
 
-    final shopRequest = await get(
+    final shopRequest = await post(
       Uri.parse(getStoreLink(userId, region!)),
       headers: {
         'X-Riot-Entitlements-JWT': entitlements,
         'Authorization': 'Bearer $accessToken',
+        "Content-Type": "application/json",
         ...platformHeaders,
       },
+      body: jsonEncode({}),
     );
 
     final body = shopRequest.body;
     final allShopJson = json.decode(body);
 
     var shop = Shop.fromJson(allShopJson);
-    if (shop.bonusStore == null) return null;
+    if (shop.bonusStore == null) {
+      return null;
+    }
 
     List<NightMarketSkin> nightMarketSkins = [];
+    final allSkins = await getAllSkins();
 
     for (var offer in shop.bonusStore!.bonusStoreOffers!) {
-      var firebaseSkin =
-          await FireStoreService().getSkin(offer.offer!.offerID!);
-
-      nightMarketSkins.add(NightMarketSkin(
-        skinData: firebaseSkin,
-        percentageReduced: offer.discountPercent,
-      ));
+      // var firebaseSkin = await FireStoreService().getSkin(offer.offer!.offerID!);
+      final skin = allSkins?.data
+          ?.where((element) => element.levels?[0].uuid == offer.offer!.offerID)
+          .firstOrNull;
+      if (skin != null) {
+        int cost = offer.offer!.cost?.i85ad13f73d1b51289eb27cd8ee0b5741 ?? 0;
+        final firebaseSkin = FirebaseSkin(
+          name: skin.displayName,
+          cost: cost,
+          contentTier: getContentTierByCost(cost),
+          icon: skin.displayIcon ?? skin.levels?[0].displayIcon,
+          levels: skin.levels,
+          chromas: skin.chromas,
+          offerId: offer.offer!.offerID,
+          skinId: skin.uuid,
+        );
+        nightMarketSkins.add(NightMarketSkin(
+          skinData: firebaseSkin,
+          percentageReduced: offer.discountPercent,
+        ));
+        await FireStoreService().registerSkin(firebaseSkin);
+      }
     }
     nightMarket = NightMarket(
       durationRemain: shop.bonusStore!.bonusStoreRemainingDurationInSeconds,

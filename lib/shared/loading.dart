@@ -24,7 +24,7 @@ class StoreItemLoading extends StatelessWidget {
             width: double.infinity,
             child: Shimmer.fromColors(
               child: const Card(),
-              baseColor: const Color.fromARGB(255, 49, 47, 47).withOpacity(.8),
+              baseColor: const Color.fromARGB(255, 49, 47, 47).withValues(alpha: .8),
               highlightColor: Colors.grey.shade700,
             ),
           ),
@@ -34,7 +34,7 @@ class StoreItemLoading extends StatelessWidget {
             width: double.infinity,
             child: Shimmer.fromColors(
               child: const Card(),
-              baseColor: const Color.fromARGB(255, 49, 47, 47).withOpacity(.8),
+              baseColor: const Color.fromARGB(255, 49, 47, 47).withValues(alpha: .8),
               highlightColor: Colors.grey.shade700,
             ),
           ),
@@ -48,7 +48,7 @@ class StoreItemLoading extends StatelessWidget {
                 child: Shimmer.fromColors(
                   child: const Card(),
                   baseColor:
-                      const Color.fromARGB(255, 49, 47, 47).withOpacity(.8),
+                      const Color.fromARGB(255, 49, 47, 47).withValues(alpha: .8),
                   highlightColor: Colors.grey.shade700,
                 ),
               ),
@@ -89,7 +89,7 @@ class BasicItemLoader extends StatelessWidget {
                 ),
               ),
             ),
-            baseColor: const Color.fromARGB(255, 77, 77, 77).withOpacity(.8),
+            baseColor: const Color.fromARGB(255, 77, 77, 77).withValues(alpha: .8),
             highlightColor: Colors.grey,
           ),
           const SizedBox(
@@ -105,7 +105,7 @@ class BasicItemLoader extends StatelessWidget {
                 ),
               ),
             ),
-            baseColor: const Color.fromARGB(255, 77, 77, 77).withOpacity(.8),
+            baseColor: const Color.fromARGB(255, 77, 77, 77).withValues(alpha: .8),
             highlightColor: Colors.grey,
           ),
         ],

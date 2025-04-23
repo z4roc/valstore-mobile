@@ -234,7 +234,7 @@ class _SettingsPageState extends State<SettingsPage> {
         leading: Transform.scale(
           scale: 0.8,
           child: CupertinoSwitch(
-            activeColor: Colors.redAccent,
+            activeTrackColor: Colors.redAccent,
             value: state,
             onChanged: enableNotificationFunction,
           ),

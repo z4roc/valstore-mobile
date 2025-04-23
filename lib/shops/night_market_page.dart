@@ -167,17 +167,17 @@ class NightMarketItemTile extends StatelessWidget {
                 end: Alignment.topRight,
                 colors: [
                   color
-                      .withBlue((color.blue / 4).round())
-                      .withRed((color.red / 4).round())
-                      .withGreen((color.green / 4).round()),
+                      .withBlue((color.b / 4).round())
+                      .withRed((color.r / 4).round())
+                      .withGreen((color.g / 4).round()),
                   color
-                      .withBlue((color.blue / 2).round())
-                      .withRed((color.red / 2).round())
-                      .withGreen((color.green / 2).round()),
+                      .withBlue((color.b / 2).round())
+                      .withRed((color.r / 2).round())
+                      .withGreen((color.g / 2).round()),
                   color
-                      .withBlue((color.blue / 1).round())
-                      .withRed((color.red / 1).round())
-                      .withGreen((color.green / 1).round()),
+                      .withBlue((color.b / 1).round())
+                      .withRed((color.r / 1).round())
+                      .withGreen((color.g / 1).round()),
                 ],
               ),
               image: DecorationImage(

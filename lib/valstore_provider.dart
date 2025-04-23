@@ -12,7 +12,7 @@ import 'services/firestore_service.dart';
 
 class ValstoreProvider extends ChangeNotifier {
   static late Valstore _instance;
-  static bool _shouldNotify = false;
+  static const bool _shouldNotify = false;
 
   Valstore get getInstance => _instance;
 

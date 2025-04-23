@@ -22,7 +22,7 @@ ThemeData themeData = ThemeData(
     elevation: 1,
   ),
   primaryColor: const Color(0x00ff4655),
-  scaffoldBackgroundColor: const Color.fromARGB(0, 37, 37, 52).withOpacity(.5),
+  scaffoldBackgroundColor: const Color.fromARGB(0, 37, 37, 52).withValues(alpha: .5),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
       foregroundColor: Colors.white,
