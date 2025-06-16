@@ -1,11 +1,8 @@
+STATUS: Archived
+Riot doesn't like these kind of apps, so it got removed from Google Play, at the same time I lack the passion and time maintainting the project, so this will be archived.
+Feel free to fork it, and use it as it should still work as of today.
 
-  
-<a class="badge" href="https://play.google.com/store/apps/details?id=de.zaroc.valstore&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-pyPartBadge-Mar2515-1"><img height=100px alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"/></a>
-
-<a href='https://ko-fi.com/N4N1IL99T' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi4.png?v=3' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
-
-###
-Fund IOS Release
+For questions: Discord @turbointerl9
 
 # valstore
 
